@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-hover: #45a049;
+            --accent: #ffcc00;
+            --accent-hover: #ffdb4d;
+            --bg-color: #f0f8ff;
+            --german-text: #d84315;
+            --english-text: #333;
+            --arabic-text: #0056b3;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive, sans-serif;
+            background-color: var(--bg-color);
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px white;
+        }
+
+        /* --- Tabs Navigation --- */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: white;
+            border: 3px solid #e6b800;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-family: 'Balsamiq Sans', cursive;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .section-container {
+            display: none;
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 5px solid var(--primary);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Tab 1: Learn (Images & Sentences) --- */
+        .lesson-slide {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lesson-slide.active {
+            display: flex;
+        }
+
+        .lesson-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 350px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .lesson-text {
+            font-size: 32px;
+            color: var(--german-text);
+            font-family: 'Balsamiq Sans', cursive;
+            margin-bottom: 15px;
+        }
+
+        .sound-btn {
+            background-color: #ce93d8;
+            border: 3px solid #8e24aa;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s;
+        }
+
+        .sound-btn:active { transform: scale(0.9); }
+        .sound-btn:hover { background-color: #ba68c8; }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .nav-arrow {
+            background-color: #81d4fa;
+            border: 3px solid #0288d1;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        /* --- Dots Navigation for Tab 1 --- */
+        .dots-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f1f8e9;
+            border-radius: 15px;
+        }
+
+        .slide-nav-dot {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid #4CAF50;
+            background: white;
+            color: #4CAF50;
+            font-size: 18px;
+            font-family: 'Balsamiq Sans', cursive;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-nav-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .slide-nav-dot.active {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* --- Dialogue Specific Styles --- */
+        .dialogue-container {
+            width: 100%;
+            text-align: left;
+            background: #fff9c4;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px dashed #fbc02d;
+            margin-top: 15px;
+        }
+
+        .master-play {
+            background-color: #a5d6a7;
+            border: 3px solid #388e3c;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dialogue-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .dialogue-text {
+            font-size: 20px;
+            color: var(--german-text);
+            font-family: 'Balsamiq Sans', cursive;
+        }
+
+        .dialogue-speaker {
+            color: #333;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .small-sound {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        /* --- Tab 2: Dictionary Table --- */
+        .dict-table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        th, td {
+            border: 2px solid #ddd;
+            padding: 12px;
+            font-size: 20px;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-family: 'Balsamiq Sans', cursive;
+        }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        td.de-text { color: var(--german-text); font-family: 'Balsamiq Sans', cursive; font-weight: bold; }
+        td.en-text { color: var(--english-text); }
+        td.ar-text { color: var(--arabic-text); font-size: 24px; }
+
+        .table-sound-btn {
+            background-color: #fff59d;
+            border: 2px solid #fbc02d;
+            border-radius: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* --- Tab 3: NEW Image Match Quiz --- */
+        #quiz-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .quiz-header {
+            font-size: 28px;
+            color: #0288d1;
+            font-family: 'Balsamiq Sans', cursive;
+            margin-bottom: 10px;
+        }
+
+        .massive-sound-btn {
+            font-size: 60px;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            background: #ff9800;
+            border: 8px solid #e65100;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .massive-sound-btn:active {
+            transform: scale(0.9);
+        }
+        .massive-sound-btn:hover {
+            background: #fb8c00;
+        }
+
+        .quiz-options-images {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .quiz-img-btn {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            background: #fff;
+            border: 6px solid #e1f5fe;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s, border-color 0.2s, opacity 0.2s;
+            padding: 5px;
+        }
+
+        .quiz-img-btn:hover {
+            transform: scale(1.05);
+            border-color: #03a9f4;
+        }
+        
+        .quiz-img-btn.correct {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+            transform: scale(1.15);
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.6);
+            z-index: 10;
+        }
+
+        .quiz-img-btn.wrong {
+            border-color: #f44336;
+            animation: shake 0.4s;
+            opacity: 0.6;
+        }
+
+        .quiz-img-btn.disabled {
+            pointer-events: none;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-15px) rotate(-5deg); }
+            50% { transform: translateX(15px) rotate(5deg); }
+            75% { transform: translateX(-15px) rotate(-5deg); }
+            100% { transform: translateX(0); }
+        }
+
+        #certificate {
+            display: none;
+            background: linear-gradient(135deg, #fff9c4, #ffecb3);
+            border: 8px double #ffb300;
+            padding: 40px 20px;
+            border-radius: 20px;
+        }
+        
+        #certificate h2 { color: #d84315; font-size: 32px; font-family: 'Balsamiq Sans', cursive;}
+    </style>
+</head>
+<body>
+
+    <h1>Week 1</h1>
+
+    <!-- Tabs Navigation -->
+    <div class="nav-buttons">
+        <button class="tab-btn active" onclick="switchTab('learn-tab', this)">🖼️ Learn</button>
+        <button class="tab-btn" onclick="switchTab('dict-tab', this)">📚 Dictionary</button>
+        <button class="tab-btn" onclick="switchTab('quiz-tab', this)">🎯 Quiz</button>
+    </div>
+
+    <!-- TAB 1: LEARN (Images & Audio) -->
+    <div id="learn-tab" class="section-container active">
+        <div id="slide-container">
+            <!-- Slides will be injected here by JS -->
+        </div>
+        
+        <div class="controls">
+            <button class="nav-arrow" onclick="prevSlide()">⬅️ Back</button>
+            <span id="slide-counter" style="font-weight: bold; font-size: 18px; color: #555;">1 / 11</span>
+            <button class="nav-arrow" onclick="nextSlide()">Next ➡️</button>
+        </div>
+
+        <!-- NEW: Free Navigation Dots (1 to 11) -->
+        <div id="slide-dots" class="dots-container">
+            <!-- Dots injected via JS -->
+        </div>
+    </div>
+
+    <!-- TAB 2: DICTIONARY -->
+    <div id="dict-tab" class="section-container">
+        <h2>Vocabulary List</h2>
+        <p>Click the 🔊 button to hear the word in German, English, and Arabic!</p>
+        
+        <div class="dict-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Audio</th>
+                        <th>Deutsch (German)</th>
+                        <th>English</th>
+                        <th>العربية (Arabic)</th>
+                    </tr>
+                </thead>
+                <tbody id="dict-table-body">
+                    <!-- Rows injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB 3: QUIZ (Kid Friendly Image Matching) -->
+    <div id="quiz-tab" class="section-container">
+        <div id="quiz-game">
+            <div class="quiz-header">Listen & Click the Matching Picture! 🎧</div>
+            <p>Question <span id="q-current">1</span> of <span id="q-total">10</span></p>
+            
+            <button class="massive-sound-btn" onclick="playQuizAudio()" title="Play Sound">🔊</button>
+            
+            <div class="quiz-options-images" id="quiz-image-options">
+                <!-- Image buttons injected here -->
+            </div>
+        </div>
+
+        <div id="certificate">
+            <div style="font-size: 60px;">🎓🥇</div>
+            <h2>Super gemacht! (Great job!)</h2>
+            <p>You completed the Week 1 Quiz!</p>
+            <button class="tab-btn" onclick="startQuiz()" style="margin-top: 20px;">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+
+        // 1. Data for Tab 1 (Learn Images)
+        const lessonSlides = [
+            { img: 'img/1.png', de: 'Hallo' },
+            { img: 'img/1.png', de: 'Tschüss' },
+            { img: 'img/2.png', de: 'Ja' },
+            { img: 'img/3.png', de: 'Nein' },
+            { img: 'img/4.png', de: 'Das ist mein Papa.' },
+            { img: 'img/5.png', de: 'Das ist meine Mama.' },
+            { img: 'img/6.png', de: 'Ich bin ein Junge.' },
+            { img: 'img/7.png', de: 'Du bist ein Mädchen.' },
+            { img: 'img/8.png', de: 'Guten Morgen!' },
+            { img: 'img/9.png', de: 'Gute Nacht!' },
+            { 
+                img: 'img/10.png', 
+                isDialogue: true,
+                dialogue: [
+                    { speaker: 'Sarah', text: 'Hallo!' },
+                    { speaker: 'Tameem', text: 'Hallo! Wie heißt du?' },
+                    { speaker: 'Sarah', text: 'Ich heiße Sarah. Wie heißt du?' },
+                    { speaker: 'Tameem', text: "Ich heiße Tameem. Wie geht's dir?" },
+                    { speaker: 'Sarah', text: "Gut, danke! Wie geht's dir?" },
+                    { speaker: 'Tameem', text: 'Gut, danke! Bist du neu hier?' },
+                    { speaker: 'Sarah', text: 'Ja! Bist du auch neu?' },
+                    { speaker: 'Tameem', text: 'Nein. Hier, ein Wasser für dich!' },
+                    { speaker: 'Sarah', text: 'Danke!' },
+                    { speaker: 'Tameem', text: 'Bitte!' },
+                    { speaker: 'Sarah', text: 'Tschüss, Tameem!' },
+                    { speaker: 'Tameem', text: 'Tschüss, Sarah!' }
+                ]
+            }
+        ];
+
+        // 2. Data for Tab 2 (Dictionary)
+        const dictionary = [
+            { de: "Hallo", en: "Hello", ar: "مَرْحَبًا" },
+            { de: "Tschüss", en: "Bye", ar: "وَدَاعًا" },
+            { de: "Ja", en: "Yes", ar: "نَعَمْ" },
+            { de: "Nein", en: "No", ar: "لا" },
+            { de: "Bitte", en: "Please / Here you go", ar: "مِنْ فَضْلِكَ" },
+            { de: "Danke", en: "Thank you", ar: "شُكْرًا" },
+            { de: "Ich", en: "I", ar: "أَنَا" },
+            { de: "Du", en: "You", ar: "أَنْتَ" },
+            { de: "Junge", en: "Boy", ar: "وَلَدٌ" },
+            { de: "Mädchen", en: "Girl", ar: "بِنْتٌ" },
+            { de: "Mama", en: "Mom", ar: "أُمِّي" },
+            { de: "Papa", en: "Dad", ar: "أَبِي" },
+            { de: "Guten Morgen!", en: "Good morning!", ar: "صَباحُ الْخَيْرِ" },
+            { de: "Gute Nacht!", en: "Good night!", ar: "تُصْبِحُ عَلَى خَيْرٍ" },
+            { de: "Wie heißt du?", en: "What is your name?", ar: "مَا إِسْمُكَ؟" },
+            { de: "Ich heiße...", en: "My name is...", ar: "اِسْمِي..." },
+            { de: "Wie geht's dir?", en: "How are you?", ar: "كَيْفَ حَالُكَ؟؟" },
+            { de: "Gut, danke!", en: "Good, thanks!", ar: "بِخَيْرٍ، شُكْرًا" }
+        ];
+
+        // Ensure users have interacted with the page before auto-playing sound
+        let userHasInteracted = true;
+        //document.body.addEventListener('click', () => { userHasInteracted = true; }, { once: true });
+
+        // --- APP LOGIC ---
+        function switchTab(tabId, btnElement) {
+            window.speechSynthesis.cancel();
+            
+            document.querySelectorAll('.section-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+
+            if(tabId === 'quiz-tab') {
+                startQuiz();
+            }
+        }
+
+        // --- TTS Helper Functions ---
+        function speakGerman(text, pitch = 1) {
+            window.speechSynthesis.cancel();
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.pitch = pitch;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playDictionaryRow(de, en, ar) {
+            window.speechSynthesis.cancel();
+            
+            let uDe = new SpeechSynthesisUtterance(de);
+            uDe.lang = 'de-DE';
+            let uEn = new SpeechSynthesisUtterance(en);
+            uEn.lang = 'en-US';
+            let uAr = new SpeechSynthesisUtterance(ar);
+            uAr.lang = 'ar-SA';
+            
+            window.speechSynthesis.speak(uDe);
+            window.speechSynthesis.speak(uEn);
+            window.speechSynthesis.speak(uAr);
+        }
+
+        function playAllDialog() {
+            window.speechSynthesis.cancel();
+            const dialogData = lessonSlides[lessonSlides.length - 1].dialogue;
+            
+            dialogData.forEach(line => {
+                let u = new SpeechSynthesisUtterance(line.text);
+                u.lang = 'de-DE';
+                if(line.speaker === 'Sarah') u.pitch = 1.3;
+                if(line.speaker === 'Tameem') u.pitch = 0.9;
+                window.speechSynthesis.speak(u);
+            });
+        }
+
+
+        // --- TAB 1: LEARN CAROUSEL & DOTS ---
+        let currentSlide = 0;
+
+        function renderSlides() {
+            const container = document.getElementById('slide-container');
+            const dotsContainer = document.getElementById('slide-dots');
+            
+            container.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            lessonSlides.forEach((slide, index) => {
+                // Build Slides
+                let div = document.createElement('div');
+                div.className = `lesson-slide ${index === 0 ? 'active' : ''}`;
+                div.id = `slide-${index}`;
+
+                let img = document.createElement('img');
+                img.src = slide.img;
+                img.className = 'lesson-img';
+                img.alt = 'German lesson image';
+                div.appendChild(img);
+
+                if (!slide.isDialogue) {
+                    let textDiv = document.createElement('div');
+                    textDiv.className = 'lesson-text';
+                    textDiv.innerText = slide.de;
+                    
+                    let btn = document.createElement('button');
+                    btn.className = 'sound-btn';
+                    btn.innerHTML = '🔊';
+                    btn.onclick = () => speakGerman(slide.de);
+
+                    div.appendChild(textDiv);
+                    div.appendChild(btn);
+                } else {
+                    let diagContainer = document.createElement('div');
+                    diagContainer.className = 'dialogue-container';
+
+                    let masterBtn = document.createElement('button');
+                    masterBtn.className = 'master-play';
+                    masterBtn.innerHTML = '🔊 Play Entire Dialogue';
+                    masterBtn.onclick = playAllDialog;
+                    diagContainer.appendChild(masterBtn);
+
+                    slide.dialogue.forEach(line => {
+                        let lineDiv = document.createElement('div');
+                        lineDiv.className = 'dialogue-line';
+
+                        let textSpan = document.createElement('span');
+                        textSpan.className = 'dialogue-text';
+                        textSpan.innerHTML = `<span class="dialogue-speaker">${line.speaker}:</span> ${line.text}`;
+
+                        let smallBtn = document.createElement('button');
+                        smallBtn.className = 'sound-btn small-sound';
+                        smallBtn.innerHTML = '🔊';
+                        let pitch = line.speaker === 'Sarah' ? 1.3 : 0.9;
+                        smallBtn.onclick = () => speakGerman(line.text, pitch);
+
+                        lineDiv.appendChild(textSpan);
+                        lineDiv.appendChild(smallBtn);
+                        diagContainer.appendChild(lineDiv);
+                    });
+                    div.appendChild(diagContainer);
+                }
+                container.appendChild(div);
+
+                // Build Dots (Free Navigation)
+                let dot = document.createElement('button');
+                dot.className = `slide-nav-dot ${index === 0 ? 'active' : ''}`;
+                dot.id = `dot-${index}`;
+                dot.innerText = index + 1;
+                dot.onclick = () => showSlide(index);
+                dotsContainer.appendChild(dot);
+            });
+            updateSlideCounter();
+        }
+
+        function updateSlideCounter() {
+            document.getElementById('slide-counter').innerText = `${currentSlide + 1} / ${lessonSlides.length}`;
+        }
+
+        function showSlide(index) {
+            currentSlide = index;
+            window.speechSynthesis.cancel();
+            
+            // Manage Active Slide
+            document.querySelectorAll('.lesson-slide').forEach(el => el.classList.remove('active'));
+            document.getElementById(`slide-${index}`).classList.add('active');
+            
+            // Manage Active Dot
+            document.querySelectorAll('.slide-nav-dot').forEach(el => el.classList.remove('active'));
+            document.getElementById(`dot-${index}`).classList.add('active');
+
+            updateSlideCounter();
+
+            // Auto-pronounce when image loads (only if user interacted with the page first)
+            if (userHasInteracted) {
+                let slide = lessonSlides[index];
+                if (!slide.isDialogue) {
+                    speakGerman(slide.de);
+                }
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < lessonSlides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // --- TAB 2: DICTIONARY ---
+        function renderDictionaryTable() {
+            const tbody = document.getElementById('dict-table-body');
+            tbody.innerHTML = '';
+            
+            dictionary.forEach(item => {
+                let tr = document.createElement('tr');
+                
+                let tdAudio = document.createElement('td');
+                let btn = document.createElement('button');
+                btn.className = 'table-sound-btn';
+                btn.innerHTML = '🔊 Play';
+                btn.onclick = () => playDictionaryRow(item.de, item.en, item.ar);
+                tdAudio.appendChild(btn);
+
+                let tdDe = document.createElement('td');
+                tdDe.className = 'de-text';
+                tdDe.innerText = item.de;
+
+                let tdEn = document.createElement('td');
+                tdEn.className = 'en-text';
+                tdEn.innerText = item.en;
+
+                let tdAr = document.createElement('td');
+                tdAr.className = 'ar-text';
+                tdAr.dir = 'rtl';
+                tdAr.innerText = item.ar;
+
+                tr.appendChild(tdAudio);
+                tr.appendChild(tdDe);
+                tr.appendChild(tdEn);
+                tr.appendChild(tdAr);
+                
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- TAB 3: KID-FRIENDLY IMAGE QUIZ ---
+        let currentQuizTarget = null;
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+
+        function startQuiz() {
+            document.getElementById('quiz-game').style.display = 'flex';
+            document.getElementById('certificate').style.display = 'none';
+            
+            // Only use image-based slides (exclude dialogue)
+            let quizPool = lessonSlides.filter(s => !s.isDialogue);
+            const TOTAL_QUESTIONS = Math.min(10, quizPool.length);
+
+            // Shuffle pool and select questions
+            quizQuestions = [...quizPool].sort(() => 0.5 - Math.random()).slice(0, TOTAL_QUESTIONS);
+            document.getElementById('q-total').innerText = TOTAL_QUESTIONS;
+            currentQuizIndex = 0;
+            
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            currentQuizTarget = quizQuestions[currentQuizIndex];
+            document.getElementById('q-current').innerText = currentQuizIndex + 1;
+            
+            // Get all normal slides as options
+            let quizPool = lessonSlides.filter(s => !s.isDialogue);
+            
+            // Exclude slides that use the SAME image (e.g. 'Hallo' and 'Tschüss' both use 1.png)
+            // This prevents the child from seeing two identical images as options
+            let distinctPool = quizPool.filter(s => s.img !== currentQuizTarget.img);
+            
+            // Pick 2 wrong answers
+            let wrongOptions = distinctPool.sort(() => 0.5 - Math.random()).slice(0, 2);
+            
+            // Combine with target and shuffle
+            let options = [currentQuizTarget, ...wrongOptions].sort(() => 0.5 - Math.random());
+
+            const optionsContainer = document.getElementById('quiz-image-options');
+            optionsContainer.innerHTML = '';
+            
+            options.forEach(opt => {
+                let imgBtn = document.createElement('img');
+                imgBtn.src = opt.img;
+                imgBtn.className = 'quiz-img-btn';
+                
+                // When clicked, check if this option object is exactly the target object
+                imgBtn.onclick = () => checkImageAnswer(opt === currentQuizTarget, imgBtn);
+                optionsContainer.appendChild(imgBtn);
+            });
+
+            // Automatically play sound for the new question
+            setTimeout(playQuizAudio, 300);
+        }
+
+        function playQuizAudio() {
+            if (currentQuizTarget) {
+                speakGerman(currentQuizTarget.de);
+            }
+        }
+
+        function checkImageAnswer(isCorrect, imgElement) {
+            if (imgElement.classList.contains('disabled')) return;
+
+            if (isCorrect) {
+                // Disable all images to prevent spam clicking
+                document.querySelectorAll('.quiz-img-btn').forEach(b => b.classList.add('disabled'));
+                
+                imgElement.classList.add('correct');
+                speakGerman("Super!"); // Praise in German!
+
+                setTimeout(() => {
+                    currentQuizIndex++;
+                    if (currentQuizIndex < quizQuestions.length) {
+                        loadQuizQuestion();
+                    } else {
+                        showCertificate();
+                    }
+                }, 1500); 
+            } else {
+                imgElement.classList.add('wrong');
+                imgElement.classList.add('disabled'); // Disable the wrong choice
+                
+                playQuizAudio(); // Remind them of the target sound so they can try again
+
+                setTimeout(() => {
+                    imgElement.classList.remove('wrong');
+                    imgElement.classList.remove('disabled');
+                }, 800);
+            }
+        }
+
+        function showCertificate() {
+            document.getElementById('quiz-game').style.display = 'none';
+            document.getElementById('certificate').style.display = 'block';
+            
+            let cheer = new SpeechSynthesisUtterance("Super gemacht!");
+            cheer.lang = 'de-DE';
+            window.speechSynthesis.speak(cheer);
+        }        
+
+        // --- Initialization ---
+        window.onload = () => {
+            renderSlides();
+            renderDictionaryTable();
+        };
+
+    </script>
+</body>
+</html>
