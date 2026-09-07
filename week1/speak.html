@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronunciation Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-hover: #45a049;
+            --accent: #ffcc00;
+            --accent-hover: #ffdb4d;
+            --bg-color: #f0f8ff;
+            --german-text: #d84315;
+            --english-text: #333;
+            --arabic-text: #0056b3;
+        }
+
+        body {
+            font-family: 'Baloo 2', cursive, sans-serif;
+            background-color: var(--bg-color);
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: white;
+            border: 3px solid #e6b800;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-family: 'Balsamiq Sans', cursive;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            background-color: var(--accent);
+        }
+
+        .section-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 5px solid var(--primary);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Quiz Specific Styles --- */
+        .quiz-header {
+            font-size: 26px;
+            color: #0288d1;
+            font-family: 'Balsamiq Sans', cursive;
+            margin-bottom: 10px;
+        }
+
+        .score-board {
+            font-size: 22px;
+            font-weight: bold;
+            color: #8e24aa;
+            background: #f3e5f5;
+            padding: 10px 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 2px dashed #ab47bc;
+        }
+
+        .target-word-container {
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #fbc02d;
+            margin-bottom: 20px;
+        }
+
+        .target-word {
+            font-size: 40px;
+            color: var(--german-text);
+            font-family: 'Balsamiq Sans', cursive;
+            margin: 0;
+        }
+
+        .translation {
+            font-size: 18px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .massive-btn {
+            font-size: 50px;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .massive-btn:active {
+            transform: scale(0.9);
+        }
+
+        .sound-btn {
+            background: #03a9f4;
+            border: 6px solid #0288d1;
+        }
+
+        .sound-btn:hover { background: #29b6f6; }
+
+        .mic-btn {
+            background: #f44336;
+            border: 6px solid #c62828;
+        }
+
+        .mic-btn:hover { background: #ef5350; }
+
+        .mic-btn.recording {
+            animation: pulse 1s infinite;
+            background: #e53935;
+            border-color: #b71c1c;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+
+        .feedback-area {
+            min-height: 80px;
+            margin-top: 15px;
+        }
+
+        .feedback-text {
+            font-size: 24px;
+            font-family: 'Balsamiq Sans', cursive;
+            font-weight: bold;
+        }
+
+        .feedback-sub {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .correct { color: #4CAF50; }
+        .wrong { color: #f44336; }
+        .partial { color: #ff9800; }
+
+        .next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: 3px solid #388e3c;
+            padding: 10px 25px;
+            font-size: 22px;
+            font-family: 'Balsamiq Sans', cursive;
+            border-radius: 15px;
+            cursor: pointer;
+            display: none; /* Hidden until they answer */
+            margin: 10px auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .next-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        #certificate {
+            display: none;
+            background: linear-gradient(135deg, #fff9c4, #ffecb3);
+            border: 8px double #ffb300;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        
+        #certificate h2 { color: #d84315; font-size: 32px; font-family: 'Balsamiq Sans', cursive;}
+
+        /* Browser warning */
+        #browser-warning {
+            display: none;
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ef5350;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Pronunciation Quiz 🎙️</h1>
+
+    <div class="nav-buttons">
+        <a href="index.html" class="tab-btn">🏠 Back to Lesson</a>
+    </div>
+
+    <div class="section-container">
+        
+        <div id="browser-warning">
+            ⚠️ Warning: Your browser does not support Speech Recognition. Please use Google Chrome, Microsoft Edge, or Safari.
+        </div>
+
+        <div id="game-area">
+            <div class="quiz-header">Listen, then press 🎤 and say it!</div>
+            <p>Word <span id="q-current">1</span> of <span id="q-total">10</span></p>
+            
+            <div class="score-board">
+                ⭐ Total Score: <span id="score-display">0</span>
+            </div>
+
+            <div class="target-word-container">
+                <p class="target-word" id="target-de">Hallo</p>
+                <p class="translation" id="target-en">(Hello)</p>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="massive-btn sound-btn" onclick="playTargetAudio()" title="Listen">🔊</button>
+                <button class="massive-btn mic-btn" id="mic-button" onclick="toggleRecording()" title="Speak">🎤</button>
+            </div>
+
+            <div class="feedback-area">
+                <div id="feedback-main" class="feedback-text"></div>
+                <div id="feedback-sub" class="feedback-sub"></div>
+            </div>
+
+            <button class="next-btn" id="next-button" onclick="nextQuestion()">Next Word ➡️</button>
+        </div>
+
+        <div id="certificate">
+            <div style="font-size: 60px;">🎓🏆</div>
+            <h2>Wunderbar! (Wonderful!)</h2>
+            <p>You completed the Pronunciation Quiz!</p>
+            <p style="font-size: 24px; font-weight: bold; color: #8e24aa;">Final Score: <span id="final-score">0</span></p>
+            <button class="tab-btn" onclick="startQuiz()" style="margin-top: 20px;">Play Again 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- DATA ---
+        // We use the exact dictionary from Week 1
+        const dictionary = [
+            { de: "Hallo", en: "Hello", ar: "مَرْحَبًا" },
+            { de: "Tschüss", en: "Bye", ar: "وَدَاعًا" },
+            { de: "Ja", en: "Yes", ar: "نَعَمْ" },
+            { de: "Nein", en: "No", ar: "لا" },
+            { de: "Bitte", en: "Please / Here you go", ar: "مِنْ فَضْلِكَ" },
+            { de: "Danke", en: "Thank you", ar: "شُكْرًا" },
+            { de: "Ich", en: "I", ar: "أَنَا" },
+            { de: "Du", en: "You", ar: "أَنْتَ" },
+            { de: "Junge", en: "Boy", ar: "وَلَدٌ" },
+            { de: "Mädchen", en: "Girl", ar: "بِنْتٌ" },
+            { de: "Mama", en: "Mom", ar: "أُمِّي" },
+            { de: "Papa", en: "Dad", ar: "أَبِي" },
+            { de: "Guten Morgen!", en: "Good morning!", ar: "صَباحُ الْخَيْرِ" },
+            { de: "Gute Nacht!", en: "Good night!", ar: "تُصْبِحُ عَلَى خَيْرٍ" },
+            { de: "Wie heißt du?", en: "What is your name?", ar: "مَا إِسْمُكَ؟" },
+            { de: "Ich heiße...", en: "My name is...", ar: "اِسْمِي..." },
+            { de: "Wie geht's dir?", en: "How are you?", ar: "كَيْفَ حَالُكَ؟؟" },
+            { de: "Gut, danke!", en: "Good, thanks!", ar: "بِخَيْرٍ، شُكْرًا" }
+        ];
+
+        // --- SPEECH RECOGNITION SETUP ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let isRecording = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'de-DE'; // Listen for German
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                document.getElementById('mic-button').classList.add('recording');
+                setFeedback("Listening... Speak now!", "", "partial");
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                checkPronunciation(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                if (event.error === 'no-speech') {
+                    setFeedback("I didn't hear anything. Try again!", "", "wrong");
+                } else {
+                    setFeedback("Microphone error: " + event.error, "Make sure you gave microphone permissions.", "wrong");
+                }
+                stopRecordingVisuals();
+            };
+
+            recognition.onend = function() {
+                stopRecordingVisuals();
+            };
+        } else {
+            document.getElementById('browser-warning').style.display = 'block';
+            document.getElementById('mic-button').style.opacity = '0.5';
+            document.getElementById('mic-button').disabled = true;
+        }
+
+        // --- GAME LOGIC ---
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let currentScore = 0;
+        const TOTAL_QUESTIONS = 10; // Number of questions per round
+
+        function startQuiz() {
+            document.getElementById('game-area').style.display = 'block';
+            document.getElementById('certificate').style.display = 'none';
+            document.getElementById('q-total').innerText = TOTAL_QUESTIONS;
+            
+            currentScore = 0;
+            updateScoreDisplay();
+
+            // Pick random words from dictionary
+            quizQuestions = [...dictionary].sort(() => 0.5 - Math.random()).slice(0, TOTAL_QUESTIONS);
+            currentQuestionIndex = 0;
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            let currentData = quizQuestions[currentQuestionIndex];
+            
+            // Handle edge case text like "Ich heiße..." -> "Ich heiße"
+            let displayText = currentData.de.replace('...', '');
+
+            document.getElementById('q-current').innerText = currentQuestionIndex + 1;
+            document.getElementById('target-de').innerText = displayText;
+            document.getElementById('target-en').innerText = `(${currentData.en})`;
+            
+            document.getElementById('next-button').style.display = 'none';
+            setFeedback("", "", "");
+        }
+
+        // --- ACTIONS ---
+        function playTargetAudio() {
+            window.speechSynthesis.cancel();
+            let textToSpeak = document.getElementById('target-de').innerText;
+            let utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'de-DE';
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleRecording() {
+            if (!recognition) return;
+            
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                window.speechSynthesis.cancel(); // Stop playing audio if speaking
+                recognition.start();
+            }
+        }
+
+        function stopRecordingVisuals() {
+            isRecording = false;
+            document.getElementById('mic-button').classList.remove('recording');
+        }
+
+        // --- SCORING & STRING MATCHING ---
+        function cleanString(str) {
+            // Remove punctuation and convert to lowercase for easy comparison
+            return str.toLowerCase().replace(/[.,!?…'"]/g, '').trim();
+        }
+
+        function checkPronunciation(spokenText) {
+            let targetText = document.getElementById('target-de').innerText;
+            
+            let cleanTarget = cleanString(targetText);
+            let cleanSpoken = cleanString(spokenText);
+
+            let scoreEarned = 0;
+
+            // 1. Perfect Match
+            if (cleanSpoken === cleanTarget) {
+                scoreEarned = 100;
+                setFeedback("Perfect! 🌟", `You said: "${spokenText}"`, "correct");
+                speakGermanPraise("Super gemacht!");
+            } 
+            // 2. Contains Match (Kids often add words like "ja" or say it in a sentence)
+            else if (cleanSpoken.includes(cleanTarget) || cleanTarget.includes(cleanSpoken)) {
+                scoreEarned = 80;
+                setFeedback("Very Good! 👍", `You said: "${spokenText}"`, "partial");
+                speakGermanPraise("Gut!");
+            }
+            // 3. Fallback (Calculate how many words match)
+            else {
+                let targetWords = cleanTarget.split(' ');
+                let spokenWords = cleanSpoken.split(' ');
+                let matchCount = 0;
+                
+                targetWords.forEach(w => {
+                    if (spokenWords.includes(w)) matchCount++;
+                });
+
+                if (matchCount > 0 && matchCount >= targetWords.length / 2) {
+                    scoreEarned = 50;
+                    setFeedback("Almost there! 😊", `You said: "${spokenText}"`, "partial");
+                } else {
+                    scoreEarned = 0;
+                    setFeedback("Try Again! 💪", `I heard: "${spokenText}"`, "wrong");
+                }
+            }
+
+            // Only add score once per question, show next button if they scored something
+            if (scoreEarned > 0) {
+                currentScore += scoreEarned;
+                updateScoreDisplay();
+                document.getElementById('next-button').style.display = 'block';
+            } else {
+                // If they got 0, let them try again without showing next button immediately
+                // (Or you can show it if you don't want them to get stuck)
+                document.getElementById('next-button').style.display = 'block'; 
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = currentScore;
+        }
+
+        function setFeedback(mainText, subText, typeClass) {
+            let mainEl = document.getElementById('feedback-main');
+            mainEl.innerText = mainText;
+            mainEl.className = `feedback-text ${typeClass}`;
+            
+            document.getElementById('feedback-sub').innerText = subText;
+        }
+
+        function speakGermanPraise(text) {
+            let utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'de-DE';
+            utterance.pitch = 1.2; // Friendly pitch
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showCertificate();
+            }
+        }
+
+        function showCertificate() {
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('certificate').style.display = 'block';
+            document.getElementById('final-score').innerText = currentScore + " / " + (TOTAL_QUESTIONS * 100);
+            
+            speakGermanPraise("Wunderbar!");
+        }
+
+        // Start when page loads
+        window.onload = startQuiz;
+
+    </script>
+</body>
+</html>
