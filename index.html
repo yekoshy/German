@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Learning Adventure!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: #ff9f43;
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 2.5rem 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 90%;
+            margin: 2rem auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #2e86de;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+            border-top: 8px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
+        }
+
+        .card-week1 { border-color: #10ac84; }
+        .card-week2 { border-color: #5f27cd; }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-week1 h2 { color: #10ac84; }
+        .card-week2 h2 { color: #5f27cd; }
+
+        .vocab-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .links {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .btn-main { background-color: #2e86de; }
+        .btn-speak { background-color: #ff6b6b; }
+
+        .daily-strategy {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 4rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+            border: 2px dashed #ff9f43;
+        }
+
+        .daily-strategy h3 {
+            color: #ff9f43;
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 0;
+        }
+
+        .day-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .day-card {
+            background: #fff4e6;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #ffd3a5;
+        }
+
+        .day-card strong {
+            display: block;
+            color: #ff9f43;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .day-card span {
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding: 2rem;
+            text-align: center;
+            color: #888;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🇩🇪 German Learning Adventure! 🎈</h1>
+        <p>A fun, play-based course for your 4.5-year-old nephew!</p>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">🌟 Available Modules</h2>
+        
+        <div class="grid">
+            <!-- WEEK 1 CARD -->
+            <div class="card card-week1">
+                <h2>👋 Week 1: Greetings & Basics</h2>
+                <div class="vocab-list">
+                    <strong>Words:</strong> Hallo, Tschüss, Ja, Nein, Bitte, Danke, Ich, Du, Junge, Mädchen, Mama, Papa.<br>
+                    <strong>Sentences:</strong> Guten Morgen!, Gute Nacht!, Wie heißt du?, Ich heiße..., Wie geht es dir?, Gut, danke!
+                </div>
+                <div class="links">
+                    <a href="week1/index.html" class="btn btn-main">📝 Learn</a>
+                    <a href="week1/speak.html" class="btn btn-speak">🎙️ Speak</a>
+                </div>
+            </div>
+
+            <!-- WEEK 2 CARD -->
+            <div class="card card-week2">
+                <h2>🎨 Week 2: Numbers & Colors</h2>
+                <div class="vocab-list">
+                    <strong>Words:</strong> Eins, Zwei, Drei, Vier, Fünf, Rot, Blau, Gelb, Grün, Schwarz, Weiß, Auto, Ball.<br>
+                    <strong>Sentences:</strong> Wie alt bist du?, Ich bin vier., Welche Farbe ist das?, Das ist rot., Lass uns spielen!, Komm her!
+                </div>
+                <div class="links">
+                    <a href="week2/index.html" class="btn btn-main">📝 Learn</a>
+                    <a href="week2/speak.html" class="btn btn-speak">🎙️ Speak</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK CHEATSHEET FOR THE PARENT/UNCLE -->
+        <div class="daily-strategy">
+            <h3>⏰ 15-Min Daily Routine</h3>
+            <p style="text-align: center; color: #555;">Keep it silly, keep it short, and praise heavily ("Super!")</p>
+            <div class="day-grid">
+                <div class="day-card">
+                    <strong>Monday</strong>
+                    <span>Intro: Flashcards & Real Objects + 3 sentences.</span>
+                </div>
+                <div class="day-card">
+                    <strong>Tuesday</strong>
+                    <span>Action: "Simon Says" (Total Physical Response).</span>
+                </div>
+                <div class="day-card">
+                    <strong>Wednesday</strong>
+                    <span>Hide & Seek: Hide objects, shout "Hier!".</span>
+                </div>
+                <div class="day-card">
+                    <strong>Thursday</strong>
+                    <span>Art: Coloring pages using the week's theme.</span>
+                </div>
+                <div class="day-card">
+                    <strong>Friday</strong>
+                    <span>Music: German kid's YouTube songs (Sing mit mir).</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Viel Erfolg! (Good luck!) • 100 Words & 50 Sentences Plan
+    </footer>
+
+</body>
+</html>
