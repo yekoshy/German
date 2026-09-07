@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronunciation Quiz</title>
+    <title>Week 1: Pronunciation Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Balsamiq+Sans:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -233,7 +233,7 @@
 </head>
 <body>
 
-    <h1>Pronunciation Quiz 🎙️</h1>
+    <h1>Week 1: Speaking Quiz 🎙️</h1>
 
     <div class="nav-buttons">
         <a href="index.html" class="tab-btn">🏠 Back to Lesson</a>
@@ -283,7 +283,7 @@
 
     <script>
         // --- DATA ---
-        // We use the exact dictionary from Week 1
+        // Week 1 Dictionary
         const dictionary = [
             { de: "Hallo", en: "Hello", ar: "مَرْحَبًا" },
             { de: "Tschüss", en: "Bye", ar: "وَدَاعًا" },
@@ -349,7 +349,7 @@
         let quizQuestions = [];
         let currentQuestionIndex = 0;
         let currentScore = 0;
-        const TOTAL_QUESTIONS = 10; // Number of questions per round
+        const TOTAL_QUESTIONS = dictionary.length; // Uses the entire dictionary length!
 
         function startQuiz() {
             document.getElementById('game-area').style.display = 'block';
@@ -359,8 +359,8 @@
             currentScore = 0;
             updateScoreDisplay();
 
-            // Pick random words from dictionary
-            quizQuestions = [...dictionary].sort(() => 0.5 - Math.random()).slice(0, TOTAL_QUESTIONS);
+            // Shuffle the entire list
+            quizQuestions = [...dictionary].sort(() => 0.5 - Math.random());
             currentQuestionIndex = 0;
             
             loadQuestion();
@@ -457,7 +457,6 @@
                 document.getElementById('next-button').style.display = 'block';
             } else {
                 // If they got 0, let them try again without showing next button immediately
-                // (Or you can show it if you don't want them to get stuck)
                 document.getElementById('next-button').style.display = 'block'; 
             }
         }
