@@ -246,8 +246,6 @@
 
 <script>
     // Data representation of all 45 sentences.
-    // 'words' is the array of words to display.
-    // 'wrongIndex' is the array position (0-based) of the Stolperwort.
     const sentences = [
         // LEVEL 1 (1-15)
         { words: ["Die", "ist", "Kinder", "lernen", "in", "der", "Schule."], wrongIndex: 1 },
@@ -305,12 +303,10 @@
     let score = 0;
     let mistakes = [];
 
-    // Screen elements
     const startScreen = document.getElementById('start-screen');
     const gameScreen = document.getElementById('game-screen');
     const endScreen = document.getElementById('end-screen');
     
-    // UI elements
     const sentenceContainer = document.getElementById('sentence-container');
     const progressIndicator = document.getElementById('progress-indicator');
     const scoreIndicator = document.getElementById('score-indicator');
@@ -353,10 +349,8 @@
         progressIndicator.innerText = `${currentQuestionIndex + 1} / ${sentences.length}`;
         scoreIndicator.innerText = `⭐ ${score}`;
         
-        // Clear previous buttons
         sentenceContainer.innerHTML = '';
 
-        // Generate buttons for words
         currentData.words.forEach((word, index) => {
             const btn = document.createElement('button');
             btn.className = 'word-btn';
@@ -367,7 +361,6 @@
     }
 
     function checkAnswer(selectedIndex, btnElement, correctWrongIndex) {
-        // Disable all buttons to prevent double clicking
         const allButtons = document.querySelectorAll('.word-btn');
         allButtons.forEach(b => b.classList.add('disabled'));
 
@@ -379,14 +372,10 @@
             scoreIndicator.innerText = `⭐ ${score}`;
         } else {
             btnElement.classList.add('wrong');
-            // Show the correct "Stolperwort" to the kid
             allButtons[correctWrongIndex].classList.add('correct');
-            
-            // Record mistake for end screen
             mistakes.push(sentences[currentQuestionIndex]);
         }
 
-        // Wait a short time so the kid sees the result, then load next
         setTimeout(() => {
             currentQuestionIndex++;
             loadQuestion();
@@ -394,7 +383,8 @@
     }
 
     function endGame() {
-        document.body.style.backgroundColor = var(--bg-color);
+        // Hier war der Fehler! Die Anführungszeichen haben gefehlt:
+        document.body.style.backgroundColor = "var(--bg-color)";
         gameScreen.style.display = 'none';
         endScreen.style.display = 'block';
 
@@ -404,7 +394,6 @@
         
         finalScoreElem.innerText = `${score}/45`;
 
-        // Calculate Level and Advice
         if (score >= 40) {
             levelResultElem.innerText = "Dein Lese-Level: Lesemeister! 🏆";
             levelResultElem.style.color = "#4CAF50";
@@ -424,7 +413,6 @@
             finalScoreElem.style.background = "#f44336";
         }
 
-        // Show mistakes
         if (mistakes.length > 0) {
             document.getElementById('mistakes-container').style.display = 'block';
             const mistakesList = document.getElementById('mistakes-list');
@@ -434,7 +422,6 @@
                 const item = document.createElement('div');
                 item.className = 'mistake-item';
                 
-                // Format the sentence to cross out the wrong word
                 let formattedSentence = mistake.words.map((word, idx) => {
                     if (idx === mistake.wrongIndex) {
                         return `<span class="highlight">${word}</span>`;
