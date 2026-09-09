@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stolperwörter Lesetest</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --bg-color: #f0f8ff;
+            --text-color: #333;
+            --wrong: #f44336;
+            --correct: #4CAF50;
+            --level1: #e1f5fe;
+            --level2: #fff3e0;
+            --level3: #f3e5f5;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.5s;
+        }
+
+        #app-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--secondary);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p.instructions {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        /* Buttons */
+        button.btn-primary {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+            font-family: inherit;
+        }
+
+        button.btn-primary:hover {
+            transform: scale(1.05);
+            background-color: #1976D2;
+        }
+
+        /* Game UI */
+        #game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #ccc;
+        }
+
+        .level-badge {
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        #sentence-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px 0;
+        }
+
+        /* Words as Blocks for easy reading */
+        .word-btn {
+            background-color: #fff;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .word-btn:hover {
+            border-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .word-btn.correct {
+            background-color: var(--correct);
+            color: white;
+            border-color: var(--correct);
+            animation: pop 0.5s;
+        }
+
+        .word-btn.wrong {
+            background-color: var(--wrong);
+            color: white;
+            border-color: var(--wrong);
+            animation: shake 0.5s;
+        }
+
+        .word-btn.disabled {
+            pointer-events: none;
+        }
+
+        /* End Screen */
+        .result-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .advice-box {
+            background: #fff9c4;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.2em;
+            margin: 20px 0;
+            border: 2px solid #fbc02d;
+        }
+
+        .mistakes-list {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .mistake-item {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .mistake-item span.highlight {
+            color: var(--wrong);
+            text-decoration: line-through;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- START SCREEN -->
+    <div id="start-screen">
+        <h1>Stolperwörter Lesetest</h1>
+        <p class="instructions">
+            Finde das "Stolperwort"!<br>
+            In jedem Satz hat sich ein falsches Wort versteckt, das da nicht hingehört.<br>
+            Klicke auf das falsche Wort, um den Satz zu reparieren.
+        </p>
+        <button class="btn-primary" onclick="startGame()">Starten!</button>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" style="display: none;">
+        <div id="game-header">
+            <span class="level-badge" id="level-indicator">Level 1</span>
+            <span id="progress-indicator">1 / 45</span>
+            <span id="score-indicator">⭐ 0</span>
+        </div>
+        <h2 style="color: #666; font-size: 1.5em;">Welches Wort ist falsch?</h2>
+        <div id="sentence-container">
+            <!-- Buttons will be generated here -->
+        </div>
+    </div>
+
+    <!-- END SCREEN -->
+    <div id="end-screen" style="display: none;">
+        <h1 class="result-title" id="result-title">Test Beendet!</h1>
+        <div class="score-circle" id="final-score">45/45</div>
+        <h2 id="level-result">Dein Lese-Level: Lesemeister!</h2>
+        <div class="advice-box" id="advice-text">
+            Klasse gemacht!
+        </div>
+        
+        <div class="mistakes-list" id="mistakes-container" style="display: none;">
+            <h3>Hier kannst du nochmal üben:</h3>
+            <div id="mistakes-list"></div>
+        </div>
+        
+        <br>
+        <button class="btn-primary" onclick="location.reload()">Nochmal spielen</button>
+    </div>
+</div>
+
+<script>
+    // Data representation of all 45 sentences.
+    // 'words' is the array of words to display.
+    // 'wrongIndex' is the array position (0-based) of the Stolperwort.
+    const sentences = [
+        // LEVEL 1 (1-15)
+        { words: ["Die", "ist", "Kinder", "lernen", "in", "der", "Schule."], wrongIndex: 1 },
+        { words: ["In", "dem", "Buch", "Geschichten", "sind", "Bilder."], wrongIndex: 3 },
+        { words: ["Das", "Fenster", "steht", "kalt", "offen."], wrongIndex: 3 },
+        { words: ["Lieb", "meine", "Oma", "ist", "schon", "sehr", "alt."], wrongIndex: 0 },
+        { words: ["Der", "Hund", "bellt", "Wut."], wrongIndex: 3 },
+        { words: ["Mir", "gefällt", "dein", "schön", "Bild", "gut."], wrongIndex: 3 },
+        { words: ["Möchtest", "du", "ein", "Bonbon", "süß?"], wrongIndex: 4 },
+        { words: ["Das", "Wasser", "ist", "schmutzig", "Tafel."], wrongIndex: 4 },
+        { words: ["Meine", "Küche", "Mutter", "kocht", "sehr", "gut."], wrongIndex: 1 },
+        { words: ["Im", "Winter", "eisig", "ist", "es", "oft", "kalt."], wrongIndex: 2 },
+        { words: ["Auf", "Opas", "Nase", "sitzt", "eine", "summt", "Fliege."], wrongIndex: 5 },
+        { words: ["Ich", "Buch", "kann", "sehr", "gut", "lesen."], wrongIndex: 1 },
+        { words: ["Magst", "Schokolade", "du", "gern", "Nudeln?"], wrongIndex: 1 },
+        { words: ["Die", "Kinder", "laut", "rennen", "schreiend", "auf", "den", "Hof."], wrongIndex: 2 },
+        { words: ["Mein", "Heft", "ist", "schreiben", "voll."], wrongIndex: 3 },
+        
+        // LEVEL 2 (16-30)
+        { words: ["Gruselig", "vor", "Spinnen", "ekle", "ich", "mich."], wrongIndex: 0 },
+        { words: ["Mein", "Bleistift", "anspitzen", "ist", "abgebrochen."], wrongIndex: 2 },
+        { words: ["Es", "regnet", "den", "ganzen", "nass", "Tag."], wrongIndex: 4 },
+        { words: ["Mein", "Bruder", "ist", "gestern", "acht", "Jahre", "alt."], wrongIndex: 3 },
+        { words: ["Die", "Aufgaben", "liest", "sind", "schwer."], wrongIndex: 2 },
+        { words: ["Hast", "du", "mein", "rechnen", "Heft", "gesehen?"], wrongIndex: 3 },
+        { words: ["Die", "Hexe", "reitet", "auf", "einem", "das", "Besen."], wrongIndex: 5 },
+        { words: ["Bald", "wollen", "wir", "den", "Zoo", "besuchen", "Tiere."], wrongIndex: 6 },
+        { words: ["Ich", "Angst", "gehe", "nicht", "gern", "zum", "Zahnarzt."], wrongIndex: 1 },
+        { words: ["In", "der", "durstig", "Wüste", "gibt", "es", "kein", "Wasser."], wrongIndex: 2 },
+        { words: ["Alle", "Mädchen", "in", "die", "unserer", "Klasse", "mögen", "Pferde."], wrongIndex: 3 },
+        { words: ["Hast", "du", "eine", "jung", "Lehrerin", "oder", "einen", "Lehrer?"], wrongIndex: 3 },
+        { words: ["Spielen", "wir", "heute", "Nachmittag", "Garten", "zusammen?"], wrongIndex: 4 },
+        { words: ["Der", "Polizist", "Uniform", "erzählt", "uns", "vom", "Verkehr."], wrongIndex: 2 },
+        { words: ["Der", "Mann", "ist", "bei", "eilig", "Rot", "über", "die", "Straße", "gelaufen."], wrongIndex: 4 },
+        
+        // LEVEL 3 (31-45)
+        { words: ["Ich", "spiele", "möchte", "gerne", "Klavier", "lernen."], wrongIndex: 1 },
+        { words: ["Bald", "nächste", "Woche", "wandern", "wir", "im", "Wald."], wrongIndex: 0 },
+        { words: ["Rechnest", "oder", "liest", "aber", "du", "lieber?"], wrongIndex: 3 },
+        { words: ["Der", "Bus", "nach", "ist", "uns", "vor", "der", "Nase", "weggefahren."], wrongIndex: 2 },
+        { words: ["Unser", "Klassenzimmer", "ist", "oft", "schmutzig", "Besen."], wrongIndex: 5 },
+        { words: ["Die", "Himmel", "Sonne", "blendet", "mich."], wrongIndex: 1 },
+        { words: ["In", "unserer", "Schule", "gibt", "es", "nur", "wenige", "der", "Computer."], wrongIndex: 7 },
+        { words: ["Mit", "Opa", "habe", "ich", "Korb", "Pilze", "gesucht."], wrongIndex: 4 },
+        { words: ["Eine", "Maus", "klein", "flitzt", "unter", "den", "Schrank."], wrongIndex: 2 },
+        { words: ["Zu", "Weihnachten", "wünsche", "Zettel", "ich", "mir", "Bücher."], wrongIndex: 3 },
+        { words: ["Ich", "lustig", "denke", "mir", "gerne", "verrückte", "Geschichten", "aus."], wrongIndex: 1 },
+        { words: ["Meine", "Mutter", "lobt", "mich", "wegen", "meiner", "sauber", "Handschrift."], wrongIndex: 6 },
+        { words: ["Der", "neben", "Elefant", "hat", "sich", "auf", "seine", "Hinterbeine", "gestellt."], wrongIndex: 1 },
+        { words: ["Füchse", "frisst", "gibt", "es", "auch", "in", "unseren", "Wäldern."], wrongIndex: 1 },
+        { words: ["Torte", "backen", "mit", "Erdbeeren", "esse", "ich", "besonders", "gern."], wrongIndex: 1 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let mistakes = [];
+
+    // Screen elements
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const endScreen = document.getElementById('end-screen');
+    
+    // UI elements
+    const sentenceContainer = document.getElementById('sentence-container');
+    const progressIndicator = document.getElementById('progress-indicator');
+    const scoreIndicator = document.getElementById('score-indicator');
+    const levelIndicator = document.getElementById('level-indicator');
+
+    function startGame() {
+        startScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        currentQuestionIndex = 0;
+        score = 0;
+        mistakes = [];
+        loadQuestion();
+    }
+
+    function updateLevelBackground() {
+        if (currentQuestionIndex < 15) {
+            document.body.style.backgroundColor = "var(--level1)";
+            levelIndicator.innerText = "Level 1 (Leicht)";
+            levelIndicator.style.backgroundColor = "#4CAF50";
+        } else if (currentQuestionIndex < 30) {
+            document.body.style.backgroundColor = "var(--level2)";
+            levelIndicator.innerText = "Level 2 (Mittel)";
+            levelIndicator.style.backgroundColor = "#FF9800";
+        } else {
+            document.body.style.backgroundColor = "var(--level3)";
+            levelIndicator.innerText = "Level 3 (Schwer)";
+            levelIndicator.style.backgroundColor = "#9C27B0";
+        }
+    }
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= sentences.length) {
+            endGame();
+            return;
+        }
+
+        updateLevelBackground();
+        const currentData = sentences[currentQuestionIndex];
+        
+        progressIndicator.innerText = `${currentQuestionIndex + 1} / ${sentences.length}`;
+        scoreIndicator.innerText = `⭐ ${score}`;
+        
+        // Clear previous buttons
+        sentenceContainer.innerHTML = '';
+
+        // Generate buttons for words
+        currentData.words.forEach((word, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'word-btn';
+            btn.innerText = word;
+            btn.onclick = () => checkAnswer(index, btn, currentData.wrongIndex);
+            sentenceContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btnElement, correctWrongIndex) {
+        // Disable all buttons to prevent double clicking
+        const allButtons = document.querySelectorAll('.word-btn');
+        allButtons.forEach(b => b.classList.add('disabled'));
+
+        const isCorrect = (selectedIndex === correctWrongIndex);
+
+        if (isCorrect) {
+            btnElement.classList.add('correct');
+            score++;
+            scoreIndicator.innerText = `⭐ ${score}`;
+        } else {
+            btnElement.classList.add('wrong');
+            // Show the correct "Stolperwort" to the kid
+            allButtons[correctWrongIndex].classList.add('correct');
+            
+            // Record mistake for end screen
+            mistakes.push(sentences[currentQuestionIndex]);
+        }
+
+        // Wait a short time so the kid sees the result, then load next
+        setTimeout(() => {
+            currentQuestionIndex++;
+            loadQuestion();
+        }, 1200);
+    }
+
+    function endGame() {
+        document.body.style.backgroundColor = var(--bg-color);
+        gameScreen.style.display = 'none';
+        endScreen.style.display = 'block';
+
+        const finalScoreElem = document.getElementById('final-score');
+        const levelResultElem = document.getElementById('level-result');
+        const adviceTextElem = document.getElementById('advice-text');
+        
+        finalScoreElem.innerText = `${score}/45`;
+
+        // Calculate Level and Advice
+        if (score >= 40) {
+            levelResultElem.innerText = "Dein Lese-Level: Lesemeister! 🏆";
+            levelResultElem.style.color = "#4CAF50";
+            adviceTextElem.innerHTML = "Wow! Du liest richtig toll und hast ein super Auge für Stolperwörter. Lies weiter so fleißig spannende Bücher!";
+        } else if (score >= 30) {
+            levelResultElem.innerText = "Dein Lese-Level: Super Leser! 🥈";
+            levelResultElem.style.color = "#2196F3";
+            adviceTextElem.innerHTML = "Tolle Leistung! Du bist schon richtig gut. Wenn du jeden Tag 10 Minuten laut liest, wirst du bald ein echter Lesemeister!";
+        } else if (score >= 15) {
+            levelResultElem.innerText = "Dein Lese-Level: Lese-Abenteurer 🥉";
+            levelResultElem.style.color = "#FF9800";
+            adviceTextElem.innerHTML = "Du bist auf einem guten Weg! Lass dir beim Lesen etwas mehr Zeit. Tipp: Zeige beim Lesen mit dem Finger auf jedes Wort, das hilft!";
+        } else {
+            levelResultElem.innerText = "Dein Lese-Level: Lese-Lehrling 📚";
+            levelResultElem.style.color = "#f44336";
+            adviceTextElem.innerHTML = "Wir üben noch ein bisschen! Macht nichts, Übung macht den Meister. Schau dir jedes Wort genau an und lies jeden Tag ein kleines bisschen zusammen mit deinen Eltern.";
+            finalScoreElem.style.background = "#f44336";
+        }
+
+        // Show mistakes
+        if (mistakes.length > 0) {
+            document.getElementById('mistakes-container').style.display = 'block';
+            const mistakesList = document.getElementById('mistakes-list');
+            mistakesList.innerHTML = '';
+            
+            mistakes.forEach(mistake => {
+                const item = document.createElement('div');
+                item.className = 'mistake-item';
+                
+                // Format the sentence to cross out the wrong word
+                let formattedSentence = mistake.words.map((word, idx) => {
+                    if (idx === mistake.wrongIndex) {
+                        return `<span class="highlight">${word}</span>`;
+                    }
+                    return word;
+                }).join(' ');
+
+                item.innerHTML = formattedSentence;
+                mistakesList.appendChild(item);
+            });
+        }
+    }
+</script>
+
+</body>
+</html>
