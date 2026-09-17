@@ -13,6 +13,12 @@
             --der: #4FC3F7; /* Blau */
             --die: #F06292; /* Pink */
             --das: #81C784; /* Grün */
+            
+            /* Dunklere Farben für den Text im Wörterbuch (besser lesbar) */
+            --text-der: #0288D1; 
+            --text-die: #C2185B;
+            --text-das: #2E7D32;
+
             --btn: #FFCA28;
             --btn-hover: #FFB300;
         }
@@ -62,6 +68,7 @@
         
         .btn-main { background-color: var(--btn); color: #333; width: 90%; max-width: 400px; display: block; margin: 15px auto; }
         .btn-test { background-color: #AB47BC; color: white; width: 90%; max-width: 400px; display: block; margin: 15px auto; }
+        .btn-learn { background-color: #26C6DA; color: white; width: 90%; max-width: 400px; display: block; margin: 15px auto; }
         .btn-back { background-color: #E0E0E0; font-size: 1.2rem; padding: 10px 20px; margin-top: 30px; }
         
         /* Grid für Buchstaben */
@@ -72,6 +79,18 @@
         .lvl-1 { background-color: #66BB6A; color: white;}
         .lvl-2 { background-color: #FFA726; color: white;}
         .lvl-3 { background-color: #EF5350; color: white;}
+
+        /* Wörterbuch (Dictionary) Styles */
+        .dict-section { margin-bottom: 25px; text-align: left; background: #f4fcff; padding: 20px; border-radius: 20px; border: 2px solid #E1F5FE; }
+        .dict-section h3 { margin-top: 0; color: #444; border-bottom: 2px dashed #B3E5FC; padding-bottom: 10px; font-size: 1.6rem; }
+        .dict-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+        .dict-word { background: #FFF; padding: 8px 15px; border-radius: 20px; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; border: 2px solid #EEE; box-shadow: 0 3px 0 #EEE; }
+        .dict-word span.der { color: var(--text-der); font-weight: bold; }
+        .dict-word span.die { color: var(--text-die); font-weight: bold; }
+        .dict-word span.das { color: var(--text-das); font-weight: bold; }
+        
+        .btn-mini-audio { background: #7E57C2; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 rgba(0,0,0,0.2); padding: 0; margin: 0; }
+        .btn-mini-audio:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
 
         /* Artikel Game */
         .big-word { font-size: 3.5rem; font-weight: bold; color: #D84315; margin: 40px 0; min-height: 80px; }
@@ -118,7 +137,7 @@
         <h1>🌟 Deutsch Profi-Trainer 🌟</h1>
         <p>Für die 1. und 2. Klasse</p>
         
-        <h2>📖 Lektionen lernen</h2>
+        <h2>📖 Lektionen lernen & üben</h2>
         <button class="btn-main" onclick="nav('screen-letters')">🔤 Nach Buchstaben lernen</button>
         
         <h2>🏆 Die großen Tests</h2>
@@ -137,6 +156,12 @@
     <!-- 3. LEVEL & MODE SELECTION (per Letter) -->
     <div id="screen-options" class="screen">
         <h1 id="opt-title">Buchstabe A</h1>
+        
+        <!-- NEU: Wörterbuch Button -->
+        <button class="btn-learn" onclick="showDictionary()">📖 Wörter vorher lernen</button>
+        
+        <hr style="border: 1px dashed #CCC; margin: 25px 0;">
+
         <p>1. Welches Level möchtest du spielen?</p>
         <button class="btn-main lvl-1" onclick="setLevel(1)">🟢 Level 1 (Leicht)</button>
         <button class="btn-main lvl-2" onclick="setLevel(2)">🟠 Level 2 (Mittel)</button>
@@ -149,6 +174,16 @@
             <button class="btn-main" onclick="startLesson('dictation')">✍️ Diktat schreiben</button>
         </div>
         <button class="btn-back" onclick="nav('screen-letters')">🔙 Andere Buchstaben wählen</button>
+    </div>
+
+    <!-- 3.5. DICTIONARY (Wörterbuch) -->
+    <div id="screen-dictionary" class="screen">
+        <h1 id="dict-title">Wörterbuch</h1>
+        <p>Höre dir die Wörter an und präge sie dir gut ein!</p>
+        <div id="dict-content">
+            <!-- Wird per JavaScript mit Levels und Wörtern gefüllt -->
+        </div>
+        <button class="btn-back" onclick="nav('screen-options')">🔙 Zurück zur Auswahl</button>
     </div>
 
     <!-- 4. ARTICLE GAME -->
@@ -200,9 +235,7 @@
 </div>
 
 <script>
-    /* ================= 1. DICTIONARY DATA ================= 
-       Compressed format: "Word|Article|Level" 
-       Article is empty string if not a noun. */
+    /* ================= 1. DICTIONARY DATA ================= */
     const rawData = [
         "Abend|der|2", "acht||1", "alle||1", "alt||1", "Ampel|die|2", "antworten||3", "Apfel|der|2", "April|der|2", "arbeiten||3", "Arm|der|1", "Ast|der|1", "Aufgabe|die|3", "Auge|das|2", "August|der|2", "Auto|das|2",
         "Baby|das|3", "baden||2", "Ball|der|1", "Bank|die|2", "Bauch|der|2", "bauen||2", "Baum|der|2", "Bein|das|2", "bewegen||3", "bezahlen||3", "Biene|die|2", "Bild|das|2", "Birne|die|2", "bitten||2", "Blatt|das|2", "blau||2", "bleiben||2", "Blume|die|2", "blühen||3", "Blüte|die|2", "Boden|der|2", "böse||2", "braun||2", "bringen||3", "Brot|das|2", "Brief|der|3", "Bruder|der|2", "Buch|das|2", "bunt||1", "Busch|der|2",
@@ -221,7 +254,6 @@
     rawData.forEach(item => {
         let parts = item.split('|');
         let l = parts[0].charAt(0).toUpperCase();
-        // Mappe Umlaute für eine bessere Sortierung
         if(l === 'Ü') l = 'U'; if(l === 'Ä') l = 'A'; if(l === 'Ö') l = 'O';
         
         dictionary.push({
@@ -238,7 +270,7 @@
         level: 0,
         mode: '', 
         isTest: false,
-        isProcessing: false, // <-- NEU: Verhindert doppelte Punktvergabe durch schnelles Klicken
+        isProcessing: false, 
         queue: [],
         currentIndex: 0,
         score: 0,
@@ -276,6 +308,70 @@
         document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "0.5");
         event.target.style.opacity = "1";
         document.getElementById('mode-selection').style.display = "block";
+    }
+
+    /* ================= 3.5 WÖRTERBUCH ANZEIGEN ================= */
+    function showDictionary() {
+        document.getElementById('dict-title').innerText = "Buchstabe " + state.letter;
+        let content = document.getElementById('dict-content');
+        content.innerHTML = ""; // Leeren
+
+        let levelTitles = {
+            1: "🟢 Level 1 (Leicht)", 
+            2: "🟠 Level 2 (Mittel)", 
+            3: "🔴 Level 3 (Schwer)"
+        };
+
+        [1, 2, 3].forEach(lvl => {
+            let words = dictionary.filter(d => d.letter === state.letter && d.level === lvl);
+            
+            if (words.length > 0) {
+                // Section pro Level erstellen
+                let section = document.createElement('div');
+                section.className = 'dict-section';
+                
+                let h3 = document.createElement('h3');
+                h3.innerText = levelTitles[lvl];
+                section.appendChild(h3);
+
+                let ul = document.createElement('ul');
+                ul.className = 'dict-list';
+
+                words.forEach(w => {
+                    let li = document.createElement('li');
+                    li.className = 'dict-word';
+                    
+                    // Audio Button
+                    let audioBtn = document.createElement('button');
+                    audioBtn.className = 'btn-mini-audio';
+                    audioBtn.innerText = '🔊';
+                    audioBtn.onclick = () => {
+                        let textToRead = w.article ? `${w.article} ${w.word}` : w.word;
+                        let u = new SpeechSynthesisUtterance(textToRead);
+                        u.lang = 'de-DE';
+                        u.rate = 0.8;
+                        speechSynthesis.speak(u);
+                    };
+
+                    // Text (Wort + Artikel)
+                    let textSpan = document.createElement('span');
+                    if (w.article) {
+                        textSpan.innerHTML = `<span class="${w.article}">${w.article}</span> ${w.word}`;
+                    } else {
+                        textSpan.innerText = w.word;
+                    }
+
+                    li.appendChild(audioBtn);
+                    li.appendChild(textSpan);
+                    ul.appendChild(li);
+                });
+
+                section.appendChild(ul);
+                content.appendChild(section);
+            }
+        });
+
+        nav('screen-dictionary');
     }
 
     /* ================= 4. GAME LOGIC SETUP ================= */
@@ -341,9 +437,9 @@
         state.currentIndex = 0;
         state.score = 0;
         state.mistakes = [];
-        state.isProcessing = false; // Zurücksetzen der Eingabe-Sperre
+        state.isProcessing = false; 
         
-        // Audio initialisieren (für Smartphones/Tablets wichtig)
+        // Audio initialisieren
         let u = new SpeechSynthesisUtterance('');
         u.volume = 0;
         speechSynthesis.speak(u);
@@ -352,7 +448,7 @@
     }
 
     function loadNextTurn() {
-        state.isProcessing = false; // Eingabe wieder erlauben
+        state.isProcessing = false; 
 
         if (state.currentIndex >= state.queue.length) {
             showResults();
@@ -382,8 +478,6 @@
     }
 
     /* ================= 5. EVALUATION LOGIC ================= */
-    
-    // Artikel prüfen
     function checkArticle(selected) {
         if (state.isProcessing) return;
         
@@ -391,14 +485,12 @@
         let correct = cw.article;
         let isCorrect = (selected === correct);
         
-        // Komplette Wörter für die Fehleranzeige generieren
         let givenText = selected ? `${selected} ${cw.word}` : `(nichts) ${cw.word}`;
         let correctText = `${correct} ${cw.word}`;
 
         handleAnswer(isCorrect, givenText, correctText, cw);
     }
 
-    // Diktat prüfen
     function playAudio() {
         let cw = state.queue[state.currentIndex];
         let textToRead = cw.article ? `${cw.article} ${cw.word}` : cw.word;
@@ -424,14 +516,12 @@
         handleAnswer(isPerfect, input, target, cw, isSoftCorrect);
     }
 
-    // "Enter" auf der Tastatur fürs Diktat zulassen
     document.getElementById('dict-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') checkDictation();
     });
 
-    // Zentrale Funktion für die Auswertung
     function handleAnswer(isCorrect, kidAns, correctAns, wordObj, softCorrect = false) {
-        state.isProcessing = true; // Sperrt die Eingabe bis zur nächsten Runde (verhindert Double-Clicks!)
+        state.isProcessing = true; 
         
         state.levelsStats[wordObj.level].t++;
         
@@ -474,7 +564,7 @@
 
     function nextTurn() {
         let overlay = document.getElementById('feedback-overlay');
-        if (!overlay.classList.contains('active')) return; // Verhindert Doppelklick auf den "Weiter"-Button
+        if (!overlay.classList.contains('active')) return; 
         
         overlay.classList.remove('active');
         state.currentIndex++;
@@ -499,7 +589,6 @@
         else if (state.score >= total * 0.7) msg.innerHTML = "Sehr gut gemacht! Fast alles richtig! 👍";
         else msg.innerHTML = "Das war schwer, aber Übung macht den Meister! 💪";
 
-        // Dynamischer Zurück-Button auf der Ergebnis-Seite
         let btnResult = document.getElementById('btn-result-menu');
         if (state.letter === 'ALLE') {
             btnResult.innerHTML = "🏠 Zurück zum Hauptmenü";
@@ -509,7 +598,6 @@
             btnResult.onclick = () => nav('screen-options');
         }
 
-        // Einstufungstest Feedback
         if (state.isTest && state.letter !== 'ALLE') {
             let rec = 1;
             let acc = {
@@ -523,7 +611,6 @@
             msg.innerHTML += `<br><br><b>💡 Mein Tipp:</b> Wir empfehlen dir für diesen Buchstaben <b>Level ${rec}</b>.`;
         }
 
-        // Fehlerliste anzeigen
         let mContainer = document.getElementById('mistakes-container');
         let mList = document.getElementById('mistakes-list');
         mList.innerHTML = "";
