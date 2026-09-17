@@ -2,326 +2,535 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grundwortschatz Deutsch - Lern-App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deutsch Profi-Trainer (1. & 2. Klasse)</title>
     <style>
-        /* Kinderfreundliches Design & große Schriften */
+        /* ================= DESIGN & LAYOUT ================= */
         :root {
-            --primary: #FF9800;
-            --bg-color: #E0F7FA;
-            --text-color: #333;
-            --card-bg: #ffffff;
+            --bg: #F0F8FF;
+            --text: #333;
+            --card: #FFF;
+            --der: #4FC3F7; /* Blau */
+            --die: #F06292; /* Pink */
+            --das: #81C784; /* Grün */
+            --btn: #FFCA28;
+            --btn-hover: #FFB300;
         }
 
         body {
             font-family: 'Comic Sans MS', 'Chalkboard SE', 'Nunito', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             text-align: center;
             margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: #00838F;
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.5rem;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
+            margin: 20px auto;
+            background: var(--card);
+            padding: 20px 30px 40px;
             border-radius: 30px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        /* Screens (Menü & Spiele) */
-        .screen {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-        .screen.active {
-            display: block;
-        }
+        h1 { font-size: 2.5rem; color: #00838F; margin-bottom: 5px; }
+        h2 { font-size: 1.8rem; color: #555; }
+        p { font-size: 1.4rem; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        /* Screens */
+        .screen { display: none; animation: fadeIn 0.4s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Buttons */
         button {
             font-family: inherit;
-            font-size: 1.8rem;
-            padding: 15px 30px;
-            margin: 15px;
+            font-size: 1.5rem;
+            padding: 15px 25px;
+            margin: 10px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 5px 0px rgba(0,0,0,0.2);
-            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.15);
+            transition: all 0.1s;
+            font-weight: bold;
         }
-
-        button:active {
-            transform: translateY(5px);
-            box-shadow: 0 0px 0px rgba(0,0,0,0.2);
-        }
-
-        .btn-menu { background-color: #FFC107; color: #333; font-weight: bold; width: 80%; max-width: 400px; }
-        .btn-der { background-color: #4FC3F7; color: white; }
-        .btn-die { background-color: #F06292; color: white; }
-        .btn-das { background-color: #81C784; color: white; }
-        .btn-back { background-color: #E0E0E0; font-size: 1.2rem; padding: 10px 20px; margin-top: 30px; }
-        .btn-word { background-color: #BA68C8; color: white; display: block; width: 80%; margin: 15px auto; }
+        button:active { transform: translateY(6px); box-shadow: 0 0px 0px rgba(0,0,0,0.15); }
         
-        .btn-category { background-color: #4DB6AC; color: white; width: 40%; display: inline-block;}
+        .btn-main { background-color: var(--btn); color: #333; width: 90%; max-width: 400px; display: block; margin: 15px auto; }
+        .btn-test { background-color: #AB47BC; color: white; width: 90%; max-width: 400px; display: block; margin: 15px auto; }
+        .btn-back { background-color: #E0E0E0; font-size: 1.2rem; padding: 10px 20px; margin-top: 30px; }
+        
+        /* Grid für Buchstaben */
+        .letter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 10px; margin-top: 20px; }
+        .btn-letter { background-color: #29B6F6; color: white; padding: 15px 0; font-size: 1.8rem; border-radius: 15px; }
 
-        /* Spiel-Elemente */
-        .big-word {
-            font-size: 4rem;
-            font-weight: bold;
-            color: #D84315;
-            margin: 30px 0;
-            min-height: 80px;
-        }
+        /* Levels */
+        .lvl-1 { background-color: #66BB6A; color: white;}
+        .lvl-2 { background-color: #FFA726; color: white;}
+        .lvl-3 { background-color: #EF5350; color: white;}
 
-        .feedback {
-            font-size: 2rem;
-            font-weight: bold;
-            height: 40px;
+        /* Artikel Game */
+        .big-word { font-size: 3.5rem; font-weight: bold; color: #D84315; margin: 40px 0; min-height: 80px; }
+        .btn-der { background-color: var(--der); color: white; font-size: 2rem; width: 120px; }
+        .btn-die { background-color: var(--die); color: white; font-size: 2rem; width: 120px; }
+        .btn-das { background-color: var(--das); color: white; font-size: 2rem; width: 120px; }
+
+        /* Diktat Game */
+        .audio-btn { background-color: #7E57C2; color: white; font-size: 3rem; padding: 20px 40px; border-radius: 50%; margin: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        input[type="text"] {
+            font-size: 2.5rem;
+            padding: 15px;
+            width: 80%;
+            max-width: 400px;
+            border: 4px solid #B3E5FC;
+            border-radius: 15px;
+            text-align: center;
+            font-family: inherit;
             margin-bottom: 20px;
         }
+        .btn-check { background-color: #4CAF50; color: white; font-size: 1.8rem; }
 
-        .success { color: #2E7D32; }
-        .error { color: #C62828; }
+        /* Feedback & Score */
+        .feedback-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 100; flex-direction: column; justify-content: center; align-items: center; }
+        .feedback-overlay.active { display: flex; }
+        .fb-icon { font-size: 8rem; margin-bottom: 20px; }
+        .fb-text { font-size: 2.5rem; font-weight: bold; }
 
-        /* Konfetti */
-        .celebration {
-            font-size: 5rem;
-            margin: 20px 0;
-        }
+        /* Results */
+        .mistake-list { text-align: left; background: #FFF9C4; padding: 20px; border-radius: 15px; margin: 20px auto; max-width: 500px; font-size: 1.3rem; }
+        .correct-ans { color: #2E7D32; font-weight: bold; }
+        .wrong-ans { color: #C62828; text-decoration: line-through; }
+        .progress { font-size: 1.5rem; font-weight: bold; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="container">
     
-    <!-- HAUPTMENÜ -->
-    <div id="menu-screen" class="screen active">
-        <h1>🌟 Lern-App Deutsch 🌟</h1>
-        <p>1. und 2. Klasse</p>
-        <p>Wähle ein Spiel aus:</p>
-        <button class="btn-menu" onclick="startGame(1)">1. Artikel finden 🍎</button>
-        <button class="btn-menu" onclick="startGame(2)">2. Was passt nicht? 🔍</button>
-        <button class="btn-menu" onclick="startGame(3)">3. Wörter sortieren 🧠</button>
+    <!-- 1. MAIN MENU -->
+    <div id="screen-home" class="screen active">
+        <h1>🌟 Deutsch Profi-Trainer 🌟</h1>
+        <p>Für die 1. und 2. Klasse</p>
+        
+        <h2>📖 Lektionen lernen</h2>
+        <button class="btn-main" onclick="nav('screen-letters')">🔤 Nach Buchstaben lernen</button>
+        
+        <h2>🏆 Die großen Tests</h2>
+        <button class="btn-test" onclick="startGlobalTest('article')">🎨 Alle Buchstaben: Artikel-Test</button>
+        <button class="btn-test" onclick="startGlobalTest('dictation')">✍️ Alle Buchstaben: Diktat-Test</button>
+        <button class="btn-test" onclick="startGlobalTest('mixed')" style="background-color: #E53935;">👑 Der Meister-Test (Mix)</button>
     </div>
 
-    <!-- SPIEL 1: Artikel (der, die, das) -->
-    <!-- Basiert auf Seite 5 (Begleiter finden) -->
-    <div id="game1-screen" class="screen">
-        <h1>Welcher Begleiter passt?</h1>
-        <p>Tippe auf den richtigen Artikel.</p>
-        <div class="big-word" id="g1-word">Apfel</div>
-        <div id="g1-feedback" class="feedback"></div>
+    <!-- 2. LETTER SELECTION -->
+    <div id="screen-letters" class="screen">
+        <h1>Wähle einen Buchstaben</h1>
+        <div class="letter-grid" id="letter-grid"></div>
+        <button class="btn-back" onclick="nav('screen-home')">🏠 Zurück zum Menü</button>
+    </div>
+
+    <!-- 3. LEVEL & MODE SELECTION (per Letter) -->
+    <div id="screen-options" class="screen">
+        <h1 id="opt-title">Buchstabe A</h1>
+        <p>1. Welches Level möchtest du spielen?</p>
+        <button class="btn-main lvl-1" onclick="setLevel(1)">🟢 Level 1 (Leicht)</button>
+        <button class="btn-main lvl-2" onclick="setLevel(2)">🟠 Level 2 (Mittel)</button>
+        <button class="btn-main lvl-3" onclick="setLevel(3)">🔴 Level 3 (Schwer)</button>
+        <button class="btn-test" onclick="startPlacementTest()">⚖️ Einstufungstest (Finde dein Level)</button>
+        
+        <div id="mode-selection" style="display: none; margin-top: 30px; border-top: 2px dashed #CCC; padding-top:20px;">
+            <p>2. Was möchtest du üben?</p>
+            <button class="btn-main" onclick="startLesson('article')">🎨 Artikel finden (der, die, das)</button>
+            <button class="btn-main" onclick="startLesson('dictation')">✍️ Diktat schreiben</button>
+        </div>
+        <button class="btn-back" onclick="nav('screen-letters')">🔙 Andere Buchstaben</button>
+    </div>
+
+    <!-- 4. ARTICLE GAME -->
+    <div id="screen-game-article" class="screen">
+        <div class="progress" id="prog-article">Wort 1 / 10</div>
+        <div class="big-word" id="word-article">Apfel</div>
         <div>
-            <button class="btn-der" onclick="checkG1('der')">der</button>
-            <button class="btn-die" onclick="checkG1('die')">die</button>
-            <button class="btn-das" onclick="checkG1('das')">das</button>
+            <button class="btn-der" onclick="checkArticle('der')">der</button>
+            <button class="btn-die" onclick="checkArticle('die')">die</button>
+            <button class="btn-das" onclick="checkArticle('das')">das</button>
         </div>
-        <button class="btn-back" onclick="showMenu()">🏠 Zurück zum Menü</button>
+        <button class="btn-back" onclick="abortGame()">🏠 Abbrechen</button>
     </div>
 
-    <!-- SPIEL 2: Welches Wort passt nicht? -->
-    <!-- Basiert auf Seite 7 (Reihen durchstreichen) -->
-    <div id="game2-screen" class="screen">
-        <h1>Was passt nicht?</h1>
-        <p>Tippe auf das Wort, das <b>nicht</b> zu den anderen passt!</p>
-        <div id="g2-feedback" class="feedback"></div>
-        <div id="g2-buttons">
-            <!-- Buttons werden per JS geladen -->
-        </div>
-        <button class="btn-back" onclick="showMenu()">🏠 Zurück zum Menü</button>
+    <!-- 5. DICTATION GAME -->
+    <div id="screen-game-dictation" class="screen">
+        <div class="progress" id="prog-dict">Wort 1 / 10</div>
+        <p>Klicke auf den Lautsprecher und schreibe das Wort.<br><small>(Bei Nomen immer mit Begleiter: z.B. "das Auto")</small></p>
+        <button class="audio-btn" onclick="playAudio()">🔊 Hören</button>
+        <br>
+        <input type="text" id="dict-input" placeholder="Hier schreiben..." autocomplete="off">
+        <br>
+        <button class="btn-check" onclick="checkDictation()">✅ Prüfen</button>
+        <br>
+        <button class="btn-back" onclick="abortGame()">🏠 Abbrechen</button>
     </div>
 
-    <!-- SPIEL 3: Wörter sortieren -->
-    <!-- Basiert auf Seite 11 (Tabelle: Kalender vs. Mensch) -->
-    <div id="game3-screen" class="screen">
-        <h1>Wohin gehört das Wort?</h1>
-        <div class="big-word" id="g3-word">Minute</div>
-        <div id="g3-feedback" class="feedback"></div>
-        <div>
-            <button class="btn-category" onclick="checkG3('Zeit')">📅 Kalender & Zeit</button>
-            <button class="btn-category" onclick="checkG3('Mensch')">👤 Der Mensch</button>
+    <!-- 6. RESULTS SCREEN -->
+    <div id="screen-results" class="screen">
+        <h1 id="res-title">Klasse gemacht! 🥳</h1>
+        <h2 id="res-score">Du hast 8 von 10 richtig!</h2>
+        <p id="res-msg"></p>
+        
+        <div id="mistakes-container" class="mistake-list" style="display: none;">
+            <b>Das üben wir noch mal:</b>
+            <ul id="mistakes-list"></ul>
         </div>
-        <button class="btn-back" onclick="showMenu()">🏠 Zurück zum Menü</button>
-    </div>
-
-    <!-- ENDBILDSCHIRM -->
-    <div id="end-screen" class="screen">
-        <h1>Klasse gemacht! 🥳</h1>
-        <div class="celebration">⭐ 🎈 ⭐</div>
-        <p>Du hast alle Aufgaben richtig gelöst!</p>
-        <button class="btn-menu" onclick="showMenu()">🏠 Zurück zum Menü</button>
+        
+        <button class="btn-main" onclick="nav('screen-home')">🏠 Zurück zum Menü</button>
     </div>
 
 </div>
 
+<!-- FEEDBACK OVERLAY (Correct/Wrong) -->
+<div id="feedback-overlay" class="feedback-overlay">
+    <div class="fb-icon" id="fb-icon">🌟</div>
+    <div class="fb-text" id="fb-text">Richtig!</div>
+    <button class="btn-main" id="fb-next" style="margin-top:30px;" onclick="nextTurn()">Weiter ➡️</button>
+</div>
+
 <script>
-    // --- DATEN FÜR DIE SPIELE ---
-
-    // Spiel 1: Artikel (der, die, das)
-    const g1_data = [
-        { word: "Apfel", article: "der" },
-        { word: "Blume", article: "die" },
-        { word: "Buch", article: "das" },
-        { word: "Baum", article: "der" },
-        { word: "Kind", article: "das" },
-        { word: "Sonne", article: "die" },
-        { word: "Auto", article: "das" },
-        { word: "Nase", article: "die" }
+    /* ================= 1. DICTIONARY DATA ================= 
+       Compressed format: "Word|Article|Level" 
+       Article is empty string if not a noun. */
+    const rawData = [
+        // A
+        "Abend|der|2", "acht||1", "alle||1", "alt||1", "Ampel|die|2", "antworten||3", "Apfel|der|2", "April|der|2", "arbeiten||3", "Arm|der|1", "Ast|der|1", "Aufgabe|die|3", "Auge|das|2", "August|der|2", "Auto|das|2",
+        // B
+        "Baby|das|3", "baden||2", "Ball|der|1", "Bank|die|2", "Bauch|der|2", "bauen||2", "Baum|der|2", "Bein|das|2", "bewegen||3", "bezahlen||3", "Biene|die|2", "Bild|das|2", "Birne|die|2", "bitten||2", "Blatt|das|2", "blau||2", "bleiben||2", "Blume|die|2", "blühen||3", "Blüte|die|2", "Boden|der|2", "böse||2", "braun||2", "bringen||3", "Brot|das|2", "Brief|der|3", "Bruder|der|2", "Buch|das|2", "bunt||1", "Busch|der|2",
+        // C, D
+        "Cent|der|3", "Computer|der|3", "danken||2", "denken||2", "Dezember|der|3", "Dienstag|der|3", "Donnerstag|der|3", "drei||2", "dunkel||2",
+        // E, F
+        "Ei|das|1", "eins||1", "elf||1", "Eltern|die|2", "Ende|das|2", "eng||1", "Ente|die|2", "Erde|die|2", "essen||1", "Eule|die|2", "Euro|der|2", "fahren||2", "fallen||2", "Familie|die|3", "fangen||2", "Februar|der|3", "fein||1", "Feld|das|2", "Fenster|das|2", "finden||2", "Finger|der|2", "fliegen||3", "Flügel|der|2", "flüssig||3", "fragen||2", "Frau|die|2", "Freitag|der|3", "fremd||2", "freuen||2", "Freund|der|2", "frisch||2", "Frucht|die|3", "Frühling|der|3", "füllen||2", "fünf||2", "Fuß|der|2",
+        // G, H
+        "Garten|der|2", "geben||2", "gehen||2", "gelb||1", "Geld|das|2", "Gemüse|das|3", "Gesicht|das|3", "gestern||3", "gesund||2", "Gras|das|2", "groß||2", "grün||2", "gut||1", "Haare|die|2", "haben||2", "Hals|der|2", "halten||2", "Hand|die|2", "hart||1", "Hase|der|2", "Haus|das|2", "Haut|die|2", "Hecke|die|2", "heiß||2", "heißen||2", "helfen||2", "hell||1", "Hemd|das|2", "Herbst|der|3", "Herr|der|2", "heute||2", "Hexe|die|2", "Himmel|der|2", "hören||2", "Hose|die|2", "Hund|der|2", "hundert||3",
+        // I, J, K
+        "Igel|der|2", "Jahr|das|2", "Januar|der|3", "Juli|der|2", "Junge|der|2", "Juni|der|2", "Käfer|der|2", "Kalender|der|3", "kalt||2", "Katze|die|2", "kaufen||2", "Kind|das|2", "Klasse|die|2", "Kleid|das|2", "klein||2", "kommen||2", "können||2", "Kopf|der|2", "Körper|der|3", "krank||2",
+        // L, M, N
+        "laufen||2", "laut||1", "leben||2", "legen||2", "leicht||2", "leise||2", "lernen||2", "lesen||2", "Leute|die|2", "Licht|das|3", "lieb||2", "liegen||2", "machen||2", "Mädchen|das|3", "Mai|der|2", "malen||2", "Mann|der|2", "März|der|2", "Maus|die|2", "Minute|die|3", "Mittwoch|der|3", "Monat|der|2", "Montag|der|2", "Morgen|der|2", "Mund|der|2", "müssen||2", "Mutter|die|2", "Nacht|die|2", "Name|der|2", "Nase|die|2", "Nebel|der|2", "nehmen||2", "neu||1", "neun||2", "November|der|3",
+        // O, P, Q, R
+        "Obst|das|2", "Ohr|das|1", "Oktober|der|3", "Onkel|der|2", "Ostern|das|3", "Papier|das|3", "Pferd|das|2", "pflanzen||3", "pflegen||3", "Platz|der|2", "Puppe|die|2", "quaken||3", "Raupe|die|2", "rechnen||3", "reden||2", "Regen|der|2", "reich||2", "reisen||2", "Rock|der|2", "rollen||2", "rot||1", "Rücken|der|2", "rufen||2",
+        // S
+        "Saft|der|2", "sagen||2", "Salz|das|2", "Samstag|der|3", "Sand|der|2", "Satz|der|2", "schauen||2", "scheinen||3", "Schere|die|2", "schlafen||3", "schlagen||3", "Schnee|der|3", "schneiden||3", "schnell||3", "schön||2", "schreiben||3", "Schule|die|2", "schwarz||3", "Schwester|die|3", "sechs||2", "sehen||2", "Seife|die|2", "Sekunde|die|3", "September|der|3", "sieben||2", "singen||2", "sitzen||2", "Sohn|der|2", "sollen||2", "Sommer|der|2", "Sonne|die|2", "Sonntag|der|3", "sparen||2", "Spaziergang|der|3", "spielen||2", "Sport|der|3", "Stange|die|2", "stehen||2", "stellen||2", "Stift|der|2", "still||2", "Strauch|der|3", "Stunde|die|2", "suchen||2",
+        // T, U, V
+        "Tag|der|1", "Tante|die|2", "Tasche|die|2", "Tee|der|1", "Telefon|das|3", "Tier|das|2", "Tochter|die|3", "tragen||2", "trinken||2", "turnen||2", "üben||2", "Uhr|die|2", "Vater|der|2", "Verkehr|der|3", "versuchen||3", "vier||2", "Vogel|der|2",
+        // W, Z
+        "warm||2", "warten||2", "waschen||2", "Wasser|das|2", "Weg|der|1", "Weihnachten|das|3", "weiß||2", "weit||1", "werden||2", "Wetter|das|2", "Wiese|die|2", "Wind|der|2", "Winter|der|2", "Woche|die|2", "wohnen||2", "wollen||2", "Wort|das|2", "wünschen||3", "Wurzel|die|2", "Zahl|die|2", "Zahn|der|2", "Zehe|die|2", "zehn||2", "zeigen||2", "Zeit|die|2", "Zimmer|das|2", "Zucker|der|2", "zwei||2", "Zwiebel|die|3", "zwölf||3"
     ];
 
-    // Spiel 2: Was passt nicht? (Aus dem PDF Seite 7)
-    const g2_data = [
-        { words: ["Fuß", "Feld", "Finger", "Bauch"], odd: "Feld" },
-        { words: ["Donnerstag", "Freitag", "Woche", "Dienstag"], odd: "Woche" },
-        { words: ["Fisch", "Ente", "dunkel", "Eule"], odd: "dunkel" },
-        { words: ["eins", "flüssig", "fünf", "sechs"], odd: "flüssig" }
-    ];
-
-    // Spiel 3: Kategorien (Aus dem PDF Seite 11)
-    const g3_data = [
-        { word: "Minute", cat: "Zeit" },
-        { word: "Kopf", cat: "Mensch" },
-        { word: "Jahr", cat: "Zeit" },
-        { word: "Auge", cat: "Mensch" },
-        { word: "Montag", cat: "Zeit" },
-        { word: "Bein", cat: "Mensch" },
-        { word: "Herbst", cat: "Zeit" },
-        { word: "Finger", cat: "Mensch" }
-    ];
-
-
-    // --- SPIEL LOGIK ---
-    
-    let currentIndex = 0;
-    let currentGame = 0;
-
-    // Navigation
-    function hideAllScreens() {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    }
-
-    function showMenu() {
-        hideAllScreens();
-        document.getElementById('menu-screen').classList.add('active');
-        clearFeedback();
-    }
-
-    function showEndScreen() {
-        hideAllScreens();
-        document.getElementById('end-screen').classList.add('active');
-    }
-
-    function clearFeedback() {
-        document.getElementById('g1-feedback').innerHTML = "";
-        document.getElementById('g2-feedback').innerHTML = "";
-        document.getElementById('g3-feedback').innerHTML = "";
-    }
-
-    // Spiel starten
-    function startGame(gameNumber) {
-        hideAllScreens();
-        currentIndex = 0;
-        currentGame = gameNumber;
-        document.getElementById(`game${gameNumber}-screen`).classList.add('active');
-        clearFeedback();
-        
-        if(gameNumber === 1) loadG1();
-        if(gameNumber === 2) loadG2();
-        if(gameNumber === 3) loadG3();
-    }
-
-    // --- Spiel 1 Logik ---
-    function loadG1() {
-        if (currentIndex >= g1_data.length) return showEndScreen();
-        document.getElementById('g1-word').innerText = g1_data[currentIndex].word;
-        document.getElementById('g1-feedback').innerText = "";
-    }
-
-    function checkG1(selected) {
-        let correct = g1_data[currentIndex].article;
-        let fb = document.getElementById('g1-feedback');
-        
-        if (selected === correct) {
-            fb.innerHTML = "<span class='success'>Richtig! 🌟</span>";
-            setTimeout(() => {
-                currentIndex++;
-                loadG1();
-            }, 1000);
-        } else {
-            fb.innerHTML = "<span class='error'>Oh, versuche es nochmal! ❌</span>";
-        }
-    }
-
-    // --- Spiel 2 Logik ---
-    function loadG2() {
-        if (currentIndex >= g2_data.length) return showEndScreen();
-        
-        let container = document.getElementById('g2-buttons');
-        container.innerHTML = "";
-        document.getElementById('g2-feedback').innerText = "";
-        
-        let row = g2_data[currentIndex];
-        row.words.forEach(word => {
-            let btn = document.createElement('button');
-            btn.className = "btn-word";
-            btn.innerText = word;
-            btn.onclick = () => checkG2(word);
-            container.appendChild(btn);
+    let dictionary = [];
+    rawData.forEach(item => {
+        let parts = item.split('|');
+        dictionary.push({
+            word: parts[0],
+            article: parts[1] === "" ? null : parts[1],
+            level: parseInt(parts[2]),
+            letter: parts[0].charAt(0).toUpperCase()
         });
+    });
+
+    // Handle Ü and Ö letters mapping
+    dictionary.forEach(d => {
+        if(d.letter === 'Ü') d.letter = 'U';
+        if(d.letter === 'Ä') d.letter = 'A';
+        if(d.letter === 'Ö') d.letter = 'O';
+    });
+
+    /* ================= 2. APP STATE ================= */
+    let state = {
+        letter: '',
+        level: 0,
+        mode: '', // 'article', 'dictation', 'mixed'
+        isTest: false, // In Tests gibt es kein sofortiges Feedback
+        queue: [],
+        currentIndex: 0,
+        score: 0,
+        mistakes: [],
+        levelsStats: {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}} // For placement test
+    };
+
+    /* ================= 3. NAVIGATION & INIT ================= */
+    function nav(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        document.getElementById('feedback-overlay').classList.remove('active');
     }
 
-    function checkG2(selected) {
-        let correct = g2_data[currentIndex].odd;
-        let fb = document.getElementById('g2-feedback');
+    // Init Letter Grid
+    const letters = [...new Set(dictionary.map(d => d.letter))].sort();
+    const grid = document.getElementById('letter-grid');
+    letters.forEach(l => {
+        let btn = document.createElement('button');
+        btn.className = 'btn-letter';
+        btn.innerText = l;
+        btn.onclick = () => selectLetter(l);
+        grid.appendChild(btn);
+    });
+
+    function selectLetter(l) {
+        state.letter = l;
+        document.getElementById('opt-title').innerText = "Buchstabe " + l;
+        document.getElementById('mode-selection').style.display = "none";
         
-        if (selected === correct) {
-            fb.innerHTML = "<span class='success'>Super! Das passt nicht dazu! 🌟</span>";
-            setTimeout(() => {
-                currentIndex++;
-                loadG2();
-            }, 1500);
+        // Reset level buttons
+        document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "1");
+        nav('screen-options');
+    }
+
+    function setLevel(lvl) {
+        state.level = lvl;
+        document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "0.5");
+        event.target.style.opacity = "1";
+        document.getElementById('mode-selection').style.display = "block";
+    }
+
+    /* ================= 4. GAME LOGIC SETUP ================= */
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startLesson(mode) {
+        state.mode = mode;
+        state.isTest = false;
+        
+        // Filter dictionary
+        let words = dictionary.filter(d => d.letter === state.letter && d.level === state.level);
+        if (mode === 'article') words = words.filter(d => d.article !== null);
+        
+        if (words.length === 0) {
+            alert("Für dieses Level gibt es hier keine Wörter! Wähle ein anderes Level.");
+            return;
+        }
+
+        setupQueue(words);
+    }
+
+    function startPlacementTest() {
+        state.mode = 'mixed';
+        state.isTest = true;
+        state.levelsStats = {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}};
+        
+        let words = [];
+        // Take up to 2 words from each level for this letter
+        [1, 2, 3].forEach(lvl => {
+            let lWords = shuffle(dictionary.filter(d => d.letter === state.letter && d.level === lvl));
+            words = words.concat(lWords.slice(0, 2));
+        });
+
+        if (words.length === 0) return alert("Keine Wörter gefunden!");
+        setupQueue(words);
+    }
+
+    function startGlobalTest(mode) {
+        state.mode = mode;
+        state.isTest = true;
+        state.letter = 'ALLE';
+        state.level = 'Mix';
+
+        let words = [];
+        if (mode === 'article') {
+            words = shuffle(dictionary.filter(d => d.article !== null)).slice(0, 15);
+        } else if (mode === 'dictation') {
+            words = shuffle(dictionary).slice(0, 15);
+        } else if (mode === 'mixed') {
+            let arts = shuffle(dictionary.filter(d => d.article !== null)).slice(0, 8);
+            let dicts = shuffle(dictionary).slice(0, 7);
+            words = shuffle(arts.concat(dicts));
+        }
+        setupQueue(words);
+    }
+
+    function setupQueue(words) {
+        state.queue = shuffle([...words]);
+        state.currentIndex = 0;
+        state.score = 0;
+        state.mistakes = [];
+        
+        // Unlock Audio Context immediately on start for iOS
+        let u = new SpeechSynthesisUtterance('');
+        u.volume = 0;
+        speechSynthesis.speak(u);
+
+        loadNextTurn();
+    }
+
+    function loadNextTurn() {
+        if (state.currentIndex >= state.queue.length) {
+            showResults();
+            return;
+        }
+
+        let currentWord = state.queue[state.currentIndex];
+        
+        // Determine sub-mode for Mixed tests
+        let currentMode = state.mode;
+        if (currentMode === 'mixed') {
+            currentMode = (currentWord.article !== null && Math.random() > 0.5) ? 'article' : 'dictation';
+        }
+
+        if (currentMode === 'article') {
+            document.getElementById('prog-article').innerText = `Wort ${state.currentIndex + 1} / ${state.queue.length}`;
+            document.getElementById('word-article').innerText = currentWord.word;
+            nav('screen-game-article');
         } else {
-            fb.innerHTML = "<span class='error'>Fast! Schau noch mal genau hin! ❌</span>";
+            document.getElementById('prog-dict').innerText = `Wort ${state.currentIndex + 1} / ${state.queue.length}`;
+            document.getElementById('dict-input').value = "";
+            nav('screen-game-dictation');
+            setTimeout(() => {
+                playAudio();
+                document.getElementById('dict-input').focus();
+            }, 300);
         }
     }
 
-    // --- Spiel 3 Logik ---
-    function loadG3() {
-        if (currentIndex >= g3_data.length) return showEndScreen();
-        document.getElementById('g3-word').innerText = g3_data[currentIndex].word;
-        document.getElementById('g3-feedback').innerText = "";
+    /* ================= 5. EVALUATION LOGIC ================= */
+    
+    // Article Game
+    function checkArticle(selected) {
+        let cw = state.queue[state.currentIndex];
+        let correct = cw.article;
+        let isCorrect = (selected === correct);
+        
+        handleAnswer(isCorrect, selected, correct, cw);
     }
 
-    function checkG3(selected) {
-        let correct = g3_data[currentIndex].cat;
-        let fb = document.getElementById('g3-feedback');
+    // Dictation Game
+    function playAudio() {
+        let cw = state.queue[state.currentIndex];
+        let textToRead = cw.article ? `${cw.article} ${cw.word}` : cw.word;
         
-        if (selected === correct) {
-            fb.innerHTML = "<span class='success'>Genau richtig! 🌟</span>";
-            setTimeout(() => {
-                currentIndex++;
-                loadG3();
-            }, 1000);
+        let utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.8; // slightly slower for kids
+        speechSynthesis.speak(utterance);
+    }
+
+    function checkDictation() {
+        let cw = state.queue[state.currentIndex];
+        let target = cw.article ? `${cw.article} ${cw.word}` : cw.word;
+        let input = document.getElementById('dict-input').value.trim();
+        
+        if(input === "") return;
+
+        // Check strict (including case) for points, but soft for feedback
+        let isPerfect = (input === target);
+        let isSoftCorrect = (input.toLowerCase() === target.toLowerCase());
+        
+        handleAnswer(isPerfect, input, target, cw, isSoftCorrect);
+    }
+
+    // Handle Enter key for dictation
+    document.getElementById('dict-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkDictation();
+    });
+
+    // General Answer Handler
+    function handleAnswer(isCorrect, kidAns, correctAns, wordObj, softCorrect = false) {
+        // Track stats for placement test
+        state.levelsStats[wordObj.level].t++;
+        
+        if (isCorrect) {
+            state.score++;
+            state.levelsStats[wordObj.level].c++;
         } else {
-            fb.innerHTML = "<span class='error'>Leider falsch, probiere es nochmal! ❌</span>";
+            state.mistakes.push({ word: wordObj.word, given: kidAns, correct: correctAns });
+        }
+
+        if (state.isTest) {
+            // Tests have no immediate feedback
+            state.currentIndex++;
+            loadNextTurn();
+        } else {
+            showFeedback(isCorrect, softCorrect, correctAns);
+        }
+    }
+
+    function showFeedback(isCorrect, softCorrect, correctAns) {
+        let overlay = document.getElementById('feedback-overlay');
+        let icon = document.getElementById('fb-icon');
+        let text = document.getElementById('fb-text');
+        
+        if (isCorrect) {
+            icon.innerText = "🌟";
+            text.innerText = "Richtig! Super gemacht!";
+            text.style.color = "#2E7D32";
+        } else if (softCorrect) {
+            icon.innerText = "📝";
+            text.innerText = "Fast! Achte auf die Groß- und Kleinschreibung.\nRichtig ist: " + correctAns;
+            text.style.color = "#E65100";
+        } else {
+            icon.innerText = "❌";
+            text.innerText = "Nicht ganz!\nRichtig ist: " + correctAns;
+            text.style.color = "#C62828";
+        }
+        
+        overlay.classList.add('active');
+    }
+
+    function nextTurn() {
+        document.getElementById('feedback-overlay').classList.remove('active');
+        state.currentIndex++;
+        loadNextTurn();
+    }
+
+    function abortGame() {
+        if(confirm("Willst du wirklich abbrechen?")) nav('screen-home');
+    }
+
+    /* ================= 6. RESULTS & STATS ================= */
+    function showResults() {
+        nav('screen-results');
+        let total = state.queue.length;
+        document.getElementById('res-score').innerText = `Du hast ${state.score} von ${total} richtig!`;
+        
+        let msg = document.getElementById('res-msg');
+        if(state.score === total) msg.innerHTML = "Perfekt! Du bist ein echter Profi! 🏆";
+        else if (state.score >= total * 0.7) msg.innerHTML = "Sehr gut gemacht! Fast alles richtig! 👍";
+        else msg.innerHTML = "Das war schwer, aber Übung macht den Meister! 💪";
+
+        // Placement Test Logic (if active)
+        if (state.isTest && state.letter !== 'ALLE') {
+            let rec = 1;
+            let acc = {
+                1: state.levelsStats[1].t > 0 ? state.levelsStats[1].c / state.levelsStats[1].t : 0,
+                2: state.levelsStats[2].t > 0 ? state.levelsStats[2].c / state.levelsStats[2].t : 0,
+                3: state.levelsStats[3].t > 0 ? state.levelsStats[3].c / state.levelsStats[3].t : 0
+            };
+            if (acc[3] > 0.6) rec = 3;
+            else if (acc[2] > 0.6) rec = 2;
+            
+            msg.innerHTML += `<br><br><b>💡 Mein Tipp:</b> Wir empfehlen dir für diesen Buchstaben <b>Level ${rec}</b>.`;
+        }
+
+        // List Mistakes
+        let mContainer = document.getElementById('mistakes-container');
+        let mList = document.getElementById('mistakes-list');
+        mList.innerHTML = "";
+        
+        if (state.mistakes.length > 0) {
+            mContainer.style.display = "block";
+            state.mistakes.forEach(m => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "10px";
+                li.innerHTML = `Statt <span class="wrong-ans">${m.given || "(nichts)"}</span> ➡️ <span class="correct-ans">${m.correct}</span>`;
+                mList.appendChild(li);
+            });
+        } else {
+            mContainer.style.display = "none";
         }
     }
 
