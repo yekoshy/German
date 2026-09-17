@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesetempo-Training</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&display=swap');
+
+        :root {
+            --primary: #ff9f43;
+            --secondary: #0abde3;
+            --background: #fdf2e9;
+            --text-dark: #2d3436;
+            --white: #ffffff;
+            --green: #1dd1a1;
+            --red: #ff6b6b;
+        }
+
+        body {
+            font-family: 'Nunito', 'Comic Sans MS', sans-serif;
+            background-color: var(--background);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background-color: var(--white);
+            max-width: 600px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Menu Styles */
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 5px 15px rgba(10, 189, 227, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            background-color: #09a0c0;
+        }
+
+        .btn.primary {
+            background-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(255, 159, 67, 0.3);
+            margin-top: 20px;
+        }
+
+        .btn.primary:hover {
+            background-color: #e68e3c;
+        }
+
+        /* Game Styles */
+        .timer-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--green);
+            transition: width 1s linear, background-color 0.5s;
+        }
+
+        .time-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .word-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 40px 0;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            border: 4px dashed var(--secondary);
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s;
+        }
+
+        .word-display:active {
+            transform: scale(0.95);
+        }
+
+        .score-display {
+            font-size: 1.3rem;
+            color: gray;
+        }
+
+        /* Result Styles */
+        .stars {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: #f1c40f;
+        }
+
+        .advice {
+            background-color: #e8f8f5;
+            border-left: 5px solid var(--green);
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .instructions {
+            text-align: left;
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- MAIN MENU SCREEN -->
+    <div id="menu-screen" class="screen active">
+        <h1>Lesetempo-Training ⏱️</h1>
+        <h2>Wie viele Wörter schaffst du in 40 Sekunden?</h2>
+        
+        <div class="instructions">
+            <strong>Und so geht's:</strong>
+            <ul>
+                <li>Du hast genau <strong>40 Sekunden</strong> Zeit.</li>
+                <li>Lies das Wort laut vor. <strong>Lies es so lange, bis du es verstehst!</strong></li>
+                <li>Tippe danach auf das Wort, um das nächste zu sehen.</li>
+            </ul>
+        </div>
+
+        <p>Wähle eine Liste, um zu starten:</p>
+        <div class="level-grid">
+            <button class="btn" onclick="startGame(0)">Blatt 1<br><small>(Wetter)</small></button>
+            <button class="btn" onclick="startGame(1)">Blatt 2<br><small>(Wochentage)</small></button>
+            <button class="btn" onclick="startGame(2)">Blatt 3<br><small>(Monate/Zeit)</small></button>
+            <button class="btn" onclick="startGame(3)">Blatt 4<br><small>(Klima)</small></button>
+            <button class="btn" onclick="startGame(4)">Blatt 5<br><small>(Gemischt)</small></button>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen">
+        <div class="timer-bar-container">
+            <div id="timer-bar" class="timer-bar"></div>
+        </div>
+        <div id="time-text" class="time-text">40 Sekunden</div>
+        
+        <div id="word-display" class="word-display" onclick="nextWord()">
+            Wort
+        </div>
+        
+        <div class="score-display">Gelesen: <span id="current-score">0</span> / 30</div>
+        
+        <p style="font-size: 1rem; color: gray; margin-top: 15px;">(Tippe auf das Wort, wenn du es gelesen hast)</p>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="screen">
+        <h1>Zeit abgelaufen! 🛑</h1>
+        <h2>Du hast <span id="final-score" style="font-size: 2.5rem; color: var(--primary);">0</span> Wörter geschafft!</h2>
+        
+        <div id="stars" class="stars">⭐⭐⭐</div>
+        
+        <p id="rating-text" style="font-size: 1.4rem; font-weight: bold;"></p>
+        
+        <div class="advice">
+            <p id="advice-text"></p>
+        </div>
+        
+        <button class="btn primary" onclick="showMenu()">Zurück zum Menü</button>
+    </div>
+
+</div>
+
+<script>
+    // Word lists extracted from the PDF (30 words per list)
+    const lists = [
+        ["Wolke", "Sonne", "Regen", "Sturm", "Nebel", "Donner", "Blitz", "Sturm", "Wind", "Wärme", "Gewitter", "Schnee", "Frost", "wolkig", "Kälte", "Hagel", "Hitze", "Unwetter", "Grad", "Eis", "Eiskristall", "Luft", "Schatten", "sonnig", "schneien", "regnen", "windig", "regnerisch", "kalt", "warm"],
+        ["Montag", "Dienstag", "Samstag", "Mittwoch", "Sonntag", "Donnerstag", "Wochenende", "Freitag", "Woche", "Tag", "Wochenanfang", "Mittag", "Zeit", "morgen", "heute", "gestern", "vorgestern", "übermorgen", "Nacht", "Nachmittag", "Abend", "Mitternacht", "Feiertag", "Brückentag", "voll", "halb", "viertel", "dreiviertel", "Tageszeit", "Zeitpunkt"],
+        ["Herbst", "Sommer", "Frühling", "Winter", "Januar", "Mai", "Juni", "Februar", "August", "März", "Juli", "September", "Oktober", "Dezember", "November", "Jahr", "Monat", "Woche", "Minute", "Sekunde", "Stundenzeiger", "Uhrzeit", "Minutenzeiger", "Taschenuhr", "Küchenuhr", "Jahreszeit", "Weihnachten", "Ostern", "Pfingsten", "Erntedankfest"],
+        ["Klima", "Wettervorhersage", "Verdunstung", "Hitzewelle", "Winterwetter", "Niederschlag", "Gefrierpunkt", "Thermometer", "Feuchtigkeit", "Überschwemmung", "Wasserdampf", "Temperatur", "Regenbogen", "Regenfall", "Sonnenbrand", "Bewölkung", "Ostwind", "Westwind", "Südwind", "Nordwind", "Mistwetter", "Sonnenschein", "Pfütze", "Regenschirm", "Himmel", "Wassertropfen", "Luftdruck", "Raureif", "Tau", "Erdbeben"],
+        ["scheinen", "wehen", "fliegen", "kühl", "gut", "besser", "schlecht", "schlechter", "verändern", "blitzen", "trocken", "nass", "heiter", "donnern", "stürmen", "Schäfchenwolke", "Wetterwolke", "Gewitterwolke", "Tiefdruckgebiet", "Hochdruckgebiet", "Meteorologie", "Lufthülle", "Erde", "Atmosphäre", "Region", "Barometer", "Windfahne", "wolkenlos", "bedeckt", "kräftig"]
+    ];
+
+    let currentList = [];
+    let currentWordIndex = 0;
+    let score = 0;
+    let timeLeft = 40;
+    let timerInterval;
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function showMenu() {
+        showScreen('menu-screen');
+    }
+
+    function startGame(listIndex) {
+        // Reset variables
+        currentList = lists[listIndex];
+        currentWordIndex = 0;
+        score = 0;
+        timeLeft = 40;
+        
+        // Update UI
+        document.getElementById('current-score').innerText = score;
+        document.getElementById('timer-bar').style.width = '100%';
+        document.getElementById('timer-bar').style.backgroundColor = 'var(--green)';
+        document.getElementById('time-text').innerText = timeLeft + ' Sekunden';
+        document.getElementById('word-display').innerText = currentList[currentWordIndex];
+        
+        showScreen('game-screen');
+        
+        // Clear old intervals and start new timer
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function nextWord() {
+        // Increment score
+        score++;
+        currentWordIndex++;
+        
+        document.getElementById('current-score').innerText = score;
+        
+        // Check if finished early
+        if (currentWordIndex >= currentList.length) {
+            endGame(true);
+        } else {
+            // Show next word
+            document.getElementById('word-display').innerText = currentList[currentWordIndex];
+        }
+    }
+
+    function updateTimer() {
+        timeLeft--;
+        let percentage = (timeLeft / 40) * 100;
+        
+        document.getElementById('timer-bar').style.width = percentage + '%';
+        document.getElementById('time-text').innerText = timeLeft + ' Sekunden';
+        
+        // Color changes based on time
+        if (timeLeft <= 15) {
+            document.getElementById('timer-bar').style.backgroundColor = '#f1c40f'; // Yellow
+        }
+        if (timeLeft <= 5) {
+            document.getElementById('timer-bar').style.backgroundColor = 'var(--red)'; // Red
+        }
+
+        // Time up
+        if (timeLeft <= 0) {
+            endGame(false);
+        }
+    }
+
+    function endGame(finishedEarly) {
+        clearInterval(timerInterval);
+        showScreen('result-screen');
+        
+        document.getElementById('final-score').innerText = score;
+        
+        let stars = "";
+        let rating = "";
+        let advice = "";
+        
+        // Ratings & Advices based on PDF instructions and score
+        if (score < 10) {
+            stars = "⭐";
+            rating = "Ein guter Start!";
+            advice = "Tipp: Lies jede Seite 3x und versuche, beim nächsten Mal deine Wortanzahl zu verbessern! Du schaffst das!";
+        } else if (score < 20) {
+            stars = "⭐⭐";
+            rating = "Toll gemacht!";
+            advice = "Du bist schon richtig gut. Lies die Liste gleich nochmal und schau, ob du noch mehr Wörter schaffst!";
+        } else if (score < 30) {
+            stars = "⭐⭐⭐";
+            rating = "Klasse! Du bist sehr schnell!";
+            advice = "Wow, das war schnell! Versuche beim nächsten Mal die ganze Seite zu schaffen. Übung macht den Meister!";
+        } else {
+            stars = "⭐⭐⭐⭐⭐";
+            rating = "Wahnsinn! Lese-Profi!";
+            if (finishedEarly) {
+                advice = "Unglaublich! Du hast alle 30 Wörter gelesen und hattest sogar noch " + timeLeft + " Sekunden übrig! Du kannst sofort mit dem nächsten Blatt weitermachen.";
+            } else {
+                advice = "Perfekt! Du hast alle Wörter geschafft. Zeit für die nächste Liste!";
+            }
+        }
+        
+        document.getElementById('stars').innerText = stars;
+        document.getElementById('rating-text').innerText = rating;
+        document.getElementById('advice-text').innerText = advice;
+    }
+</script>
+</body>
+</html>
