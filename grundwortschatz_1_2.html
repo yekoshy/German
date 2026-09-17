@@ -131,7 +131,7 @@
     <div id="screen-letters" class="screen">
         <h1>Wähle einen Buchstaben</h1>
         <div class="letter-grid" id="letter-grid"></div>
-        <button class="btn-back" onclick="nav('screen-home')">🏠 Zurück zum Menü</button>
+        <button class="btn-back" onclick="nav('screen-home')">🏠 Zurück zum Hauptmenü</button>
     </div>
 
     <!-- 3. LEVEL & MODE SELECTION (per Letter) -->
@@ -148,7 +148,7 @@
             <button class="btn-main" onclick="startLesson('article')">🎨 Artikel finden (der, die, das)</button>
             <button class="btn-main" onclick="startLesson('dictation')">✍️ Diktat schreiben</button>
         </div>
-        <button class="btn-back" onclick="nav('screen-letters')">🔙 Andere Buchstaben</button>
+        <button class="btn-back" onclick="nav('screen-letters')">🔙 Andere Buchstaben wählen</button>
     </div>
 
     <!-- 4. ARTICLE GAME -->
@@ -187,7 +187,7 @@
             <ul id="mistakes-list"></ul>
         </div>
         
-        <button class="btn-main" onclick="nav('screen-home')">🏠 Zurück zum Menü</button>
+        <button class="btn-main" id="btn-result-menu" onclick="nav('screen-home')">🏠 Zurück</button>
     </div>
 
 </div>
@@ -204,59 +204,46 @@
        Compressed format: "Word|Article|Level" 
        Article is empty string if not a noun. */
     const rawData = [
-        // A
         "Abend|der|2", "acht||1", "alle||1", "alt||1", "Ampel|die|2", "antworten||3", "Apfel|der|2", "April|der|2", "arbeiten||3", "Arm|der|1", "Ast|der|1", "Aufgabe|die|3", "Auge|das|2", "August|der|2", "Auto|das|2",
-        // B
         "Baby|das|3", "baden||2", "Ball|der|1", "Bank|die|2", "Bauch|der|2", "bauen||2", "Baum|der|2", "Bein|das|2", "bewegen||3", "bezahlen||3", "Biene|die|2", "Bild|das|2", "Birne|die|2", "bitten||2", "Blatt|das|2", "blau||2", "bleiben||2", "Blume|die|2", "blühen||3", "Blüte|die|2", "Boden|der|2", "böse||2", "braun||2", "bringen||3", "Brot|das|2", "Brief|der|3", "Bruder|der|2", "Buch|das|2", "bunt||1", "Busch|der|2",
-        // C, D
         "Cent|der|3", "Computer|der|3", "danken||2", "denken||2", "Dezember|der|3", "Dienstag|der|3", "Donnerstag|der|3", "drei||2", "dunkel||2",
-        // E, F
         "Ei|das|1", "eins||1", "elf||1", "Eltern|die|2", "Ende|das|2", "eng||1", "Ente|die|2", "Erde|die|2", "essen||1", "Eule|die|2", "Euro|der|2", "fahren||2", "fallen||2", "Familie|die|3", "fangen||2", "Februar|der|3", "fein||1", "Feld|das|2", "Fenster|das|2", "finden||2", "Finger|der|2", "fliegen||3", "Flügel|der|2", "flüssig||3", "fragen||2", "Frau|die|2", "Freitag|der|3", "fremd||2", "freuen||2", "Freund|der|2", "frisch||2", "Frucht|die|3", "Frühling|der|3", "füllen||2", "fünf||2", "Fuß|der|2",
-        // G, H
         "Garten|der|2", "geben||2", "gehen||2", "gelb||1", "Geld|das|2", "Gemüse|das|3", "Gesicht|das|3", "gestern||3", "gesund||2", "Gras|das|2", "groß||2", "grün||2", "gut||1", "Haare|die|2", "haben||2", "Hals|der|2", "halten||2", "Hand|die|2", "hart||1", "Hase|der|2", "Haus|das|2", "Haut|die|2", "Hecke|die|2", "heiß||2", "heißen||2", "helfen||2", "hell||1", "Hemd|das|2", "Herbst|der|3", "Herr|der|2", "heute||2", "Hexe|die|2", "Himmel|der|2", "hören||2", "Hose|die|2", "Hund|der|2", "hundert||3",
-        // I, J, K
         "Igel|der|2", "Jahr|das|2", "Januar|der|3", "Juli|der|2", "Junge|der|2", "Juni|der|2", "Käfer|der|2", "Kalender|der|3", "kalt||2", "Katze|die|2", "kaufen||2", "Kind|das|2", "Klasse|die|2", "Kleid|das|2", "klein||2", "kommen||2", "können||2", "Kopf|der|2", "Körper|der|3", "krank||2",
-        // L, M, N
         "laufen||2", "laut||1", "leben||2", "legen||2", "leicht||2", "leise||2", "lernen||2", "lesen||2", "Leute|die|2", "Licht|das|3", "lieb||2", "liegen||2", "machen||2", "Mädchen|das|3", "Mai|der|2", "malen||2", "Mann|der|2", "März|der|2", "Maus|die|2", "Minute|die|3", "Mittwoch|der|3", "Monat|der|2", "Montag|der|2", "Morgen|der|2", "Mund|der|2", "müssen||2", "Mutter|die|2", "Nacht|die|2", "Name|der|2", "Nase|die|2", "Nebel|der|2", "nehmen||2", "neu||1", "neun||2", "November|der|3",
-        // O, P, Q, R
         "Obst|das|2", "Ohr|das|1", "Oktober|der|3", "Onkel|der|2", "Ostern|das|3", "Papier|das|3", "Pferd|das|2", "pflanzen||3", "pflegen||3", "Platz|der|2", "Puppe|die|2", "quaken||3", "Raupe|die|2", "rechnen||3", "reden||2", "Regen|der|2", "reich||2", "reisen||2", "Rock|der|2", "rollen||2", "rot||1", "Rücken|der|2", "rufen||2",
-        // S
         "Saft|der|2", "sagen||2", "Salz|das|2", "Samstag|der|3", "Sand|der|2", "Satz|der|2", "schauen||2", "scheinen||3", "Schere|die|2", "schlafen||3", "schlagen||3", "Schnee|der|3", "schneiden||3", "schnell||3", "schön||2", "schreiben||3", "Schule|die|2", "schwarz||3", "Schwester|die|3", "sechs||2", "sehen||2", "Seife|die|2", "Sekunde|die|3", "September|der|3", "sieben||2", "singen||2", "sitzen||2", "Sohn|der|2", "sollen||2", "Sommer|der|2", "Sonne|die|2", "Sonntag|der|3", "sparen||2", "Spaziergang|der|3", "spielen||2", "Sport|der|3", "Stange|die|2", "stehen||2", "stellen||2", "Stift|der|2", "still||2", "Strauch|der|3", "Stunde|die|2", "suchen||2",
-        // T, U, V
         "Tag|der|1", "Tante|die|2", "Tasche|die|2", "Tee|der|1", "Telefon|das|3", "Tier|das|2", "Tochter|die|3", "tragen||2", "trinken||2", "turnen||2", "üben||2", "Uhr|die|2", "Vater|der|2", "Verkehr|der|3", "versuchen||3", "vier||2", "Vogel|der|2",
-        // W, Z
         "warm||2", "warten||2", "waschen||2", "Wasser|das|2", "Weg|der|1", "Weihnachten|das|3", "weiß||2", "weit||1", "werden||2", "Wetter|das|2", "Wiese|die|2", "Wind|der|2", "Winter|der|2", "Woche|die|2", "wohnen||2", "wollen||2", "Wort|das|2", "wünschen||3", "Wurzel|die|2", "Zahl|die|2", "Zahn|der|2", "Zehe|die|2", "zehn||2", "zeigen||2", "Zeit|die|2", "Zimmer|das|2", "Zucker|der|2", "zwei||2", "Zwiebel|die|3", "zwölf||3"
     ];
 
     let dictionary = [];
     rawData.forEach(item => {
         let parts = item.split('|');
+        let l = parts[0].charAt(0).toUpperCase();
+        // Mappe Umlaute für eine bessere Sortierung
+        if(l === 'Ü') l = 'U'; if(l === 'Ä') l = 'A'; if(l === 'Ö') l = 'O';
+        
         dictionary.push({
             word: parts[0],
             article: parts[1] === "" ? null : parts[1],
             level: parseInt(parts[2]),
-            letter: parts[0].charAt(0).toUpperCase()
+            letter: l
         });
-    });
-
-    // Handle Ü and Ö letters mapping
-    dictionary.forEach(d => {
-        if(d.letter === 'Ü') d.letter = 'U';
-        if(d.letter === 'Ä') d.letter = 'A';
-        if(d.letter === 'Ö') d.letter = 'O';
     });
 
     /* ================= 2. APP STATE ================= */
     let state = {
         letter: '',
         level: 0,
-        mode: '', // 'article', 'dictation', 'mixed'
-        isTest: false, // In Tests gibt es kein sofortiges Feedback
+        mode: '', 
+        isTest: false,
+        isProcessing: false, // <-- NEU: Verhindert doppelte Punktvergabe durch schnelles Klicken
         queue: [],
         currentIndex: 0,
         score: 0,
         mistakes: [],
-        levelsStats: {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}} // For placement test
+        levelsStats: {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}}
     };
 
     /* ================= 3. NAVIGATION & INIT ================= */
@@ -266,7 +253,6 @@
         document.getElementById('feedback-overlay').classList.remove('active');
     }
 
-    // Init Letter Grid
     const letters = [...new Set(dictionary.map(d => d.letter))].sort();
     const grid = document.getElementById('letter-grid');
     letters.forEach(l => {
@@ -281,8 +267,6 @@
         state.letter = l;
         document.getElementById('opt-title').innerText = "Buchstabe " + l;
         document.getElementById('mode-selection').style.display = "none";
-        
-        // Reset level buttons
         document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "1");
         nav('screen-options');
     }
@@ -307,7 +291,6 @@
         state.mode = mode;
         state.isTest = false;
         
-        // Filter dictionary
         let words = dictionary.filter(d => d.letter === state.letter && d.level === state.level);
         if (mode === 'article') words = words.filter(d => d.article !== null);
         
@@ -325,7 +308,6 @@
         state.levelsStats = {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}};
         
         let words = [];
-        // Take up to 2 words from each level for this letter
         [1, 2, 3].forEach(lvl => {
             let lWords = shuffle(dictionary.filter(d => d.letter === state.letter && d.level === lvl));
             words = words.concat(lWords.slice(0, 2));
@@ -359,8 +341,9 @@
         state.currentIndex = 0;
         state.score = 0;
         state.mistakes = [];
+        state.isProcessing = false; // Zurücksetzen der Eingabe-Sperre
         
-        // Unlock Audio Context immediately on start for iOS
+        // Audio initialisieren (für Smartphones/Tablets wichtig)
         let u = new SpeechSynthesisUtterance('');
         u.volume = 0;
         speechSynthesis.speak(u);
@@ -369,6 +352,8 @@
     }
 
     function loadNextTurn() {
+        state.isProcessing = false; // Eingabe wieder erlauben
+
         if (state.currentIndex >= state.queue.length) {
             showResults();
             return;
@@ -376,7 +361,6 @@
 
         let currentWord = state.queue[state.currentIndex];
         
-        // Determine sub-mode for Mixed tests
         let currentMode = state.mode;
         if (currentMode === 'mixed') {
             currentMode = (currentWord.article !== null && Math.random() > 0.5) ? 'article' : 'dictation';
@@ -399,48 +383,56 @@
 
     /* ================= 5. EVALUATION LOGIC ================= */
     
-    // Article Game
+    // Artikel prüfen
     function checkArticle(selected) {
+        if (state.isProcessing) return;
+        
         let cw = state.queue[state.currentIndex];
         let correct = cw.article;
         let isCorrect = (selected === correct);
         
-        handleAnswer(isCorrect, selected, correct, cw);
+        // Komplette Wörter für die Fehleranzeige generieren
+        let givenText = selected ? `${selected} ${cw.word}` : `(nichts) ${cw.word}`;
+        let correctText = `${correct} ${cw.word}`;
+
+        handleAnswer(isCorrect, givenText, correctText, cw);
     }
 
-    // Dictation Game
+    // Diktat prüfen
     function playAudio() {
         let cw = state.queue[state.currentIndex];
         let textToRead = cw.article ? `${cw.article} ${cw.word}` : cw.word;
         
         let utterance = new SpeechSynthesisUtterance(textToRead);
         utterance.lang = 'de-DE';
-        utterance.rate = 0.8; // slightly slower for kids
+        utterance.rate = 0.8; 
         speechSynthesis.speak(utterance);
     }
 
     function checkDictation() {
+        if (state.isProcessing) return;
+        
         let cw = state.queue[state.currentIndex];
         let target = cw.article ? `${cw.article} ${cw.word}` : cw.word;
         let input = document.getElementById('dict-input').value.trim();
         
         if(input === "") return;
 
-        // Check strict (including case) for points, but soft for feedback
         let isPerfect = (input === target);
         let isSoftCorrect = (input.toLowerCase() === target.toLowerCase());
         
         handleAnswer(isPerfect, input, target, cw, isSoftCorrect);
     }
 
-    // Handle Enter key for dictation
+    // "Enter" auf der Tastatur fürs Diktat zulassen
     document.getElementById('dict-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') checkDictation();
     });
 
-    // General Answer Handler
+    // Zentrale Funktion für die Auswertung
     function handleAnswer(isCorrect, kidAns, correctAns, wordObj, softCorrect = false) {
-        // Track stats for placement test
+        state.isProcessing = true; // Sperrt die Eingabe bis zur nächsten Runde (verhindert Double-Clicks!)
+        
         state.levelsStats[wordObj.level].t++;
         
         if (isCorrect) {
@@ -451,7 +443,6 @@
         }
 
         if (state.isTest) {
-            // Tests have no immediate feedback
             state.currentIndex++;
             loadNextTurn();
         } else {
@@ -482,13 +473,19 @@
     }
 
     function nextTurn() {
-        document.getElementById('feedback-overlay').classList.remove('active');
+        let overlay = document.getElementById('feedback-overlay');
+        if (!overlay.classList.contains('active')) return; // Verhindert Doppelklick auf den "Weiter"-Button
+        
+        overlay.classList.remove('active');
         state.currentIndex++;
         loadNextTurn();
     }
 
     function abortGame() {
-        if(confirm("Willst du wirklich abbrechen?")) nav('screen-home');
+        if(confirm("Willst du wirklich abbrechen?")) {
+            if(state.letter === 'ALLE') nav('screen-home');
+            else nav('screen-options');
+        }
     }
 
     /* ================= 6. RESULTS & STATS ================= */
@@ -502,7 +499,17 @@
         else if (state.score >= total * 0.7) msg.innerHTML = "Sehr gut gemacht! Fast alles richtig! 👍";
         else msg.innerHTML = "Das war schwer, aber Übung macht den Meister! 💪";
 
-        // Placement Test Logic (if active)
+        // Dynamischer Zurück-Button auf der Ergebnis-Seite
+        let btnResult = document.getElementById('btn-result-menu');
+        if (state.letter === 'ALLE') {
+            btnResult.innerHTML = "🏠 Zurück zum Hauptmenü";
+            btnResult.onclick = () => nav('screen-home');
+        } else {
+            btnResult.innerHTML = `🔙 Zurück zu Buchstabe ${state.letter}`;
+            btnResult.onclick = () => nav('screen-options');
+        }
+
+        // Einstufungstest Feedback
         if (state.isTest && state.letter !== 'ALLE') {
             let rec = 1;
             let acc = {
@@ -516,7 +523,7 @@
             msg.innerHTML += `<br><br><b>💡 Mein Tipp:</b> Wir empfehlen dir für diesen Buchstaben <b>Level ${rec}</b>.`;
         }
 
-        // List Mistakes
+        // Fehlerliste anzeigen
         let mContainer = document.getElementById('mistakes-container');
         let mList = document.getElementById('mistakes-list');
         mList.innerHTML = "";
@@ -526,7 +533,7 @@
             state.mistakes.forEach(m => {
                 let li = document.createElement('li');
                 li.style.marginBottom = "10px";
-                li.innerHTML = `Statt <span class="wrong-ans">${m.given || "(nichts)"}</span> ➡️ <span class="correct-ans">${m.correct}</span>`;
+                li.innerHTML = `Statt <span class="wrong-ans">${m.given}</span> ➡️ <span class="correct-ans">${m.correct}</span>`;
                 mList.appendChild(li);
             });
         } else {
