@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deutsch Profi-Trainer (2. Klasse)</title>
+    <style>
+        /* ================= DESIGN & LAYOUT ================= */
+        :root {
+            --bg: #F0F8FF;
+            --text: #333;
+            --card: #FFF;
+            --der: #4FC3F7; /* Blau */
+            --die: #F06292; /* Pink */
+            --das: #81C784; /* Grün */
+            
+            /* Dunklere Farben für den Text im Wörterbuch (besser lesbar) */
+            --text-der: #0288D1; 
+            --text-die: #C2185B;
+            --text-das: #2E7D32;
+
+            --btn: #FFCA28;
+            --btn-hover: #FFB300;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Nunito', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card);
+            padding: 20px 30px 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 { font-size: 2.8rem; color: #00838F; margin-bottom: 5px; }
+        h2 { font-size: 2rem; color: #555; }
+        p { font-size: 1.6rem; }
+
+        /* Screens */
+        .screen { display: none; animation: fadeIn 0.4s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Buttons */
+        button {
+            font-family: inherit;
+            font-size: 1.6rem;
+            padding: 15px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.15);
+            transition: all 0.1s;
+            font-weight: bold;
+        }
+        button:active { transform: translateY(6px); box-shadow: 0 0px 0px rgba(0,0,0,0.15); }
+        
+        .btn-main { background-color: var(--btn); color: #333; width: 90%; max-width: 450px; display: block; margin: 15px auto; }
+        .btn-test { background-color: #AB47BC; color: white; width: 90%; max-width: 450px; display: block; margin: 15px auto; }
+        .btn-learn { background-color: #26C6DA; color: white; width: 90%; max-width: 450px; display: block; margin: 15px auto; }
+        .btn-back { background-color: #E0E0E0; font-size: 1.4rem; padding: 12px 20px; margin-top: 30px; }
+        
+        /* Grid für Buchstaben */
+        .letter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 12px; margin-top: 20px; }
+        .btn-letter { background-color: #29B6F6; color: white; padding: 15px 0; font-size: 2.2rem; border-radius: 15px; }
+
+        /* Levels */
+        .lvl-1 { background-color: #66BB6A; color: white;}
+        .lvl-2 { background-color: #FFA726; color: white;}
+        .lvl-3 { background-color: #EF5350; color: white;}
+
+        /* Wörterbuch (Dictionary) Styles */
+        .dict-section { margin-bottom: 25px; text-align: left; background: #f4fcff; padding: 20px; border-radius: 20px; border: 2px solid #E1F5FE; }
+        .dict-section h3 { margin-top: 0; color: #444; border-bottom: 2px dashed #B3E5FC; padding-bottom: 10px; font-size: 1.8rem; }
+        .dict-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 15px; }
+        .dict-word { background: #FFF; padding: 10px 18px; border-radius: 20px; font-size: 1.6rem; display: flex; align-items: center; gap: 10px; border: 2px solid #EEE; box-shadow: 0 3px 0 #EEE; }
+        .dict-word span.der { color: var(--text-der); font-weight: bold; }
+        .dict-word span.die { color: var(--text-die); font-weight: bold; }
+        .dict-word span.das { color: var(--text-das); font-weight: bold; }
+        
+        .btn-mini-audio { background: #7E57C2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 0 rgba(0,0,0,0.2); padding: 0; margin: 0; }
+        .btn-mini-audio:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0,0,0,0.2); }
+
+        /* Artikel Game */
+        .big-word { font-size: 4rem; font-weight: bold; color: #D84315; margin: 40px 0; min-height: 80px; }
+        .btn-der { background-color: var(--der); color: white; font-size: 2.5rem; width: 140px; }
+        .btn-die { background-color: var(--die); color: white; font-size: 2.5rem; width: 140px; }
+        .btn-das { background-color: var(--das); color: white; font-size: 2.5rem; width: 140px; }
+
+        /* Diktat Game */
+        .audio-btn { background-color: #7E57C2; color: white; font-size: 3.5rem; padding: 25px 45px; border-radius: 50%; margin: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        input[type="text"] {
+            font-size: 3rem;
+            padding: 15px;
+            width: 85%;
+            max-width: 450px;
+            border: 4px solid #B3E5FC;
+            border-radius: 15px;
+            text-align: center;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+        .btn-check { background-color: #4CAF50; color: white; font-size: 2rem; width: 250px; }
+
+        /* Feedback & Score */
+        .feedback-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 100; flex-direction: column; justify-content: center; align-items: center; }
+        .feedback-overlay.active { display: flex; }
+        .fb-icon { font-size: 9rem; margin-bottom: 20px; }
+        .fb-text { font-size: 3rem; font-weight: bold; text-align: center; padding: 20px;}
+
+        /* Results */
+        .mistake-list { text-align: left; background: #FFF9C4; padding: 25px; border-radius: 15px; margin: 20px auto; max-width: 600px; font-size: 1.6rem; }
+        .correct-ans { color: #2E7D32; font-weight: bold; }
+        .wrong-ans { color: #C62828; text-decoration: line-through; }
+        .progress { font-size: 1.8rem; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- 1. MAIN MENU -->
+    <div id="screen-home" class="screen active">
+        <h1>🌟 Deutsch Profi-Trainer 🌟</h1>
+        <p>Für die 2. Klasse - Alle Lernwörter</p>
+        
+        <h2>📖 Lektionen lernen & üben</h2>
+        <button class="btn-main" onclick="nav('screen-letters')">🔤 Nach Buchstaben lernen</button>
+        
+        <h2>🏆 Die großen Tests</h2>
+        <button class="btn-test" onclick="startGlobalTest('article')">🎨 Alle Wörter: Artikel-Test</button>
+        <button class="btn-test" onclick="startGlobalTest('dictation')">✍️ Alle Wörter: Diktat-Test</button>
+        <button class="btn-test" onclick="startGlobalTest('mixed')" style="background-color: #E53935;">👑 Der große Meister-Test (Mix)</button>
+    </div>
+
+    <!-- 2. LETTER SELECTION -->
+    <div id="screen-letters" class="screen">
+        <h1>Wähle einen Buchstaben</h1>
+        <div class="letter-grid" id="letter-grid"></div>
+        <button class="btn-back" onclick="nav('screen-home')">🏠 Zurück zum Hauptmenü</button>
+    </div>
+
+    <!-- 3. LEVEL & MODE SELECTION (per Letter) -->
+    <div id="screen-options" class="screen">
+        <h1 id="opt-title">Buchstabe A</h1>
+        
+        <button class="btn-learn" onclick="showDictionary()">📖 Wörter vorher lernen (Wörterbuch)</button>
+        
+        <hr style="border: 1px dashed #CCC; margin: 25px 0;">
+
+        <p>1. Welches Level möchtest du spielen?</p>
+        <button class="btn-main lvl-1" id="btn-lvl-1" onclick="setLevel(1)">🟢 Level 1 (Leicht)</button>
+        <button class="btn-main lvl-2" id="btn-lvl-2" onclick="setLevel(2)">🟠 Level 2 (Mittel)</button>
+        <button class="btn-main lvl-3" id="btn-lvl-3" onclick="setLevel(3)">🔴 Level 3 (Schwer)</button>
+        <button class="btn-test" onclick="startPlacementTest()">⚖️ Einstufungstest (Finde dein Level)</button>
+        
+        <div id="mode-selection" style="display: none; margin-top: 30px; border-top: 2px dashed #CCC; padding-top:20px;">
+            <p>2. Was möchtest du üben?</p>
+            <button class="btn-main" onclick="startLesson('article')">🎨 Artikel finden (der, die, das)</button>
+            <button class="btn-main" onclick="startLesson('dictation')">✍️ Diktat schreiben</button>
+        </div>
+        <button class="btn-back" onclick="nav('screen-letters')">🔙 Andere Buchstaben wählen</button>
+    </div>
+
+    <!-- 3.5. DICTIONARY (Wörterbuch) -->
+    <div id="screen-dictionary" class="screen">
+        <h1 id="dict-title">Wörterbuch</h1>
+        <p>Höre dir die Wörter an und präge sie dir gut ein!</p>
+        <div id="dict-content"></div>
+        <button class="btn-back" onclick="nav('screen-options')">🔙 Zurück zur Auswahl</button>
+    </div>
+
+    <!-- 4. ARTICLE GAME -->
+    <div id="screen-game-article" class="screen">
+        <div class="progress" id="prog-article">Wort 1 / 10</div>
+        <div class="big-word" id="word-article">Apfel</div>
+        <div>
+            <button class="btn-der" onclick="checkArticle('der')">der</button>
+            <button class="btn-die" onclick="checkArticle('die')">die</button>
+            <button class="btn-das" onclick="checkArticle('das')">das</button>
+        </div>
+        <button class="btn-back" onclick="abortGame()">🏠 Abbrechen</button>
+    </div>
+
+    <!-- 5. DICTATION GAME -->
+    <div id="screen-game-dictation" class="screen">
+        <div class="progress" id="prog-dict">Wort 1 / 10</div>
+        <p>Klicke auf den Lautsprecher und schreibe das Wort.<br><small>(Tipp: Nomen immer mit Begleiter: z.B. "das Auto")</small></p>
+        <button class="audio-btn" onclick="playAudio()">🔊 Hören</button>
+        <br>
+        <input type="text" id="dict-input" placeholder="Hier schreiben..." autocomplete="off">
+        <br>
+        <button class="btn-check" onclick="checkDictation()">✅ Prüfen</button>
+        <br>
+        <button class="btn-back" onclick="abortGame()">🏠 Abbrechen</button>
+    </div>
+
+    <!-- 6. RESULTS SCREEN -->
+    <div id="screen-results" class="screen">
+        <h1 id="res-title">Klasse gemacht! 🥳</h1>
+        <h2 id="res-score">Du hast 8 von 10 richtig!</h2>
+        <p id="res-msg"></p>
+        
+        <div id="mistakes-container" class="mistake-list" style="display: none;">
+            <b>Das üben wir noch mal:</b>
+            <ul id="mistakes-list"></ul>
+        </div>
+        
+        <button class="btn-main" id="btn-result-menu" onclick="nav('screen-home')">🏠 Zurück</button>
+    </div>
+
+</div>
+
+<!-- FEEDBACK OVERLAY (Correct/Wrong) -->
+<div id="feedback-overlay" class="feedback-overlay">
+    <div class="fb-icon" id="fb-icon">🌟</div>
+    <div class="fb-text" id="fb-text">Richtig!</div>
+    <button class="btn-main" id="fb-next" style="margin-top:30px;" onclick="nextTurn()">Weiter ➡️</button>
+</div>
+
+<script>
+    /* ================= 1. DICTIONARY DATA (KOMPLETTE WÖRTER AUS DEM PDF) ================= */
+    const rawData = [
+        // A
+        "Abend|der|1", "ähnlich||2", "ändern||2", "anders||2", "Angst|die|1", "ärgern||2", "Arzt|der|2",
+        // B
+        "backen||1", "Bahn|die|1", "bald||1", "beginnen||3", "Beispiel|das|2", "beißen||2", "belohnen||3", "beobachten||3", "bequem||2", "bereits||2", "Beruf|der|2", "besser||1", "Bett|das|1", "bevor||2", "bewegen||3", "bezahlen||3", "biegen||2", "bisschen||3", "bitten||2", "blicken||2", "blind||2", "Blitz|der|2", "bloß||2", "bohren||2", "Boot|das|1", "böse||1", "boxen||2", "Brand|der|2", "brennen||2", "Brille|die|2", "Brücke|die|2",
+        // C
+        "Computer|der|3",
+        // D
+        "Decke|die|2", "denken||2", "deutsch||2", "dick||1", "Donner|der|2", "draußen||3", "drehen||2", "Druck|der|2", "dumm||1", "dunkel||2", "dünn||1", "dürfen||2", "Durst|der|2",
+        // E
+        "Ecke|die|2", "ehrlich||2", "eigentlich||3", "entdecken||3", "entfernen||3", "entwickeln||3", "erklären||3", "erlauben||3", "erleben||3", "ernähren||3", "erschrecken||3", "erwarten||3", "erzählen||3", "essen||1", "Europa|das|3",
+        // F
+        "fahren||1", "Fahrrad|das|2", "Familie|die|2", "Fehler|der|2", "Ferien|die|2", "Fernseher|der|3", "fertig||2", "fett||1", "feucht||2", "Feuerwehr|die|3", "Fleiß|der|2", "fließen||2", "Flugzeug|das|3", "Fluss|der|1", "flüssig||2", "frei||1", "fremd||2", "fressen||2", "Frieden|der|2", "frieren||2", "frisch||2", "fröhlich||2", "frühstücken||3", "Fuchs|der|2", "fühlen||2", "füllen||2",
+        // G
+        "Gebäude|das|3", "Geburt|die|2", "Gefahr|die|2", "gefallen||2", "geheim||2", "Gemeinde|die|3", "Geschäft|das|3", "Gesetz|das|3", "gestern||2", "gewinnen||3", "Gewitter|das|3", "gießen||2", "glatt||1", "Glück|das|1", "glühen||2", "Gott|der|2", "Gruß|der|2",
+        // H
+        "Handy|das|1", "hängen||2", "häufig||2", "Hecke|die|2", "heizen||2", "Hemd|das|1", "Herr|der|1", "Hitze|die|2", "hoffen||2", "Höhe|die|1", "hohl||2", "Hunger|der|2",
+        // I
+        "impfen||2", "informieren||3", "Interesse|das|3",
+        // J
+        "jede||1", "jemand||2", "jetzt||2", "jung||1",
+        // K
+        "Käfig|der|2", "Kamm|der|2", "kaputt||2", "kennen||2", "klar||1", "klettern||2", "Kraft|die|2", "kratzen||2", "Kreuzung|die|3", "kriechen||3", "Krieg|der|2", "kühl||1", "Kuss|der|1",
+        // L
+        "Land|das|1", "lang||1", "langsam||2", "Lärm|der|2", "lassen||2", "Lehrer|der|2", "letzte||2", "leuchten||2", "Lexikon|das|3", "Lied|das|1", "links||1", "Löffel|der|2",
+        // M
+        "Magnet|der|2", "Maschine|die|3", "Meer|das|1", "messen||2", "Messer|das|2", "Miete|die|2", "Mittag|der|2", "Mitte|die|2", "mixen||2", "Moos|das|1", "Müll|der|2",
+        // N
+        "Nachmittag|der|3", "nächste||2", "nah||1", "nähen||2", "Nahrung|die|3", "nass||1", "Natur|die|2", "nehmen||2", "niemand||2", "Nummer|die|2", "Nuss|die|1", "nützlich||2",
+        // O
+        "ob||1", "offen||2", "Ostern|das|2",
+        // P
+        "packen||2", "Paket|das|2", "Papier|das|2", "passen||2", "Pilz|der|2", "Platz|der|2", "plötzlich||3", "Programm|das|3",
+        // Q
+        "Quadrat|das|3", "quälen||2", "Quelle|die|2",
+        // R
+        "Radio|das|2", "raten||2", "rechts||2", "Reh|das|1", "reißen||2", "rennen||2", "richtig||2", "riechen||2", "Ruhe|die|2", "rühren||2",
+        // S
+        "sammeln||2", "schalten||2", "scharf||2", "Schatten|der|2", "schieben||2", "schief||2", "schließen||3", "schließlich||3", "Schloss|das|2", "Schlüssel|der|2", "schmecken||2", "Schmutz|der|2", "Schreck|der|2", "schreien||2", "Schutz|der|2", "schweigen||3", "schwierig||3", "schwimmen||3", "schwitzen||3", "See|der|1", "seit||1", "Spaß|der|1", "Spaziergang|der|3", "spät||1", "Spiegel|der|2", "spitz||2", "Stadt|die|2", "Stamm|der|2", "Stange|die|2", "stark||1", "Stiel|der|2", "stimmen||2", "Stoff|der|2", "Strand|der|2", "Straße|die|2", "Strauch|der|3", "Strauß|der|3", "streiten||3", "Stück|das|2", "Stuhl|der|2", "Sturm|der|2", "süß||1",
+        // T
+        "Tabelle|die|3", "Tanne|die|2", "tausend||3", "Technik|die|3", "Telefon|das|3", "Teller|der|2", "Temperatur|die|3", "Text|der|2", "Theater|das|3", "Thermometer|das|3", "tief||1", "Träne|die|2", "Traum|der|2", "treffen||2", "trocken||2",
+        // U
+        "überqueren||3", "ungefähr||3", "Unterricht|der|3", "Urlaub|der|2",
+        // V
+        "Vase|die|2", "verbieten||3", "verbrauchen||3", "verbrennen||3", "vergessen||3", "Verkehr|der|3", "verletzen||3", "verlieren||3", "verpacken||3", "verschmutzen||3", "vielleicht||3", "voll||1", "Vorfahrt|die|3", "Vorsicht|die|3",
+        // W
+        "wachsen||2", "wählen||2", "während||3", "Wald|der|1", "wechseln||3", "Wecker|der|2", "Weihnachten|das|3", "wichtig||2", "wiegen||2", "wild||1", "wissen||2", "wohnen||2", "Wurzel|die|2",
+        // Z
+        "Zahl|die|1", "zeichnen||2", "Zeitung|die|2", "Zeugnis|das|3", "ziehen||2", "Ziel|das|1", "Zucker|der|2", "Zukunft|die|3", "zurück||2", "zusammen||3", "Zwiebel|die|2"
+    ];
+
+    let dictionary = [];
+    rawData.forEach(item => {
+        let parts = item.split('|');
+        let l = parts[0].charAt(0).toUpperCase();
+        if(l === 'Ü') l = 'U'; if(l === 'Ä') l = 'A'; if(l === 'Ö') l = 'O';
+        
+        dictionary.push({
+            word: parts[0],
+            article: parts[1] === "" ? null : parts[1],
+            level: parseInt(parts[2]),
+            letter: l
+        });
+    });
+
+    /* ================= 2. APP STATE ================= */
+    let state = {
+        letter: '',
+        level: 0,
+        mode: '', 
+        isTest: false,
+        isProcessing: false, 
+        queue: [],
+        currentIndex: 0,
+        score: 0,
+        mistakes: [],
+        levelsStats: {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}}
+    };
+
+    /* ================= 3. NAVIGATION & INIT ================= */
+    function nav(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        document.getElementById('feedback-overlay').classList.remove('active');
+    }
+
+    // Buttons für alle existierenden Buchstaben generieren
+    const letters = [...new Set(dictionary.map(d => d.letter))].sort();
+    const grid = document.getElementById('letter-grid');
+    letters.forEach(l => {
+        let btn = document.createElement('button');
+        btn.className = 'btn-letter';
+        btn.innerText = l;
+        btn.onclick = () => selectLetter(l);
+        grid.appendChild(btn);
+    });
+
+    function selectLetter(l) {
+        state.letter = l;
+        document.getElementById('opt-title').innerText = "Buchstabe " + l;
+        document.getElementById('mode-selection').style.display = "none";
+        document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "1");
+        nav('screen-options');
+    }
+
+    function setLevel(lvl) {
+        state.level = lvl;
+        document.querySelectorAll('.lvl-1, .lvl-2, .lvl-3').forEach(b => b.style.opacity = "0.5");
+        document.getElementById(`btn-lvl-${lvl}`).style.opacity = "1";
+        document.getElementById('mode-selection').style.display = "block";
+    }
+
+    /* ================= 3.5 WÖRTERBUCH ANZEIGEN ================= */
+    function showDictionary() {
+        document.getElementById('dict-title').innerText = "Buchstabe " + state.letter;
+        let content = document.getElementById('dict-content');
+        content.innerHTML = ""; // Leeren
+
+        let levelTitles = {
+            1: "🟢 Level 1 (Leicht)", 
+            2: "🟠 Level 2 (Mittel)", 
+            3: "🔴 Level 3 (Schwer)"
+        };
+
+        [1, 2, 3].forEach(lvl => {
+            let words = dictionary.filter(d => d.letter === state.letter && d.level === lvl);
+            
+            if (words.length > 0) {
+                let section = document.createElement('div');
+                section.className = 'dict-section';
+                
+                let h3 = document.createElement('h3');
+                h3.innerText = levelTitles[lvl];
+                section.appendChild(h3);
+
+                let ul = document.createElement('ul');
+                ul.className = 'dict-list';
+
+                words.forEach(w => {
+                    let li = document.createElement('li');
+                    li.className = 'dict-word';
+                    
+                    // Audio Button
+                    let audioBtn = document.createElement('button');
+                    audioBtn.className = 'btn-mini-audio';
+                    audioBtn.innerText = '🔊';
+                    audioBtn.onclick = () => {
+                        let textToRead = w.article ? `${w.article} ${w.word}` : w.word;
+                        let u = new SpeechSynthesisUtterance(textToRead);
+                        u.lang = 'de-DE';
+                        u.rate = 0.8;
+                        speechSynthesis.speak(u);
+                    };
+
+                    // Text (Wort + Artikel)
+                    let textSpan = document.createElement('span');
+                    if (w.article) {
+                        textSpan.innerHTML = `<span class="${w.article}">${w.article}</span> ${w.word}`;
+                    } else {
+                        textSpan.innerText = w.word;
+                    }
+
+                    li.appendChild(audioBtn);
+                    li.appendChild(textSpan);
+                    ul.appendChild(li);
+                });
+
+                section.appendChild(ul);
+                content.appendChild(section);
+            }
+        });
+
+        nav('screen-dictionary');
+    }
+
+    /* ================= 4. GAME LOGIC SETUP ================= */
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function startLesson(mode) {
+        state.mode = mode;
+        state.isTest = false;
+        
+        let words = dictionary.filter(d => d.letter === state.letter && d.level === state.level);
+        if (mode === 'article') words = words.filter(d => d.article !== null);
+        
+        if (words.length === 0) {
+            alert("Für dieses Level gibt es hier keine Wörter! Bitte wähle ein anderes.");
+            return;
+        }
+
+        setupQueue(words);
+    }
+
+    function startPlacementTest() {
+        state.mode = 'mixed';
+        state.isTest = true;
+        state.levelsStats = {1: {t:0, c:0}, 2: {t:0, c:0}, 3: {t:0, c:0}};
+        
+        let words = [];
+        [1, 2, 3].forEach(lvl => {
+            let lWords = shuffle(dictionary.filter(d => d.letter === state.letter && d.level === lvl));
+            words = words.concat(lWords.slice(0, 3)); // Bis zu 3 Wörter pro Level
+        });
+
+        if (words.length === 0) return alert("Keine Wörter gefunden!");
+        setupQueue(words);
+    }
+
+    function startGlobalTest(mode) {
+        state.mode = mode;
+        state.isTest = true;
+        state.letter = 'ALLE';
+        state.level = 'Mix';
+
+        let words = [];
+        if (mode === 'article') {
+            words = shuffle(dictionary.filter(d => d.article !== null)).slice(0, 15);
+        } else if (mode === 'dictation') {
+            words = shuffle(dictionary).slice(0, 15);
+        } else if (mode === 'mixed') {
+            let arts = shuffle(dictionary.filter(d => d.article !== null)).slice(0, 8);
+            let dicts = shuffle(dictionary).slice(0, 7);
+            words = shuffle(arts.concat(dicts));
+        }
+        setupQueue(words);
+    }
+
+    function setupQueue(words) {
+        state.queue = shuffle([...words]);
+        state.currentIndex = 0;
+        state.score = 0;
+        state.mistakes = [];
+        state.isProcessing = false; 
+        
+        // Audio initialisieren, um Browser-Blockaden zu verhindern
+        let u = new SpeechSynthesisUtterance('');
+        u.volume = 0;
+        speechSynthesis.speak(u);
+
+        loadNextTurn();
+    }
+
+    function loadNextTurn() {
+        state.isProcessing = false; 
+
+        if (state.currentIndex >= state.queue.length) {
+            showResults();
+            return;
+        }
+
+        let currentWord = state.queue[state.currentIndex];
+        
+        let currentMode = state.mode;
+        if (currentMode === 'mixed') {
+            currentMode = (currentWord.article !== null && Math.random() > 0.5) ? 'article' : 'dictation';
+        }
+
+        if (currentMode === 'article') {
+            document.getElementById('prog-article').innerText = `Wort ${state.currentIndex + 1} / ${state.queue.length}`;
+            document.getElementById('word-article').innerText = currentWord.word;
+            nav('screen-game-article');
+        } else {
+            document.getElementById('prog-dict').innerText = `Wort ${state.currentIndex + 1} / ${state.queue.length}`;
+            document.getElementById('dict-input').value = "";
+            nav('screen-game-dictation');
+            setTimeout(() => {
+                playAudio();
+                document.getElementById('dict-input').focus();
+            }, 300);
+        }
+    }
+
+    /* ================= 5. EVALUATION LOGIC ================= */
+    function checkArticle(selected) {
+        if (state.isProcessing) return;
+        
+        let cw = state.queue[state.currentIndex];
+        let correct = cw.article;
+        let isCorrect = (selected === correct);
+        
+        // Das ist wichtig, damit das ganze Wort als Fehler angezeigt wird:
+        let givenText = `${selected} ${cw.word}`;
+        let correctText = `${correct} ${cw.word}`;
+
+        handleAnswer(isCorrect, givenText, correctText, cw);
+    }
+
+    function playAudio() {
+        let cw = state.queue[state.currentIndex];
+        let textToRead = cw.article ? `${cw.article} ${cw.word}` : cw.word;
+        
+        let utterance = new SpeechSynthesisUtterance(textToRead);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.8; 
+        speechSynthesis.speak(utterance);
+    }
+
+    function checkDictation() {
+        if (state.isProcessing) return;
+        
+        let cw = state.queue[state.currentIndex];
+        let target = cw.article ? `${cw.article} ${cw.word}` : cw.word;
+        let input = document.getElementById('dict-input').value.trim().replace(/\s+/g, ' ');
+        
+        if(input === "") return;
+
+        let isPerfect = (input === target);
+        let isSoftCorrect = (input.toLowerCase() === target.toLowerCase());
+        
+        handleAnswer(isPerfect, input, target, cw, isSoftCorrect);
+    }
+
+    document.getElementById('dict-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkDictation();
+    });
+
+    function handleAnswer(isCorrect, kidAns, correctAns, wordObj, softCorrect = false) {
+        state.isProcessing = true; 
+        
+        state.levelsStats[wordObj.level].t++;
+        
+        if (isCorrect) {
+            state.score++;
+            state.levelsStats[wordObj.level].c++;
+        } else {
+            state.mistakes.push({ word: wordObj.word, given: kidAns, correct: correctAns });
+        }
+
+        if (state.isTest) {
+            // Im globalen Testmodus direkt zum nächsten Wort
+            state.currentIndex++;
+            loadNextTurn();
+        } else {
+            // Im Lernmodus sofortiges Feedback
+            showFeedback(isCorrect, softCorrect, correctAns);
+        }
+    }
+
+    function showFeedback(isCorrect, softCorrect, correctAns) {
+        let overlay = document.getElementById('feedback-overlay');
+        let icon = document.getElementById('fb-icon');
+        let text = document.getElementById('fb-text');
+        
+        if (isCorrect) {
+            icon.innerText = "🌟";
+            text.innerText = "Richtig! Super gemacht!";
+            text.style.color = "#2E7D32";
+        } else if (softCorrect) {
+            icon.innerText = "📝";
+            text.innerText = "Fast! Achte auf die Groß- und Kleinschreibung.\nRichtig ist: " + correctAns;
+            text.style.color = "#E65100";
+        } else {
+            icon.innerText = "❌";
+            text.innerText = "Nicht ganz!\nRichtig ist: " + correctAns;
+            text.style.color = "#C62828";
+        }
+        
+        overlay.classList.add('active');
+    }
+
+    function nextTurn() {
+        let overlay = document.getElementById('feedback-overlay');
+        if (!overlay.classList.contains('active')) return; 
+        
+        overlay.classList.remove('active');
+        state.currentIndex++;
+        loadNextTurn();
+    }
+
+    function abortGame() {
+        if(confirm("Willst du wirklich abbrechen?")) {
+            if(state.letter === 'ALLE') nav('screen-home');
+            else nav('screen-options'); // Geht zurück zum Buchstaben-Menü!
+        }
+    }
+
+    /* ================= 6. RESULTS & STATS ================= */
+    function showResults() {
+        nav('screen-results');
+        let total = state.queue.length;
+        document.getElementById('res-score').innerText = `Du hast ${state.score} von ${total} richtig!`;
+        
+        let msg = document.getElementById('res-msg');
+        if(state.score === total) msg.innerHTML = "Perfekt! Du bist ein echter Profi! 🏆";
+        else if (state.score >= total * 0.7) msg.innerHTML = "Sehr gut gemacht! Fast alles richtig! 👍";
+        else msg.innerHTML = "Das war schwer, aber Übung macht den Meister! 💪";
+
+        let btnResult = document.getElementById('btn-result-menu');
+        // Zurück-Button-Logik: Zum Buchstaben-Menü, wenn in Buchstabe, sonst Startseite
+        if (state.letter === 'ALLE') {
+            btnResult.innerHTML = "🏠 Zurück zum Hauptmenü";
+            btnResult.onclick = () => nav('screen-home');
+        } else {
+            btnResult.innerHTML = `🔙 Zurück zu Buchstabe ${state.letter}`;
+            btnResult.onclick = () => nav('screen-options');
+        }
+
+        if (state.isTest && state.letter !== 'ALLE') {
+            let rec = 1;
+            let acc = {
+                1: state.levelsStats[1].t > 0 ? state.levelsStats[1].c / state.levelsStats[1].t : 0,
+                2: state.levelsStats[2].t > 0 ? state.levelsStats[2].c / state.levelsStats[2].t : 0,
+                3: state.levelsStats[3].t > 0 ? state.levelsStats[3].c / state.levelsStats[3].t : 0
+            };
+            if (acc[3] > 0.6) rec = 3;
+            else if (acc[2] > 0.6) rec = 2;
+            
+            msg.innerHTML += `<br><br><b>💡 Mein Tipp nach dem Test:</b> Wir empfehlen dir für diesen Buchstaben <b>Level ${rec}</b>.`;
+        }
+
+        let mContainer = document.getElementById('mistakes-container');
+        let mList = document.getElementById('mistakes-list');
+        mList.innerHTML = "";
+        
+        if (state.mistakes.length > 0) {
+            mContainer.style.display = "block";
+            state.mistakes.forEach(m => {
+                let li = document.createElement('li');
+                li.style.marginBottom = "15px";
+                li.innerHTML = `Statt <span class="wrong-ans">${m.given}</span> ➡️ <span class="correct-ans">${m.correct}</span>`;
+                mList.appendChild(li);
+            });
+        } else {
+            mContainer.style.display = "none";
+        }
+    }
+
+</script>
+</body>
+</html>
