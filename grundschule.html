@@ -69,7 +69,8 @@
         .card.test { border-color: #4ecdc4; }
         .card.training { border-color: #ffca28; }
         .card.words { border-color: #ab47bc; }
-        .card.words-advanced { border-color: #ff7043; } /* Neue Farbe für 3. & 4. Klasse */
+        .card.words-advanced { border-color: #ff7043; } /* Farbe für 3. & 4. Klasse */
+        .card.uhr { border-color: #42a5f5; } /* Neue Farbe für die Uhr */
 
         .emoji {
             font-size: 4rem;
@@ -117,6 +118,10 @@
         /* Button-Farbe für die 3. & 4. Klasse */
         .btn-words-advanced { background-color: #ff7043; }
         .btn-words-advanced:hover { background-color: #f4511e; }
+        
+        /* Button-Farbe für die Uhr */
+        .btn-uhr { background-color: #42a5f5; }
+        .btn-uhr:hover { background-color: #1e88e5; }
 
         /* Mobile responsiveness */
         @media (max-width: 768px) {
@@ -131,7 +136,7 @@
     <header>
         <h1>🌟 Hallo! Willkommen! 🌟</h1>
         <p class="intro-text">
-            Schön, dass du da bist! Hier kannst du spielerisch lesen lernen und neue Wörter entdecken. 
+            Schön, dass du da bist! Hier kannst du spielerisch lernen und Neues entdecken. 
             Klicke auf ein Abenteuer, um zu starten!
         </p>
     </header>
@@ -162,12 +167,20 @@
             <a href="https://yekoshy.github.io/German/grundwortschatz_1_2.html" class="btn btn-words">Wörter entdecken!</a>
         </div>
 
-        <!-- Project 4: Grundwortschatz 3 & 4 (Neu hinzugefügt) -->
+        <!-- Project 4: Grundwortschatz 3 & 4 -->
         <div class="card words-advanced">
             <div class="emoji">🚀</div>
             <h2>Grundwortschatz 3 & 4</h2>
             <p>Erweitere deinen Wortschatz für die 3. und 4. Klasse. Lerne neue, spannende Wörter kennen!</p>
             <a href="https://yekoshy.github.io/German/grundwortschatz_3_4.html" class="btn btn-words-advanced">Mehr Wörter!</a>
+        </div>
+
+        <!-- Project 5: UhrHilfer (Neu hinzugefügt) -->
+        <div class="card uhr">
+            <div class="emoji">⏰</div>
+            <h2>Uhrzeit lernen</h2>
+            <p>Wie spät ist es? Lerne spielerisch die Uhr lesen und werde zum echten Zeit-Experten!</p>
+            <a href="https://yekoshy.github.io/German/UhrHilfer.html" class="btn btn-uhr">Zeit entdecken!</a>
         </div>
 
     </div>
