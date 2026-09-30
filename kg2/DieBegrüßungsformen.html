@@ -94,12 +94,22 @@
         }
         .slide-img {
             font-size: 8rem;
-            margin: 20px 0;
+            margin: 10px 0;
             animation: bounce 2s infinite;
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
+        }
+        .slide-time {
+            font-size: 1.8rem;
+            color: #555;
+            background: white;
+            display: inline-block;
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 3px solid #add8e6;
+            margin-bottom: 20px;
         }
         .slide-text {
             font-size: 3.5rem;
@@ -152,6 +162,7 @@
         th, td {
             border: 3px solid #ffe4e1;
             padding: 15px;
+            vertical-align: middle;
         }
         th { background: #ffb6c1; color: white; }
         .play-btn {
@@ -189,6 +200,11 @@
             box-shadow: 0 8px 15px rgba(0,0,0,0.2);
             border-color: #ff69b4;
         }
+        .quiz-img-time {
+            font-size: 1.5rem;
+            color: #555;
+            margin-top: 10px;
+        }
         .mic-btn {
             font-size: 2.5rem;
             padding: 20px 40px;
@@ -200,6 +216,7 @@
             font-family: inherit;
             box-shadow: 0 6px #dc143c;
             margin-bottom: 20px;
+            transition: 0.3s;
         }
         .mic-btn:active {
             box-shadow: 0 0 #dc143c;
@@ -257,6 +274,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>Image & Time</th>
                     <th>Deutsch (German)</th>
                     <th>English</th>
                     <th>عربى (Arabic)</th>
@@ -271,7 +289,7 @@
     <div id="speaking" class="tab-content">
         <h2>What do you say? Click the mic and speak!</h2>
         <div id="speak-quiz-area">
-            <div id="speak-img" class="quiz-img" style="font-size: 10rem; cursor: default; background: transparent; border: none; box-shadow: none;"></div>
+            <div id="speak-img" class="quiz-img" style="font-size: 8rem; cursor: default; background: transparent; border: none; box-shadow: none;"></div>
             <br>
             <button class="mic-btn" id="mic-btn" onclick="startRecording()">🎤 Start Speaking</button>
             <p id="speak-feedback" class="feedback"></p>
@@ -299,14 +317,14 @@
     </div>
 
     <script>
-        // --- DATA WITH 6 SENTENCES ---
+        // --- DATA WITH 6 SENTENCES AND TIME RANGES ---
         const data = [
-            { id: 1, de: "Guten Morgen", en: "Good morning", ar: "صَبَاحُ الْخَيْرِ", img: "🌅" },
-            { id: 2, de: "Guten Tag", en: "Good day", ar: "طَابَ يَوْمُكَ", img: "☀️" },
-            { id: 3, de: "Guten Abend", en: "Good evening", ar: "مَسَاءُ الْخَيْرِ", img: "🌇" },
-            { id: 4, de: "Gute Nacht", en: "Good night", ar: "تُصْبِحُ عَلَى خَيْرٍ", img: "🌙" },
-            { id: 5, de: "Was sagst du?", en: "What do you say?", ar: "مَاذَا تَقُولُ؟", img: "🗣️" },
-            { id: 6, de: "Was ist das?", en: "What is that?", ar: "مَا هَذَا؟", img: "❓" }
+            { id: 1, de: "Guten Morgen", en: "Good morning", ar: "صَبَاحُ الْخَيْرِ", img: "🌅", time: "06:00 - 12:00" },
+            { id: 2, de: "Guten Tag", en: "Good day", ar: "طَابَ يَوْمُكَ", img: "☀️", time: "12:00 - 18:00" },
+            { id: 3, de: "Guten Abend", en: "Good evening", ar: "مَسَاءُ الْخَيْرِ", img: "🌇", time: "18:00 - 22:00" },
+            { id: 4, de: "Gute Nacht", en: "Good night", ar: "تُصْبِحُ عَلَى خَيْرٍ", img: "🌙", time: "22:00 - 06:00" },
+            { id: 5, de: "Was sagst du?", en: "What do you say?", ar: "مَاذَا تَقُولُ؟", img: "🗣️", time: "Anytime" },
+            { id: 6, de: "Was ist das?", en: "What is that?", ar: "مَا هَذَا؟", img: "❓", time: "Anytime" }
         ];
 
         // --- TAB MANAGEMENT ---
@@ -323,6 +341,7 @@
 
         // --- SPEECH SYNTHESIS (READING ALOUD) ---
         function speakText(text, lang) {
+            window.speechSynthesis.cancel(); // Stop any currently playing audio
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = lang;
             utterance.rate = 0.9; // Slightly slower for kids
@@ -330,6 +349,7 @@
         }
 
         function playAll(de, en, ar) {
+            window.speechSynthesis.cancel();
             speakText(de, 'de-DE');
             speakText(en, 'en-US');
             speakText(ar, 'ar-SA');
@@ -344,8 +364,13 @@
             data.forEach((item, index) => {
                 const slide = document.createElement('div');
                 slide.className = 'slide' + (index === 0 ? ' active' : '');
+                
+                // Construct Slide HTML including the Time if it's not "Anytime"
+                let timeHtml = item.time !== 'Anytime' ? `<div class="slide-time">⏰ ${item.time}</div>` : '';
+                
                 slide.innerHTML = `
                     <div class="slide-img">${item.img}</div>
+                    ${timeHtml}
                     <div class="slide-text">${item.de}</div>
                     <button class="nav-btn" style="background:#32cd32; border-color:#228b22; box-shadow:0 4px #006400;" onclick="speakText('${item.de}', 'de-DE')">🔊 Read Aloud</button>
                 `;
@@ -353,12 +378,15 @@
                 
                 const dot = document.createElement('div');
                 dot.className = 'dot' + (index === 0 ? ' active' : '');
-                dot.onclick = () => showSlide(index);
+                dot.onclick = () => showSlide(index, true);
                 dotsContainer.appendChild(dot);
             });
+            
+            // Set up initial slide quietly
+            showSlide(0, false);
         }
 
-        function showSlide(index) {
+        function showSlide(index, playAudio = false) {
             if (index >= data.length) currentSlide = 0;
             else if (index < 0) currentSlide = data.length - 1;
             else currentSlide = index;
@@ -369,16 +397,28 @@
             document.querySelectorAll('.dot').forEach((el, i) => {
                 el.classList.toggle('active', i === currentSlide);
             });
+
+            // Auto-read on moving to the next slide
+            if (playAudio) {
+                speakText(data[currentSlide].de, 'de-DE');
+            }
         }
-        function nextSlide() { showSlide(currentSlide + 1); }
-        function prevSlide() { showSlide(currentSlide - 1); }
+        
+        function nextSlide() { showSlide(currentSlide + 1, true); }
+        function prevSlide() { showSlide(currentSlide - 1, true); }
 
         // --- 2. DICTIONARY TAB LOGIC ---
         function initDictionary() {
             const tbody = document.getElementById('dict-tbody');
             data.forEach(item => {
                 const tr = document.createElement('tr');
+                let timeHtml = item.time !== 'Anytime' ? `<div style="font-size: 1.2rem; color: #555; margin-top:5px;">⏰ ${item.time}</div>` : '';
+                
                 tr.innerHTML = `
+                    <td>
+                        <div style="font-size: 3rem">${item.img}</div>
+                        ${timeHtml}
+                    </td>
                     <td><strong>${item.de}</strong></td>
                     <td>${item.en}</td>
                     <td class="arabic-text" dir="rtl">${item.ar}</td>
@@ -444,8 +484,18 @@
         }
 
         function renderSpeakQuestion() {
-            document.getElementById('speak-img').innerText = speakQuizData[speakIndex].img;
+            const current = speakQuizData[speakIndex];
+            let timeHtml = current.time !== 'Anytime' ? `<div class="quiz-img-time">⏰ ${current.time}</div>` : '';
+            
+            document.getElementById('speak-img').innerHTML = `
+                <div>${current.img}</div>
+                ${timeHtml}
+            `;
             document.getElementById('speak-feedback').innerText = '';
+            
+            // Re-enable and show the mic button for the new question
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.style.display = 'inline-block';
         }
 
         function startRecording() {
@@ -459,6 +509,10 @@
         function checkSpeakAnswer(transcript) {
             const current = speakQuizData[speakIndex];
             const feedback = document.getElementById('speak-feedback');
+            const micBtn = document.getElementById('mic-btn');
+            
+            // HIDE the mic button while checking the answer & moving to the next
+            micBtn.style.display = 'none';
             
             const normalize = (str) => str.toLowerCase().replace(/[.,!?¿¡]/g, "").replace(/\s+/g, ' ').trim();
             const isCorrect = normalize(transcript) === normalize(current.de);
@@ -473,6 +527,7 @@
                 feedback.style.color = "#ff4500";
             }
             
+            // Move to next question after 4 seconds
             setTimeout(() => {
                 speakIndex++;
                 if (speakIndex < speakQuizData.length) renderSpeakQuestion();
@@ -510,11 +565,20 @@
             const mixedOptions = [...data].sort(() => Math.random() - 0.5);
             
             mixedOptions.forEach(item => {
-                const span = document.createElement('span');
-                span.className = 'quiz-img';
-                span.innerText = item.img;
-                span.onclick = () => checkMatchAnswer(item.id, span);
-                optionsDiv.appendChild(span);
+                const div = document.createElement('div');
+                div.className = 'quiz-img';
+                
+                let timeHtml = item.time !== 'Anytime' ? `<div class="quiz-img-time">⏰ ${item.time}</div>` : '';
+                div.innerHTML = `
+                    <div>${item.img}</div>
+                    ${timeHtml}
+                `;
+                
+                // Store the text to identify it later when clicked
+                div.dataset.imgText = item.img;
+                
+                div.onclick = () => checkMatchAnswer(item.id, div);
+                optionsDiv.appendChild(div);
             });
             
             setTimeout(playCurrentMatchAudio, 500);
@@ -547,7 +611,7 @@
                 
                 // Highlight choices
                 allOptions.forEach(el => {
-                    if (el.innerText === current.img) {
+                    if (el.dataset.imgText === current.img) {
                         el.style.backgroundColor = "#98fb98";
                         el.style.borderColor = "#32cd32";
                         el.style.transform = "scale(1.1)";
