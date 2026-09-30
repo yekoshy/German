@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 German Greetings for Kids 🌟</title>
+    <!-- Confetti Library for Festive Celebrations -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* Colorful & Light Theme CSS */
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@600;800&display=swap');
+
+        body {
+            font-family: 'Nunito', 'Comic Sans MS', sans-serif;
+            background-color: #f0f8ff; /* Light pastel blue */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        /* Tabs Styling */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.3s;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .tab-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .tab-btn:nth-child(1) { background-color: #ffb6c1; } /* Pastel Pink */
+        .tab-btn:nth-child(2) { background-color: #98fb98; } /* Pastel Green */
+        .tab-btn:nth-child(3) { background-color: #add8e6; } /* Pastel Blue */
+        .tab-btn:nth-child(4) { background-color: #fffacd; } /* Pastel Yellow */
+
+        .tab-btn.active:nth-child(1) { background-color: #ff1493; color: white; }
+        .tab-btn.active:nth-child(2) { background-color: #32cd32; color: white; }
+        .tab-btn.active:nth-child(3) { background-color: #1e90ff; color: white; }
+        .tab-btn.active:nth-child(4) { background-color: #ff8c00; color: white; }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Learn Tab */
+        .slide {
+            display: none;
+            padding: 40px;
+            border-radius: 30px;
+            background: #fff0f5;
+            border: 5px dashed #ffb6c1;
+        }
+        .slide.active {
+            display: block;
+        }
+        .slide-img {
+            font-size: 8rem;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-text {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ff69b4;
+            margin-bottom: 20px;
+        }
+        
+        /* Navigation & Buttons */
+        .nav-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .nav-btn {
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            background: #ffa07a;
+            color: white;
+            border: 3px solid #ff7f50;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px #ff4500;
+            font-weight: bold;
+            font-family: inherit;
+        }
+        .nav-btn:active {
+            box-shadow: 0 0 #ff4500;
+            transform: translateY(4px);
+        }
+        .dots { display: flex; gap: 10px; }
+        .dot {
+            width: 25px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .dot.active { background: #ff1493; transform: scale(1.2); }
+
+        /* Dictionary */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.8rem;
+        }
+        th, td {
+            border: 3px solid #ffe4e1;
+            padding: 15px;
+        }
+        th { background: #ffb6c1; color: white; }
+        .play-btn {
+            font-size: 1.5rem;
+            margin: 3px;
+            padding: 8px 12px;
+            background: #98fb98;
+            border: 2px solid #32cd32;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .play-btn:hover { background: #32cd32; color: white; }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 2.2rem;
+            direction: rtl;
+        }
+
+        /* Quizzes */
+        .quiz-img {
+            font-size: 6rem;
+            margin: 15px;
+            padding: 20px;
+            background: white;
+            border: 5px solid #add8e6;
+            border-radius: 20px;
+            display: inline-block;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .quiz-img:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            border-color: #ff69b4;
+        }
+        .mic-btn {
+            font-size: 2.5rem;
+            padding: 20px 40px;
+            background: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 6px #dc143c;
+            margin-bottom: 20px;
+        }
+        .mic-btn:active {
+            box-shadow: 0 0 #dc143c;
+            transform: translateY(6px);
+        }
+        .mic-btn.recording {
+            background: #dc143c;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .feedback {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 50px;
+        }
+        .report-card {
+            font-size: 2.5rem;
+            color: #20b2aa;
+            padding: 40px;
+            border: 5px dotted #20b2aa;
+            border-radius: 30px;
+            background: #e0ffff;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h1>🌟 German Greetings Fun! 🌟</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('learn')">📖 Learn</button>
+        <button class="tab-btn" onclick="openTab('dict')">📚 Dictionary</button>
+        <button class="tab-btn" onclick="openTab('speaking')">🎙️ Speaking Quiz</button>
+        <button class="tab-btn" onclick="openTab('matching')">🧩 Matching Quiz</button>
+    </div>
+
+    <!-- 1. Learn Tab -->
+    <div id="learn" class="tab-content active">
+        <div id="slides-container"></div>
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="prevSlide()">⬅️ Back</button>
+            <div id="dots-container" class="dots"></div>
+            <button class="nav-btn" onclick="nextSlide()">Next ➡️</button>
+        </div>
+    </div>
+
+    <!-- 2. Dictionary Tab -->
+    <div id="dict" class="tab-content">
+        <table>
+            <thead>
+                <tr>
+                    <th>Deutsch (German)</th>
+                    <th>English</th>
+                    <th>عربى (Arabic)</th>
+                    <th>Play Audio 🔊</th>
+                </tr>
+            </thead>
+            <tbody id="dict-tbody"></tbody>
+        </table>
+    </div>
+
+    <!-- 3. Speaking Quiz Tab -->
+    <div id="speaking" class="tab-content">
+        <h2>What do you say? Click the mic and speak!</h2>
+        <div id="speak-quiz-area">
+            <div id="speak-img" class="quiz-img" style="font-size: 10rem; cursor: default; background: transparent; border: none; box-shadow: none;"></div>
+            <br>
+            <button class="mic-btn" id="mic-btn" onclick="startRecording()">🎤 Start Speaking</button>
+            <p id="speak-feedback" class="feedback"></p>
+        </div>
+        <div id="speak-report" class="hidden report-card">
+            <h3>Quiz Complete! 🎈</h3>
+            <p id="speak-score"></p>
+            <button class="nav-btn" onclick="startSpeakingQuiz()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <!-- 4. Matching Quiz Tab -->
+    <div id="matching" class="tab-content">
+        <h2>Listen and choose the right picture!</h2>
+        <div id="match-quiz-area">
+            <button class="nav-btn" style="background:#1e90ff; border-color:#0000cd; box-shadow:0 4px #00008b;" onclick="playCurrentMatchAudio()">🔊 Hear the Sentence Again</button>
+            <div id="match-options" style="margin-top: 30px;"></div>
+            <p id="match-feedback" class="feedback"></p>
+        </div>
+        <div id="match-report" class="hidden report-card">
+            <h3>Quiz Complete! 🎈</h3>
+            <p id="match-score"></p>
+            <button class="nav-btn" onclick="startMatchingQuiz()">Play Again 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA WITH 6 SENTENCES ---
+        const data = [
+            { id: 1, de: "Guten Morgen", en: "Good morning", ar: "صَبَاحُ الْخَيْرِ", img: "🌅" },
+            { id: 2, de: "Guten Tag", en: "Good day", ar: "طَابَ يَوْمُكَ", img: "☀️" },
+            { id: 3, de: "Guten Abend", en: "Good evening", ar: "مَسَاءُ الْخَيْرِ", img: "🌇" },
+            { id: 4, de: "Gute Nacht", en: "Good night", ar: "تُصْبِحُ عَلَى خَيْرٍ", img: "🌙" },
+            { id: 5, de: "Was sagst du?", en: "What do you say?", ar: "مَاذَا تَقُولُ؟", img: "🗣️" },
+            { id: 6, de: "Was ist das?", en: "What is that?", ar: "مَا هَذَا؟", img: "❓" }
+        ];
+
+        // --- TAB MANAGEMENT ---
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if (tabId === 'matching') startMatchingQuiz();
+            if (tabId === 'speaking') startSpeakingQuiz();
+        }
+
+        // --- SPEECH SYNTHESIS (READING ALOUD) ---
+        function speakText(text, lang) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9; // Slightly slower for kids
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function playAll(de, en, ar) {
+            speakText(de, 'de-DE');
+            speakText(en, 'en-US');
+            speakText(ar, 'ar-SA');
+        }
+
+        // --- 1. LEARN TAB LOGIC ---
+        let currentSlide = 0;
+        function initLearn() {
+            const container = document.getElementById('slides-container');
+            const dotsContainer = document.getElementById('dots-container');
+            
+            data.forEach((item, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide' + (index === 0 ? ' active' : '');
+                slide.innerHTML = `
+                    <div class="slide-img">${item.img}</div>
+                    <div class="slide-text">${item.de}</div>
+                    <button class="nav-btn" style="background:#32cd32; border-color:#228b22; box-shadow:0 4px #006400;" onclick="speakText('${item.de}', 'de-DE')">🔊 Read Aloud</button>
+                `;
+                container.appendChild(slide);
+                
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (index === 0 ? ' active' : '');
+                dot.onclick = () => showSlide(index);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function showSlide(index) {
+            if (index >= data.length) currentSlide = 0;
+            else if (index < 0) currentSlide = data.length - 1;
+            else currentSlide = index;
+            
+            document.querySelectorAll('.slide').forEach((el, i) => {
+                el.classList.toggle('active', i === currentSlide);
+            });
+            document.querySelectorAll('.dot').forEach((el, i) => {
+                el.classList.toggle('active', i === currentSlide);
+            });
+        }
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+
+        // --- 2. DICTIONARY TAB LOGIC ---
+        function initDictionary() {
+            const tbody = document.getElementById('dict-tbody');
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.de}</strong></td>
+                    <td>${item.en}</td>
+                    <td class="arabic-text" dir="rtl">${item.ar}</td>
+                    <td>
+                        <button class="play-btn" title="German" onclick="speakText('${item.de}', 'de-DE')">🇩🇪</button>
+                        <button class="play-btn" title="English" onclick="speakText('${item.en}', 'en-US')">🇬🇧</button>
+                        <button class="play-btn" title="Arabic" onclick="speakText('${item.ar}', 'ar-SA')">🇸🇦</button>
+                        <button class="play-btn" title="Play All" style="background:#ffb6c1; border-color:#ff69b4;" onclick="playAll('${item.de}', '${item.en}', '${item.ar}')">All 🔊</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- 3. SPEAKING QUIZ LOGIC ---
+        let speakQuizData = [];
+        let speakIndex = 0;
+        let speakScore = 0;
+        let recognition;
+
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'de-DE';
+                recognition.interimResults = false;
+                
+                recognition.onstart = () => {
+                    const btn = document.getElementById('mic-btn');
+                    btn.classList.add('recording');
+                    btn.innerText = '🎙️ Listening...';
+                };
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    checkSpeakAnswer(transcript);
+                };
+                
+                recognition.onerror = (event) => {
+                    document.getElementById('speak-feedback').innerText = `⚠️ Error: Make sure microphone permissions are enabled. (${event.error})`;
+                    document.getElementById('speak-feedback').style.color = "red";
+                    resetMicButton();
+                };
+                
+                recognition.onend = () => resetMicButton();
+            }
+        }
+
+        function resetMicButton() {
+            const btn = document.getElementById('mic-btn');
+            btn.classList.remove('recording');
+            btn.innerText = '🎤 Start Speaking';
+        }
+
+        function startSpeakingQuiz() {
+            speakQuizData = [...data].sort(() => Math.random() - 0.5);
+            speakIndex = 0;
+            speakScore = 0;
+            document.getElementById('speak-report').classList.add('hidden');
+            document.getElementById('speak-quiz-area').classList.remove('hidden');
+            if (!recognition) initSpeechRecognition();
+            renderSpeakQuestion();
+        }
+
+        function renderSpeakQuestion() {
+            document.getElementById('speak-img').innerText = speakQuizData[speakIndex].img;
+            document.getElementById('speak-feedback').innerText = '';
+        }
+
+        function startRecording() {
+            if (recognition) recognition.start();
+            else {
+                document.getElementById('speak-feedback').innerText = "⚠️ Speech recognition is not supported in this browser. Try Google Chrome!";
+                document.getElementById('speak-feedback').style.color = "red";
+            }
+        }
+
+        function checkSpeakAnswer(transcript) {
+            const current = speakQuizData[speakIndex];
+            const feedback = document.getElementById('speak-feedback');
+            
+            const normalize = (str) => str.toLowerCase().replace(/[.,!?¿¡]/g, "").replace(/\s+/g, ' ').trim();
+            const isCorrect = normalize(transcript) === normalize(current.de);
+            
+            if (isCorrect) {
+                feedback.innerHTML = `You said: "${transcript}". <br><strong>Correct! 🎉</strong>`;
+                feedback.style.color = "#32cd32";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                speakScore++;
+            } else {
+                feedback.innerHTML = `You said: "${transcript}". <br><strong>Oops!</strong> The correct sentence is "<strong>${current.de}</strong>"`;
+                feedback.style.color = "#ff4500";
+            }
+            
+            setTimeout(() => {
+                speakIndex++;
+                if (speakIndex < speakQuizData.length) renderSpeakQuestion();
+                else showSpeakReport();
+            }, 4000);
+        }
+
+        function showSpeakReport() {
+            document.getElementById('speak-quiz-area').classList.add('hidden');
+            document.getElementById('speak-report').classList.remove('hidden');
+            document.getElementById('speak-score').innerText = `You scored ${speakScore} out of ${speakQuizData.length}!`;
+        }
+
+        // --- 4. MATCHING QUIZ LOGIC ---
+        let matchQuizData = [];
+        let matchIndex = 0;
+        let matchScore = 0;
+
+        function startMatchingQuiz() {
+            matchQuizData = [...data].sort(() => Math.random() - 0.5);
+            matchIndex = 0;
+            matchScore = 0;
+            document.getElementById('match-report').classList.add('hidden');
+            document.getElementById('match-quiz-area').classList.remove('hidden');
+            renderMatchQuestion();
+        }
+
+        function renderMatchQuestion() {
+            const current = matchQuizData[matchIndex];
+            const optionsDiv = document.getElementById('match-options');
+            optionsDiv.innerHTML = '';
+            document.getElementById('match-feedback').innerText = '';
+            
+            // Randomize options order on screen
+            const mixedOptions = [...data].sort(() => Math.random() - 0.5);
+            
+            mixedOptions.forEach(item => {
+                const span = document.createElement('span');
+                span.className = 'quiz-img';
+                span.innerText = item.img;
+                span.onclick = () => checkMatchAnswer(item.id, span);
+                optionsDiv.appendChild(span);
+            });
+            
+            setTimeout(playCurrentMatchAudio, 500);
+        }
+
+        function playCurrentMatchAudio() {
+            if(matchIndex < matchQuizData.length) {
+                speakText(matchQuizData[matchIndex].de, 'de-DE');
+            }
+        }
+
+        function checkMatchAnswer(id, clickedElement) {
+            const current = matchQuizData[matchIndex];
+            const feedback = document.getElementById('match-feedback');
+            const allOptions = document.querySelectorAll('#match-options .quiz-img');
+            
+            // Disable further clicks
+            allOptions.forEach(el => el.style.pointerEvents = 'none');
+            
+            if (id === current.id) {
+                feedback.innerText = "Correct! 🎉 Excellent job!";
+                feedback.style.color = "#32cd32";
+                clickedElement.style.backgroundColor = "#98fb98";
+                clickedElement.style.borderColor = "#32cd32";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                matchScore++;
+            } else {
+                feedback.innerHTML = `<strong>Wrong!</strong> The correct picture was <strong>${current.img}</strong> (${current.de})`;
+                feedback.style.color = "#ff4500";
+                
+                // Highlight choices
+                allOptions.forEach(el => {
+                    if (el.innerText === current.img) {
+                        el.style.backgroundColor = "#98fb98";
+                        el.style.borderColor = "#32cd32";
+                        el.style.transform = "scale(1.1)";
+                    }
+                    if (el === clickedElement) {
+                        el.style.backgroundColor = "#ffb6c1";
+                        el.style.borderColor = "#dc143c";
+                    }
+                });
+            }
+            
+            setTimeout(() => {
+                matchIndex++;
+                if (matchIndex < matchQuizData.length) renderMatchQuestion();
+                else showMatchReport();
+            }, 3500);
+        }
+
+        function showMatchReport() {
+            document.getElementById('match-quiz-area').classList.add('hidden');
+            document.getElementById('match-report').classList.remove('hidden');
+            document.getElementById('match-score').innerText = `You scored ${matchScore} out of ${matchQuizData.length}!`;
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            initLearn();
+            initDictionary();
+        };
+
+    </script>
+</body>
+</html>
