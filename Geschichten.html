@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lese-Trainer 2. Klasse</title>
+    <style>
+        /* --- THEME & GRUNDLAGEN --- */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap');
+
+        :root {
+            --bg-color: #f0f8ff;
+            --primary: #4CAF50;
+            --secondary: #2196F3;
+            --accent: #FF9800;
+            --syl1: #000080; /* Dunkelblau für 1. Silbe */
+            --syl2: #b22222; /* Dunkelrot für 2. Silbe */
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Quicksand', 'Comic Sans MS', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 { color: var(--secondary); font-size: 2.5rem; }
+        
+        /* --- BUTTONS --- */
+        button {
+            font-family: inherit;
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+        button:hover { transform: scale(1.05); }
+        .btn-story { background-color: white; color: var(--secondary); border: 3px solid var(--secondary); display: block; margin: 15px auto; width: 80%; max-width: 400px; }
+        .btn-start { background-color: var(--primary); color: white; }
+        .btn-stop { background-color: #f44336; color: white; }
+        .btn-back { background-color: #9e9e9e; color: white; }
+        
+        /* --- SEITEN (PAGES) --- */
+        .page { display: none; max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .page.active { display: block; }
+
+        /* --- LESE-BEREICH --- */
+        #story-title { color: var(--accent); font-size: 2.2rem; }
+        #timer { font-size: 1.5rem; color: #666; margin-bottom: 20px; font-weight: bold; }
+        
+        .story-line {
+            font-size: 28px;
+            line-height: 2.5;
+            margin: 15px 0;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+
+        /* Silben & Wörter */
+        .word { display: inline-block; margin-right: 10px; padding: 2px 5px; border-radius: 8px; transition: all 0.3s; cursor: pointer; }
+        .syl-0 { color: var(--syl1); }
+        .syl-1 { color: var(--syl2); }
+        .syl-2 { color: var(--syl1); } /* Falls 3 Silben */
+        
+        /* Hervorhebungen */
+        .word.active { background-color: #fff59d; border-bottom: 4px solid var(--accent); transform: scale(1.1); }
+        .word.read { background-color: #c8e6c9; opacity: 0.8; }
+        .word.wrong { background-color: #ffcdd2; color: #c62828 !important; text-decoration: underline; }
+
+        /* --- WÖRTERBUCH --- */
+        #dictionary {
+            margin-top: 30px;
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+        }
+        #dictionary h3 { margin-top: 0; color: var(--secondary); }
+        .dict-entry { margin-bottom: 10px; font-size: 1.2rem; }
+        .dict-word { font-weight: bold; color: var(--syl1); }
+
+        /* --- ERGEBNISSE --- */
+        #score-display { font-size: 3rem; margin: 20px 0; }
+        .stars { font-size: 4rem; color: #FFD700; }
+        #audio-playback { margin-top: 20px; width: 100%; }
+
+        /* Info-Box */
+        .info { background: #fff3cd; color: #856404; padding: 10px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1rem; }
+
+    </style>
+</head>
+<body>
+
+    <!-- HAUPTMENÜ -->
+    <div id="menu-page" class="page active">
+        <h1>🎈 Lese-Trainer 🎈</h1>
+        <p>Wähle eine Geschichte aus und zeige, wie toll du lesen kannst!</p>
+        <div id="story-buttons"></div>
+    </div>
+
+    <!-- LESE-SEITE -->
+    <div id="reader-page" class="page">
+        <h2 id="story-title">Titel</h2>
+        <div class="info">Tipp: Wenn ein Wort falsch erkannt wird, kannst du einfach auf das nächste Wort klicken, um weiterzumachen!</div>
+        <div id="timer">⏱️ Zeit: <span id="time">0</span> Sekunden</div>
+        
+        <div id="text-container"></div>
+        
+        <div style="margin-top: 30px;">
+            <button id="btn-start" class="btn-start">🎤 Starten</button>
+            <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
+            <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
+        </div>
+
+        <div id="dictionary">
+            <h3>📖 Wörterbuch (Schwere Wörter)</h3>
+            <div id="dict-content"></div>
+        </div>
+    </div>
+
+    <!-- ERGEBNIS-SEITE -->
+    <div id="result-page" class="page">
+        <h1>Super gemacht! 🎉</h1>
+        <div id="score-display"></div>
+        <div id="stars-display" class="stars"></div>
+        <p style="font-size: 1.5rem;">Du hast <b id="result-time">0</b> Sekunden gebraucht.</p>
+        
+        <h3>Höre dir deine Lesung an:</h3>
+        <audio id="audio-playback" controls></audio>
+        
+        <br><br>
+        <button class="btn-start" onclick="showPage('menu-page')">🏠 Zurück zum Menü</button>
+    </div>
+
+    <script>
+        // --- DATEN DER GESCHICHTEN (Silben mit Bindestrich markiert) ---
+        const stories = [
+            {
+                id: 1,
+                title: "Lottas große Reise 🐌",
+                words: 85,
+                lines: [
+                    "Lot-ta ist ei-ne Schne-cke.",
+                    "Lot-ta will ei-ne Rei-se ma-chen.",
+                    "Lang-sam kriecht sie los.",
+                    "Hil-fe! Da kommt ein I-gel.",
+                    "I-gel fres-sen Schne-cken.",
+                    "Lot-ta kriecht in ihr Haus.",
+                    "Bald ist der I-gel weg.",
+                    "Da kriecht Lot-ta wei-ter.",
+                    "Lot-ta hat gro-ßen Hun-ger.",
+                    "Lot-ta macht ei-ne Pau-se.",
+                    "Sie frisst ein paar Blät-ter.",
+                    "Dann kriecht Lot-ta wei-ter.",
+                    "Schon bald wird es dun-kel.",
+                    "Lot-ta kriecht in ihr Haus.",
+                    "Mor-gen geht die Rei-se wei-ter.",
+                    "Am an-de-ren Tag denkt Lot-ta:",
+                    "Das war ei-ne schö-ne Rei-se.",
+                    "Dann kriecht sie nach Hau-se."
+                ],
+                dict: {
+                    "Schnecke": "Ein kleines Tier, das sehr langsam ist und sein Haus auf dem Rücken trägt.",
+                    "Igel": "Ein kleines Tier mit vielen spitzen Stacheln auf dem Rücken."
+                }
+            },
+            {
+                id: 2,
+                title: "Mimi und Hund Bello 🐶",
+                words: 60,
+                lines: [
+                    "Bel-lo jagt ger-ne Mäu-se.",
+                    "Er sieht ein Mau-se-loch.",
+                    "Da sitzt Mi-mi, die Maus.",
+                    "Sie schaut aus dem Loch.",
+                    "Bel-lo springt schnell hin.",
+                    "Schwups, Mi-mi ist weg.",
+                    "Bel-lo wühlt und scharrt.",
+                    "Das Loch wird grö-ßer.",
+                    "Bel-lo gräbt wie wild wei-ter.",
+                    "A-ber er fin-det Mi-mi nicht.",
+                    "Oh! Da ist ja noch ein Loch.",
+                    "Mi-mi schaut raus und lacht."
+                ],
+                dict: {
+                    "scharrt": "Mit den Pfoten über die Erde kratzen.",
+                    "wühlt": "Die Erde umgraben, um etwas zu finden."
+                }
+            },
+            {
+                id: 3,
+                title: "Bello und der Igel 🦔",
+                words: 60,
+                lines: [
+                    "Bel-lo ist ein jun-ger Hund.",
+                    "Bel-lo ist ein Jagd-hund.",
+                    "Im Gar-ten sitzt ein I-gel.",
+                    "Der I-gel frisst ei-nen Ap-fel.",
+                    "Da sieht Bel-lo den I-gel.",
+                    "Er bellt und läuft hin.",
+                    "Der I-gel rollt sich ein.",
+                    "Al-le Sta-cheln ste-hen hoch.",
+                    "Bel-lo springt und beißt zu.",
+                    "„A-uhh!“ Bel-lo jault laut auf.",
+                    "Sei-ne Schnau-ze blu-tet.",
+                    "Der I-gel läuft schnell weg."
+                ],
+                dict: {
+                    "Jagdhund": "Ein Hund, der Menschen dabei hilft, andere Tiere zu fangen.",
+                    "jault": "Laut und weinerlich bellen, weil etwas wehtut."
+                }
+            },
+            {
+                id: 4,
+                title: "Frosch und Storch 🐸",
+                words: 81,
+                lines: [
+                    "Frosch Fri-do-lin saß am Teich.",
+                    "Er öff-ne-te sein gro-ßes Maul",
+                    "und rief: „Quak, quak, quak!“",
+                    "Das hör-te auch Storch Stelz-fuß.",
+                    "Er kam nä-her und im-mer nä-her.",
+                    "Er klap-per-te: „Klapp-schnapp.“",
+                    "Das hör-te auch Frosch Fri-do-lin.",
+                    "Er frag-te: „Was suchst du hier?",
+                    "Was bist denn du für ein Tier?“",
+                    "Stelz-fuß sag-te: „Ich su-che Frö-sche.",
+                    "Ich ha-be sie zum Fres-sen ger-ne!",
+                    "Klapp-schnapp, klapp-schnapp.“",
+                    "Fri-do-lin be-kam ei-nen Schreck.",
+                    "Er rief: „Ein Storch! Quak, quak!“",
+                    "Er sprang in den Teich und war weg!"
+                ],
+                dict: {
+                    "Storch": "Ein großer weißer Vogel mit langen, dünnen Beinen und einem langen Schnabel.",
+                    "klapperte": "Schnelle Geräusche machen, indem man den Schnabel auf und zu klappt.",
+                    "Schreck": "Plötzliche Angst, wenn man sich erschrickt."
+                }
+            }
+        ];
+
+        // --- VARIABLEN ---
+        let currentStory = null;
+        let wordElements = [];
+        let currentWordIndex = 0;
+        
+        // Timer & Audio
+        let timerInterval;
+        let secondsElapsed = 0;
+        
+        let recognition;
+        let mediaRecorder;
+        let audioChunks = [];
+
+        // --- INITIALISIERUNG MENÜ ---
+        const menuContainer = document.getElementById('story-buttons');
+        stories.forEach(story => {
+            let btn = document.createElement('button');
+            btn.className = 'btn-story';
+            btn.innerText = story.title;
+            btn.onclick = () => loadStory(story);
+            menuContainer.appendChild(btn);
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            stopReading(); // Sicherheitsstop
+        }
+
+        // --- GESCHICHTE LADEN UND RENDERN ---
+        function loadStory(story) {
+            currentStory = story;
+            document.getElementById('story-title').innerText = story.title;
+            
+            const container = document.getElementById('text-container');
+            container.innerHTML = '';
+            wordElements = [];
+            let globalWordIndex = 0;
+
+            // Text Rendern
+            story.lines.forEach(line => {
+                let lineDiv = document.createElement('div');
+                lineDiv.className = 'story-line';
+                
+                // Teile Zeile in Wörter (behält Satzzeichen für Anzeige, separiert Silben)
+                let words = line.split(' ');
+                words.forEach(wordStr => {
+                    let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); // Für Prüfung
+                    let syllables = wordStr.split('-');
+                    
+                    let wordSpan = document.createElement('span');
+                    wordSpan.className = 'word';
+                    wordSpan.dataset.index = globalWordIndex;
+                    wordSpan.dataset.clean = cleanWord.replace(/-/g, '').toLowerCase();
+                    
+                    // Silben färben
+                    syllables.forEach((syl, i) => {
+                        let isPunctuation = /[.,!?:„“"']/.test(syl);
+                        if(isPunctuation && syl.length === 1) {
+                            // Reines Satzzeichen
+                            let sylSpan = document.createElement('span');
+                            sylSpan.innerText = syl;
+                            sylSpan.style.color = 'var(--text)';
+                            wordSpan.appendChild(sylSpan);
+                        } else {
+                            // Silbe
+                            let sylSpan = document.createElement('span');
+                            sylSpan.className = `syl-${i % 2}`;
+                            
+                            // Sonderfall: Satzzeichen an der Silbe hängend (z.B. "Schne-cke.")
+                            let textPart = syl.replace(/[.,!?:„“"']/g, '');
+                            let puncPart = syl.match(/[.,!?:„“"']/g);
+                            
+                            if (syl.startsWith('„')) {
+                                wordSpan.innerHTML += `<span style="color:var(--text)">„</span>`;
+                            }
+
+                            sylSpan.innerText = textPart;
+                            wordSpan.appendChild(sylSpan);
+
+                            if (puncPart && !syl.startsWith('„')) {
+                                wordSpan.innerHTML += `<span style="color:var(--text)">${puncPart.join('')}</span>`;
+                            }
+                        }
+                    });
+
+                    // Manuelles Weiterschalten erlauben
+                    wordSpan.onclick = function() {
+                        if (currentWordIndex >= 0) {
+                            setWordActive(parseInt(this.dataset.index));
+                        }
+                    };
+
+                    lineDiv.appendChild(wordSpan);
+                    wordElements.push(wordSpan);
+                    globalWordIndex++;
+                });
+                container.appendChild(lineDiv);
+            });
+
+            // Wörterbuch Rendern
+            const dictContainer = document.getElementById('dict-content');
+            dictContainer.innerHTML = '';
+            for (let [word, meaning] of Object.entries(story.dict)) {
+                let entry = document.createElement('div');
+                entry.className = 'dict-entry';
+                entry.innerHTML = `<span class="dict-word">${word}:</span> ${meaning}`;
+                dictContainer.appendChild(entry);
+            }
+
+            // UI Reset
+            document.getElementById('time').innerText = '0';
+            document.getElementById('btn-start').style.display = 'inline-block';
+            document.getElementById('btn-stop').style.display = 'none';
+            currentWordIndex = -1;
+            
+            showPage('reader-page');
+        }
+
+        // --- SPRACHERKENNUNG & AUDIO SETUP ---
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'de-DE';
+
+            recognition.onresult = function(event) {
+                if(currentWordIndex < 0 || currentWordIndex >= wordElements.length) return;
+
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+                
+                let spokenWords = interimTranscript.toLowerCase().split(' ');
+                
+                // Prüfen ob das aktuelle Wort in den gesprochenen Wörtern auftaucht
+                let expectedWord = wordElements[currentWordIndex].dataset.clean;
+                
+                // Tolerante Prüfung (z.B. wegen Ungenauigkeiten der Spracherkennung bei Kindern)
+                let matchFound = spokenWords.some(w => w.includes(expectedWord) || expectedWord.includes(w) && w.length > 2);
+
+                if (matchFound) {
+                    wordElements[currentWordIndex].classList.remove('active');
+                    wordElements[currentWordIndex].classList.add('read');
+                    
+                    currentWordIndex++;
+                    if (currentWordIndex < wordElements.length) {
+                        wordElements[currentWordIndex].classList.add('active');
+                    } else {
+                        finishReading(); // Fertig!
+                    }
+                }
+            };
+        } else {
+            alert("Achtung: Dein Browser unterstützt keine Spracherkennung. Bitte nutze Google Chrome oder Edge für die automatische Worterkennung.");
+        }
+
+        function setWordActive(index) {
+            if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
+                wordElements[currentWordIndex].classList.remove('active');
+            }
+            currentWordIndex = index;
+            // Vorherige als gelesen markieren
+            for(let i=0; i<index; i++){
+                wordElements[i].classList.add('read');
+            }
+            if(index < wordElements.length){
+                wordElements[index].classList.add('active');
+            }
+        }
+
+        // --- START / STOP LOGIK ---
+        document.getElementById('btn-start').onclick = async () => {
+            secondsElapsed = 0;
+            document.getElementById('time').innerText = secondsElapsed;
+            
+            // Timer starten
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                document.getElementById('time').innerText = secondsElapsed;
+            }, 1000);
+
+            // UI anpassen
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('btn-stop').style.display = 'inline-block';
+            
+            // Erstes Wort markieren
+            setWordActive(0);
+
+            // Mikrofon für Aufnahme & Spracherkennung anfordern
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Audio Aufnahme (für Kind zum Anhören)
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    document.getElementById('audio-playback').src = audioUrl;
+                };
+                mediaRecorder.start();
+
+                // Spracherkennung (für Worterkennung)
+                if(recognition) recognition.start();
+            } catch (err) {
+                console.error("Mikrofonfehler:", err);
+                alert("Mikrofon konnte nicht gestartet werden. Du kannst trotzdem lesen und die Wörter manuell antippen!");
+            }
+        };
+
+        document.getElementById('btn-stop').onclick = () => {
+            finishReading();
+        };
+
+        function stopReading() {
+            clearInterval(timerInterval);
+            if(recognition) {
+                try { recognition.stop(); } catch(e){}
+            }
+            if(mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                // Stream-Tracks beenden
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function finishReading() {
+            stopReading();
+            
+            // Auswertung
+            let readWords = 0;
+            wordElements.forEach(el => {
+                el.classList.remove('active');
+                if (el.classList.contains('read')) {
+                    readWords++;
+                } else {
+                    el.classList.add('wrong'); // Zeigt nicht gelesene / falsche Wörter rot an
+                }
+            });
+
+            let percentage = (readWords / wordElements.length) * 100;
+            
+            // Ergebnisse anzeigen
+            document.getElementById('result-time').innerText = secondsElapsed;
+            
+            let scoreText = "";
+            let stars = "";
+            
+            if (percentage >= 90) {
+                scoreText = "Perfekt! Du bist ein Lesemeister!";
+                stars = "⭐⭐⭐";
+            } else if (percentage >= 60) {
+                scoreText = "Gut gemacht! Das war schon sehr flüssig.";
+                stars = "⭐⭐";
+            } else {
+                scoreText = "Schon ganz gut! Übe noch ein bisschen weiter.";
+                stars = "⭐";
+            }
+            
+            document.getElementById('score-display').innerText = scoreText;
+            document.getElementById('stars-display').innerText = stars;
+
+            // Zeige Result-Page erst nach kurzer Verzögerung, damit man die "falschen" Wörter im Text noch sieht
+            setTimeout(() => {
+                showPage('result-page');
+            }, 3000); 
+        }
+
+    </script>
+</body>
+</html>
