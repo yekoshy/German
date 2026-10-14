@@ -27,26 +27,38 @@
             text-align: center;
         }
 
-        h1 { color: var(--secondary); font-size: 2.5rem; }
+        h1 { color: var(--secondary); font-size: 2.5rem; margin-bottom: 10px; }
         
-        /* --- BEDIENFELD AM ANFANG (Statisch, nicht sticky, um Fehler zu vermeiden) --- */
-        .controls-header {
+        #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; margin-bottom: 10px; }
+        
+        /* --- BEDIENFELD (Direkt über dem Text) --- */
+        .controls-area {
             background: #ffffff;
-            padding: 20px;
+            padding: 15px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            margin: 20px auto 30px auto;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
-        #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; }
-        #timer { font-size: 1.5rem; color: #666; margin-bottom: 15px; font-weight: bold; }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        #timer { font-size: 1.5rem; color: #666; font-weight: bold; margin: 0; }
 
         /* --- BUTTONS --- */
         button {
             font-family: inherit;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             padding: 12px 25px;
-            margin: 5px;
             border: none;
             border-radius: 20px;
             cursor: pointer;
@@ -65,8 +77,12 @@
         .page.active { display: block; }
 
         /* --- LESE-BEREICH --- */
+        #text-container {
+            margin-top: 20px;
+        }
+
         .story-line {
-            font-size: 28px;
+            font-size: 32px; /* Etwas größer für Tablets */
             line-height: 2.5;
             margin: 15px 0;
             text-align: left;
@@ -75,7 +91,7 @@
         }
 
         /* Silben & Wörter */
-        .word { display: inline-block; margin-right: 10px; padding: 2px 5px; border-radius: 8px; transition: all 0.3s; cursor: pointer; }
+        .word { display: inline-block; margin-right: 12px; padding: 2px 5px; border-radius: 8px; transition: all 0.3s; cursor: pointer; }
         .syl-0 { color: var(--syl1); }
         .syl-1 { color: var(--syl2); }
         .syl-2 { color: var(--syl1); }
@@ -98,13 +114,17 @@
         .dict-word { font-weight: bold; color: var(--syl1); }
 
         /* --- ERGEBNISSE --- */
-        #score-display { font-size: 3rem; margin: 20px 0; }
-        .stars { font-size: 4rem; color: #FFD700; }
-        #audio-playback { margin-top: 20px; width: 100%; }
+        #score-display { font-size: 2.5rem; margin: 20px 0; }
+        .stars { font-size: 4rem; color: #FFD700; margin-bottom: 20px; }
 
         /* Info-Box */
-        .info { background: #fff3cd; color: #856404; padding: 10px; border-radius: 10px; margin-bottom: 20px; font-size: 1.1rem; }
+        .info { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 1.1rem; }
 
+        /* Mobile Anpassungen */
+        @media (max-width: 600px) {
+            .story-line { font-size: 26px; }
+            button { font-size: 1.1rem; padding: 10px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -119,16 +139,17 @@
     <!-- LESE-SEITE -->
     <div id="reader-page" class="page">
         
-        <!-- BEDIENFELD GANZ AM ANFANG DER SEITE -->
-        <div class="controls-header">
-            <h2 id="story-title">Titel</h2>
-            <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, tippe einfach auf das nächste Wort!</div>
-            
-            <div id="timer">⏱️ Zeit: <span id="time">0</span> Sekunden</div>
-            
-            <button id="btn-start" class="btn-start">🎤 Starten</button>
-            <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
-            <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
+        <h2 id="story-title">Titel</h2>
+        <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, tippe einfach auf das nächste Wort, um weiterzumachen!</div>
+        
+        <!-- BEDIENFELD (Buttons über dem Text) -->
+        <div class="controls-area">
+            <div id="timer">⏱️ Zeit: <span id="time">0</span> s</div>
+            <div class="button-group">
+                <button id="btn-start" class="btn-start">🎤 Starten</button>
+                <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
+                <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
+            </div>
         </div>
         
         <!-- HIER STEHT DER TEXT -->
@@ -145,12 +166,9 @@
         <h1>Super gemacht! 🎉</h1>
         <div id="score-display"></div>
         <div id="stars-display" class="stars"></div>
-        <p style="font-size: 1.5rem;">Du hast <b id="result-time">0</b> Sekunden gebraucht.</p>
+        <p style="font-size: 1.5rem;">Lesezeit: <b id="result-time">0</b> Sekunden.</p>
         
-        <h3>Höre dir deine Lesung an:</h3>
-        <audio id="audio-playback" controls></audio>
-        
-        <br><br>
+        <br>
         <button class="btn-start" onclick="showPage('menu-page')">🏠 Zurück zum Menü</button>
     </div>
 
@@ -207,18 +225,15 @@
         let wordElements = [];
         let currentWordIndex = 0;
         let isReadingActive = false;
-        
         let currentActiveLine = null; // Für das zeilenweise Scrollen
         
         let timerInterval;
         let secondsElapsed = 0;
         
         let recognition;
-        let isRecognizing = false; // Statusprüfung gegen Aufhängen
-        let mediaRecorder;
-        let audioChunks = [];
+        let isRecognizing = false; 
 
-        // --- INITIALISIERUNG MENÜ ---
+        // Initialisierung Menü
         const menuContainer = document.getElementById('story-buttons');
         stories.forEach(story => {
             let btn = document.createElement('button');
@@ -234,22 +249,20 @@
             stopReading(); // Sicherheitsstop
         }
 
-        // --- GESCHICHTE LADEN UND RENDERN ---
+        // --- GESCHICHTE LADEN ---
         function loadStory(story) {
             currentStory = story;
             document.getElementById('story-title').innerText = story.title;
-            currentActiveLine = null; // Scroll-Speicher zurücksetzen
+            currentActiveLine = null;
             
             const container = document.getElementById('text-container');
             container.innerHTML = '';
             wordElements = [];
             let globalWordIndex = 0;
 
-            // Text Rendern
             story.lines.forEach((line, lineIndex) => {
                 let lineDiv = document.createElement('div');
                 lineDiv.className = 'story-line';
-                lineDiv.id = `line-${lineIndex}`; // Eindeutige ID für die Zeile
                 
                 let words = line.split(' ');
                 words.forEach(wordStr => {
@@ -261,7 +274,6 @@
                     wordSpan.dataset.index = globalWordIndex;
                     wordSpan.dataset.clean = cleanWord.replace(/-/g, '').toLowerCase();
                     
-                    // Silben färben
                     syllables.forEach((syl, i) => {
                         let isPunctuation = /[.,!?:„“"']/.test(syl);
                         if(isPunctuation && syl.length === 1) {
@@ -282,7 +294,7 @@
                         }
                     });
 
-                    // Manuelles Weiterschalten erlauben (behebt auch Hänger, falls Erkennung ausfällt)
+                    // Manuelles Weiterschalten per Klick/Tippen
                     wordSpan.onclick = function() {
                         if (isReadingActive && currentWordIndex >= 0) {
                             setWordActive(parseInt(this.dataset.index));
@@ -296,7 +308,6 @@
                 container.appendChild(lineDiv);
             });
 
-            // Wörterbuch Rendern
             const dictContainer = document.getElementById('dict-content');
             dictContainer.innerHTML = '';
             for (let [word, meaning] of Object.entries(story.dict)) {
@@ -312,14 +323,16 @@
             document.getElementById('btn-stop').style.display = 'none';
             currentWordIndex = -1;
             
-            // Zum Start der Seite scrollen
             window.scrollTo(0, 0);
             showPage('reader-page');
         }
 
-        // --- SPRACHERKENNUNG & AUDIO SETUP ---
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
+        // --- SPRACHERKENNUNG SETUP (Ohne Audio-Aufnahme) ---
+        // Funktioniert mit Safari (iOS) und Chrome (Android)
+        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (SpeechRecognitionAPI) {
+            recognition = new SpeechRecognitionAPI();
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'de-DE';
@@ -343,9 +356,9 @@
                 if (matchFound) {
                     let nextIndex = currentWordIndex + 1;
                     if (nextIndex < wordElements.length) {
-                        setWordActive(nextIndex); // Macht das neue Wort aktiv + Auto-Scroll Zeilenweise
+                        setWordActive(nextIndex); 
                     } else {
-                        // Letztes Wort
+                        // Letztes Wort erreicht
                         wordElements[currentWordIndex].classList.remove('active');
                         wordElements[currentWordIndex].classList.add('read');
                         currentWordIndex++;
@@ -354,52 +367,56 @@
                 }
             };
 
-            // VERHINDERT AUFHÄNGEN: Sicherer Neustart bei Unterbrechungen
+            // Falls die Erkennung auf Mobilgeräten abbricht, wird sie automatisch neu gestartet
             recognition.onend = function() {
                 isRecognizing = false;
                 if (isReadingActive) {
-                    // Verzögerung verhindert Endlos-Schleife, die den Browser einfrieren lässt
                     setTimeout(() => {
                         if (!isRecognizing && isReadingActive) {
-                            try { recognition.start(); } catch(e) { console.warn("Spracherkennung Neustart Fehler:", e); }
+                            try { recognition.start(); } catch(e) { }
                         }
                     }, 300);
                 }
             };
-
         } else {
-            alert("Achtung: Dein Browser unterstützt keine automatische Spracherkennung. Das Kind kann aber trotzdem lesen und die Wörter manuell antippen!");
+            alert("Dein Browser unterstützt die automatische Spracherkennung leider nicht. Das Kind kann die Wörter manuell antippen!");
         }
 
-        // --- WORTHERVORHEBUNG & AUTO-SCROLL (NUR ZEILENWEISE) ---
+        // --- WORTHERVORHEBUNG & ZUVERLÄSSIGES AUTO-SCROLL ---
         function setWordActive(index) {
             if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
                 wordElements[currentWordIndex].classList.remove('active');
             }
             currentWordIndex = index;
             
-            // Vorherige als gelesen markieren
             for(let i=0; i<index; i++){
                 wordElements[i].classList.add('read');
             }
             
-            // Neues Wort markieren
             if(index < wordElements.length){
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
                 
-                // --- NEU: ZEILENWEISES SCROLLEN ---
+                // Zuverlässiges Scrollen auf Mobilgeräten (Zeilenweise)
                 let lineEl = activeEl.closest('.story-line');
-                // Wenn das Wort in einer NEUEN Zeile ist, scrolle diese Zeile in die Mitte
-                if (lineEl !== currentActiveLine) {
+                if (lineEl && lineEl !== currentActiveLine) {
                     currentActiveLine = lineEl;
-                    lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Berechnet die Position der neuen Zeile und scrollt etwas darüber (wegen der Buttons)
+                    const headerOffset = 150; 
+                    const elementPosition = lineEl.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                         top: offsetPosition,
+                         behavior: "smooth"
+                    });
                 }
             }
         }
 
         // --- START / STOP LOGIK ---
-        document.getElementById('btn-start').onclick = async () => {
+        document.getElementById('btn-start').onclick = () => {
             isReadingActive = true;
             secondsElapsed = 0;
             document.getElementById('time').innerText = secondsElapsed;
@@ -414,23 +431,13 @@
             
             setWordActive(0);
 
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    document.getElementById('audio-playback').src = audioUrl;
-                };
-                mediaRecorder.start();
-
-                if(recognition && !isRecognizing) recognition.start();
-            } catch (err) {
-                console.error("Mikrofonfehler:", err);
-                alert("Mikrofon konnte nicht gestartet werden. Du kannst trotzdem lesen und die Wörter manuell antippen!");
+            // Startet NUR die Spracherkennung (Keine Speicherung der Stimme mehr)
+            if(recognition && !isRecognizing) {
+                try {
+                    recognition.start();
+                } catch(e) {
+                    console.log("Spracherkennung Fehler:", e);
+                }
             }
         };
 
@@ -444,10 +451,6 @@
             
             if(recognition && isRecognizing) {
                 try { recognition.stop(); } catch(e){}
-            }
-            if(mediaRecorder && mediaRecorder.state === "recording") {
-                mediaRecorder.stop();
-                mediaRecorder.stream.getTracks().forEach(track => track.stop());
             }
         }
 
@@ -486,7 +489,7 @@
             document.getElementById('stars-display').innerText = stars;
 
             setTimeout(() => {
-                window.scrollTo(0, 0); // Scrollt zum Ergebnis hoch
+                window.scrollTo(0, 0); 
                 showPage('result-page');
             }, 2000); 
         }
