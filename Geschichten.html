@@ -29,18 +29,17 @@
 
         h1 { color: var(--secondary); font-size: 2.5rem; }
         
-        /* --- BEDIENFELD (Immer oben sichtbar) --- */
+        /* --- BEDIENFELD AM ANFANG (Statisch, nicht sticky, um Fehler zu vermeiden) --- */
         .controls-header {
-            position: sticky;
-            top: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
+            background: #ffffff;
+            padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
-            backdrop-filter: blur(5px);
         }
+
+        #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; }
+        #timer { font-size: 1.5rem; color: #666; margin-bottom: 15px; font-weight: bold; }
 
         /* --- BUTTONS --- */
         button {
@@ -66,9 +65,6 @@
         .page.active { display: block; }
 
         /* --- LESE-BEREICH --- */
-        #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; }
-        #timer { font-size: 1.5rem; color: #666; margin-bottom: 15px; font-weight: bold; }
-        
         .story-line {
             font-size: 28px;
             line-height: 2.5;
@@ -122,17 +118,20 @@
 
     <!-- LESE-SEITE -->
     <div id="reader-page" class="page">
-        <h2 id="story-title">Titel</h2>
-        <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, klicke einfach auf das nächste Wort, um weiterzumachen!</div>
         
-        <!-- NEU: Fixiertes Bedienfeld am Anfang -->
+        <!-- BEDIENFELD GANZ AM ANFANG DER SEITE -->
         <div class="controls-header">
+            <h2 id="story-title">Titel</h2>
+            <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, tippe einfach auf das nächste Wort!</div>
+            
             <div id="timer">⏱️ Zeit: <span id="time">0</span> Sekunden</div>
+            
             <button id="btn-start" class="btn-start">🎤 Starten</button>
             <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
             <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
         </div>
         
+        <!-- HIER STEHT DER TEXT -->
         <div id="text-container"></div>
 
         <div id="dictionary">
@@ -207,12 +206,15 @@
         let currentStory = null;
         let wordElements = [];
         let currentWordIndex = 0;
-        let isReadingActive = false; // Neu: Status für Aufzeichnung
+        let isReadingActive = false;
+        
+        let currentActiveLine = null; // Für das zeilenweise Scrollen
         
         let timerInterval;
         let secondsElapsed = 0;
         
         let recognition;
+        let isRecognizing = false; // Statusprüfung gegen Aufhängen
         let mediaRecorder;
         let audioChunks = [];
 
@@ -236,6 +238,7 @@
         function loadStory(story) {
             currentStory = story;
             document.getElementById('story-title').innerText = story.title;
+            currentActiveLine = null; // Scroll-Speicher zurücksetzen
             
             const container = document.getElementById('text-container');
             container.innerHTML = '';
@@ -243,9 +246,10 @@
             let globalWordIndex = 0;
 
             // Text Rendern
-            story.lines.forEach(line => {
+            story.lines.forEach((line, lineIndex) => {
                 let lineDiv = document.createElement('div');
                 lineDiv.className = 'story-line';
+                lineDiv.id = `line-${lineIndex}`; // Eindeutige ID für die Zeile
                 
                 let words = line.split(' ');
                 words.forEach(wordStr => {
@@ -278,7 +282,7 @@
                         }
                     });
 
-                    // Manuelles Weiterschalten erlauben (inkl. Auto-Scroll!)
+                    // Manuelles Weiterschalten erlauben (behebt auch Hänger, falls Erkennung ausfällt)
                     wordSpan.onclick = function() {
                         if (isReadingActive && currentWordIndex >= 0) {
                             setWordActive(parseInt(this.dataset.index));
@@ -320,6 +324,10 @@
             recognition.interimResults = true;
             recognition.lang = 'de-DE';
 
+            recognition.onstart = function() {
+                isRecognizing = true;
+            };
+
             recognition.onresult = function(event) {
                 if(currentWordIndex < 0 || currentWordIndex >= wordElements.length) return;
 
@@ -335,7 +343,7 @@
                 if (matchFound) {
                     let nextIndex = currentWordIndex + 1;
                     if (nextIndex < wordElements.length) {
-                        setWordActive(nextIndex); // Macht das neue Wort aktiv + Auto-Scroll
+                        setWordActive(nextIndex); // Macht das neue Wort aktiv + Auto-Scroll Zeilenweise
                     } else {
                         // Letztes Wort
                         wordElements[currentWordIndex].classList.remove('active');
@@ -346,18 +354,24 @@
                 }
             };
 
-            // NEU: Verhindert, dass die Erkennung bei längeren Pausen oder Scrollen komplett abbricht
+            // VERHINDERT AUFHÄNGEN: Sicherer Neustart bei Unterbrechungen
             recognition.onend = function() {
+                isRecognizing = false;
                 if (isReadingActive) {
-                    try { recognition.start(); } catch(e) { console.log("Neustart der Spracherkennung...", e); }
+                    // Verzögerung verhindert Endlos-Schleife, die den Browser einfrieren lässt
+                    setTimeout(() => {
+                        if (!isRecognizing && isReadingActive) {
+                            try { recognition.start(); } catch(e) { console.warn("Spracherkennung Neustart Fehler:", e); }
+                        }
+                    }, 300);
                 }
             };
 
         } else {
-            alert("Achtung: Dein Browser unterstützt keine Spracherkennung. Bitte nutze Google Chrome oder Edge für die automatische Worterkennung.");
+            alert("Achtung: Dein Browser unterstützt keine automatische Spracherkennung. Das Kind kann aber trotzdem lesen und die Wörter manuell antippen!");
         }
 
-        // --- WORTHERVORHEBUNG & AUTO-SCROLL ---
+        // --- WORTHERVORHEBUNG & AUTO-SCROLL (NUR ZEILENWEISE) ---
         function setWordActive(index) {
             if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
                 wordElements[currentWordIndex].classList.remove('active');
@@ -369,13 +383,18 @@
                 wordElements[i].classList.add('read');
             }
             
-            // Neues Wort markieren und in die Mitte scrollen
+            // Neues Wort markieren
             if(index < wordElements.length){
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
                 
-                // NEU: Automatisches sanftes Scrollen, damit das Kind sich nur aufs Lesen konzentrieren muss
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // --- NEU: ZEILENWEISES SCROLLEN ---
+                let lineEl = activeEl.closest('.story-line');
+                // Wenn das Wort in einer NEUEN Zeile ist, scrolle diese Zeile in die Mitte
+                if (lineEl !== currentActiveLine) {
+                    currentActiveLine = lineEl;
+                    lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
             }
         }
 
@@ -408,7 +427,7 @@
                 };
                 mediaRecorder.start();
 
-                if(recognition) recognition.start();
+                if(recognition && !isRecognizing) recognition.start();
             } catch (err) {
                 console.error("Mikrofonfehler:", err);
                 alert("Mikrofon konnte nicht gestartet werden. Du kannst trotzdem lesen und die Wörter manuell antippen!");
@@ -423,7 +442,7 @@
             isReadingActive = false;
             clearInterval(timerInterval);
             
-            if(recognition) {
+            if(recognition && isRecognizing) {
                 try { recognition.stop(); } catch(e){}
             }
             if(mediaRecorder && mediaRecorder.state === "recording") {
@@ -459,8 +478,8 @@
                 scoreText = "Gut gemacht! Das war schon sehr flüssig.";
                 stars = "⭐⭐";
             } else {
-                scoreText = "Schon ganz gut! Übe noch ein bisschen weiter.";
-                stars = "⭐";
+                scoreText = "Übe noch ein bisschen weiter.";
+                stars = "";
             }
             
             document.getElementById('score-display').innerText = scoreText;
@@ -469,7 +488,7 @@
             setTimeout(() => {
                 window.scrollTo(0, 0); // Scrollt zum Ergebnis hoch
                 showPage('result-page');
-            }, 3000); 
+            }, 2000); 
         }
 
     </script>
