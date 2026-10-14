@@ -29,12 +29,25 @@
 
         h1 { color: var(--secondary); font-size: 2.5rem; }
         
+        /* --- BEDIENFELD (Immer oben sichtbar) --- */
+        .controls-header {
+            position: sticky;
+            top: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 100;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+        }
+
         /* --- BUTTONS --- */
         button {
             font-family: inherit;
             font-size: 1.5rem;
-            padding: 15px 30px;
-            margin: 10px;
+            padding: 12px 25px;
+            margin: 5px;
             border: none;
             border-radius: 20px;
             cursor: pointer;
@@ -43,7 +56,7 @@
             font-weight: bold;
         }
         button:hover { transform: scale(1.05); }
-        .btn-story { background-color: white; color: var(--secondary); border: 3px solid var(--secondary); display: block; margin: 15px auto; width: 80%; max-width: 400px; }
+        .btn-story { background-color: white; color: var(--secondary); border: 3px solid var(--secondary); display: block; margin: 15px auto; width: 80%; max-width: 400px; padding: 15px; }
         .btn-start { background-color: var(--primary); color: white; }
         .btn-stop { background-color: #f44336; color: white; }
         .btn-back { background-color: #9e9e9e; color: white; }
@@ -53,8 +66,8 @@
         .page.active { display: block; }
 
         /* --- LESE-BEREICH --- */
-        #story-title { color: var(--accent); font-size: 2.2rem; }
-        #timer { font-size: 1.5rem; color: #666; margin-bottom: 20px; font-weight: bold; }
+        #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; }
+        #timer { font-size: 1.5rem; color: #666; margin-bottom: 15px; font-weight: bold; }
         
         .story-line {
             font-size: 28px;
@@ -69,7 +82,7 @@
         .word { display: inline-block; margin-right: 10px; padding: 2px 5px; border-radius: 8px; transition: all 0.3s; cursor: pointer; }
         .syl-0 { color: var(--syl1); }
         .syl-1 { color: var(--syl2); }
-        .syl-2 { color: var(--syl1); } /* Falls 3 Silben */
+        .syl-2 { color: var(--syl1); }
         
         /* Hervorhebungen */
         .word.active { background-color: #fff59d; border-bottom: 4px solid var(--accent); transform: scale(1.1); }
@@ -78,7 +91,7 @@
 
         /* --- WÖRTERBUCH --- */
         #dictionary {
-            margin-top: 30px;
+            margin-top: 50px;
             background: #e3f2fd;
             padding: 20px;
             border-radius: 15px;
@@ -110,16 +123,17 @@
     <!-- LESE-SEITE -->
     <div id="reader-page" class="page">
         <h2 id="story-title">Titel</h2>
-        <div class="info">Tipp: Wenn ein Wort falsch erkannt wird, kannst du einfach auf das nächste Wort klicken, um weiterzumachen!</div>
-        <div id="timer">⏱️ Zeit: <span id="time">0</span> Sekunden</div>
+        <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, klicke einfach auf das nächste Wort, um weiterzumachen!</div>
         
-        <div id="text-container"></div>
-        
-        <div style="margin-top: 30px;">
+        <!-- NEU: Fixiertes Bedienfeld am Anfang -->
+        <div class="controls-header">
+            <div id="timer">⏱️ Zeit: <span id="time">0</span> Sekunden</div>
             <button id="btn-start" class="btn-start">🎤 Starten</button>
             <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
             <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
         </div>
+        
+        <div id="text-container"></div>
 
         <div id="dictionary">
             <h3>📖 Wörterbuch (Schwere Wörter)</h3>
@@ -142,109 +156,50 @@
     </div>
 
     <script>
-        // --- DATEN DER GESCHICHTEN (Silben mit Bindestrich markiert) ---
+        // --- DATEN DER GESCHICHTEN ---
         const stories = [
             {
-                id: 1,
-                title: "Lottas große Reise 🐌",
-                words: 85,
+                id: 1, title: "Lottas große Reise 🐌", words: 85,
                 lines: [
-                    "Lot-ta ist ei-ne Schne-cke.",
-                    "Lot-ta will ei-ne Rei-se ma-chen.",
-                    "Lang-sam kriecht sie los.",
-                    "Hil-fe! Da kommt ein I-gel.",
-                    "I-gel fres-sen Schne-cken.",
-                    "Lot-ta kriecht in ihr Haus.",
-                    "Bald ist der I-gel weg.",
-                    "Da kriecht Lot-ta wei-ter.",
-                    "Lot-ta hat gro-ßen Hun-ger.",
-                    "Lot-ta macht ei-ne Pau-se.",
-                    "Sie frisst ein paar Blät-ter.",
-                    "Dann kriecht Lot-ta wei-ter.",
-                    "Schon bald wird es dun-kel.",
-                    "Lot-ta kriecht in ihr Haus.",
-                    "Mor-gen geht die Rei-se wei-ter.",
-                    "Am an-de-ren Tag denkt Lot-ta:",
-                    "Das war ei-ne schö-ne Rei-se.",
-                    "Dann kriecht sie nach Hau-se."
+                    "Lot-ta ist ei-ne Schne-cke.", "Lot-ta will ei-ne Rei-se ma-chen.", "Lang-sam kriecht sie los.",
+                    "Hil-fe! Da kommt ein I-gel.", "I-gel fres-sen Schne-cken.", "Lot-ta kriecht in ihr Haus.",
+                    "Bald ist der I-gel weg.", "Da kriecht Lot-ta wei-ter.", "Lot-ta hat gro-ßen Hun-ger.",
+                    "Lot-ta macht ei-ne Pau-se.", "Sie frisst ein paar Blät-ter.", "Dann kriecht Lot-ta wei-ter.",
+                    "Schon bald wird es dun-kel.", "Lot-ta kriecht in ihr Haus.", "Mor-gen geht die Rei-se wei-ter.",
+                    "Am an-de-ren Tag denkt Lot-ta:", "Das war ei-ne schö-ne Rei-se.", "Dann kriecht sie nach Hau-se."
                 ],
-                dict: {
-                    "Schnecke": "Ein kleines Tier, das sehr langsam ist und sein Haus auf dem Rücken trägt.",
-                    "Igel": "Ein kleines Tier mit vielen spitzen Stacheln auf dem Rücken."
-                }
+                dict: { "Schnecke": "Ein kleines Tier, das sehr langsam ist und sein Haus auf dem Rücken trägt.", "Igel": "Ein kleines Tier mit vielen spitzen Stacheln auf dem Rücken." }
             },
             {
-                id: 2,
-                title: "Mimi und Hund Bello 🐶",
-                words: 60,
+                id: 2, title: "Mimi und Hund Bello 🐶", words: 60,
                 lines: [
-                    "Bel-lo jagt ger-ne Mäu-se.",
-                    "Er sieht ein Mau-se-loch.",
-                    "Da sitzt Mi-mi, die Maus.",
-                    "Sie schaut aus dem Loch.",
-                    "Bel-lo springt schnell hin.",
-                    "Schwups, Mi-mi ist weg.",
-                    "Bel-lo wühlt und scharrt.",
-                    "Das Loch wird grö-ßer.",
-                    "Bel-lo gräbt wie wild wei-ter.",
-                    "A-ber er fin-det Mi-mi nicht.",
-                    "Oh! Da ist ja noch ein Loch.",
-                    "Mi-mi schaut raus und lacht."
+                    "Bel-lo jagt ger-ne Mäu-se.", "Er sieht ein Mau-se-loch.", "Da sitzt Mi-mi, die Maus.",
+                    "Sie schaut aus dem Loch.", "Bel-lo springt schnell hin.", "Schwups, Mi-mi ist weg.",
+                    "Bel-lo wühlt und scharrt.", "Das Loch wird grö-ßer.", "Bel-lo gräbt wie wild wei-ter.",
+                    "A-ber er fin-det Mi-mi nicht.", "Oh! Da ist ja noch ein Loch.", "Mi-mi schaut raus und lacht."
                 ],
-                dict: {
-                    "scharrt": "Mit den Pfoten über die Erde kratzen.",
-                    "wühlt": "Die Erde umgraben, um etwas zu finden."
-                }
+                dict: { "scharrt": "Mit den Pfoten über die Erde kratzen.", "wühlt": "Die Erde umgraben, um etwas zu finden." }
             },
             {
-                id: 3,
-                title: "Bello und der Igel 🦔",
-                words: 60,
+                id: 3, title: "Bello und der Igel 🦔", words: 60,
                 lines: [
-                    "Bel-lo ist ein jun-ger Hund.",
-                    "Bel-lo ist ein Jagd-hund.",
-                    "Im Gar-ten sitzt ein I-gel.",
-                    "Der I-gel frisst ei-nen Ap-fel.",
-                    "Da sieht Bel-lo den I-gel.",
-                    "Er bellt und läuft hin.",
-                    "Der I-gel rollt sich ein.",
-                    "Al-le Sta-cheln ste-hen hoch.",
-                    "Bel-lo springt und beißt zu.",
-                    "„A-uhh!“ Bel-lo jault laut auf.",
-                    "Sei-ne Schnau-ze blu-tet.",
-                    "Der I-gel läuft schnell weg."
+                    "Bel-lo ist ein jun-ger Hund.", "Bel-lo ist ein Jagd-hund.", "Im Gar-ten sitzt ein I-gel.",
+                    "Der I-gel frisst ei-nen Ap-fel.", "Da sieht Bel-lo den I-gel.", "Er bellt und läuft hin.",
+                    "Der I-gel rollt sich ein.", "Al-le Sta-cheln ste-hen hoch.", "Bel-lo springt und beißt zu.",
+                    "„A-uhh!“ Bel-lo jault laut auf.", "Sei-ne Schnau-ze blu-tet.", "Der I-gel läuft schnell weg."
                 ],
-                dict: {
-                    "Jagdhund": "Ein Hund, der Menschen dabei hilft, andere Tiere zu fangen.",
-                    "jault": "Laut und weinerlich bellen, weil etwas wehtut."
-                }
+                dict: { "Jagdhund": "Ein Hund, der Menschen dabei hilft, andere Tiere zu fangen.", "jault": "Laut und weinerlich bellen, weil etwas wehtut." }
             },
             {
-                id: 4,
-                title: "Frosch und Storch 🐸",
-                words: 81,
+                id: 4, title: "Frosch und Storch 🐸", words: 81,
                 lines: [
-                    "Frosch Fri-do-lin saß am Teich.",
-                    "Er öff-ne-te sein gro-ßes Maul",
-                    "und rief: „Quak, quak, quak!“",
-                    "Das hör-te auch Storch Stelz-fuß.",
-                    "Er kam nä-her und im-mer nä-her.",
-                    "Er klap-per-te: „Klapp-schnapp.“",
-                    "Das hör-te auch Frosch Fri-do-lin.",
-                    "Er frag-te: „Was suchst du hier?",
-                    "Was bist denn du für ein Tier?“",
-                    "Stelz-fuß sag-te: „Ich su-che Frö-sche.",
-                    "Ich ha-be sie zum Fres-sen ger-ne!",
-                    "Klapp-schnapp, klapp-schnapp.“",
-                    "Fri-do-lin be-kam ei-nen Schreck.",
-                    "Er rief: „Ein Storch! Quak, quak!“",
-                    "Er sprang in den Teich und war weg!"
+                    "Frosch Fri-do-lin saß am Teich.", "Er öff-ne-te sein gro-ßes Maul", "und rief: „Quak, quak, quak!“",
+                    "Das hör-te auch Storch Stelz-fuß.", "Er kam nä-her und im-mer nä-her.", "Er klap-per-te: „Klapp-schnapp.“",
+                    "Das hör-te auch Frosch Fri-do-lin.", "Er frag-te: „Was suchst du hier?", "Was bist denn du für ein Tier?“",
+                    "Stelz-fuß sag-te: „Ich su-che Frö-sche.", "Ich ha-be sie zum Fres-sen ger-ne!", "Klapp-schnapp, klapp-schnapp.“",
+                    "Fri-do-lin be-kam ei-nen Schreck.", "Er rief: „Ein Storch! Quak, quak!“", "Er sprang in den Teich und war weg!"
                 ],
-                dict: {
-                    "Storch": "Ein großer weißer Vogel mit langen, dünnen Beinen und einem langen Schnabel.",
-                    "klapperte": "Schnelle Geräusche machen, indem man den Schnabel auf und zu klappt.",
-                    "Schreck": "Plötzliche Angst, wenn man sich erschrickt."
-                }
+                dict: { "Storch": "Ein großer weißer Vogel mit langen, dünnen Beinen und einem langen Schnabel.", "klapperte": "Schnelle Geräusche machen, indem man den Schnabel auf und zu klappt.", "Schreck": "Plötzliche Angst, wenn man sich erschrickt." }
             }
         ];
 
@@ -252,8 +207,8 @@
         let currentStory = null;
         let wordElements = [];
         let currentWordIndex = 0;
+        let isReadingActive = false; // Neu: Status für Aufzeichnung
         
-        // Timer & Audio
         let timerInterval;
         let secondsElapsed = 0;
         
@@ -292,10 +247,9 @@
                 let lineDiv = document.createElement('div');
                 lineDiv.className = 'story-line';
                 
-                // Teile Zeile in Wörter (behält Satzzeichen für Anzeige, separiert Silben)
                 let words = line.split(' ');
                 words.forEach(wordStr => {
-                    let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); // Für Prüfung
+                    let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); 
                     let syllables = wordStr.split('-');
                     
                     let wordSpan = document.createElement('span');
@@ -307,36 +261,26 @@
                     syllables.forEach((syl, i) => {
                         let isPunctuation = /[.,!?:„“"']/.test(syl);
                         if(isPunctuation && syl.length === 1) {
-                            // Reines Satzzeichen
                             let sylSpan = document.createElement('span');
                             sylSpan.innerText = syl;
                             sylSpan.style.color = 'var(--text)';
                             wordSpan.appendChild(sylSpan);
                         } else {
-                            // Silbe
                             let sylSpan = document.createElement('span');
                             sylSpan.className = `syl-${i % 2}`;
-                            
-                            // Sonderfall: Satzzeichen an der Silbe hängend (z.B. "Schne-cke.")
                             let textPart = syl.replace(/[.,!?:„“"']/g, '');
                             let puncPart = syl.match(/[.,!?:„“"']/g);
                             
-                            if (syl.startsWith('„')) {
-                                wordSpan.innerHTML += `<span style="color:var(--text)">„</span>`;
-                            }
-
+                            if (syl.startsWith('„')) { wordSpan.innerHTML += `<span style="color:var(--text)">„</span>`; }
                             sylSpan.innerText = textPart;
                             wordSpan.appendChild(sylSpan);
-
-                            if (puncPart && !syl.startsWith('„')) {
-                                wordSpan.innerHTML += `<span style="color:var(--text)">${puncPart.join('')}</span>`;
-                            }
+                            if (puncPart && !syl.startsWith('„')) { wordSpan.innerHTML += `<span style="color:var(--text)">${puncPart.join('')}</span>`; }
                         }
                     });
 
-                    // Manuelles Weiterschalten erlauben
+                    // Manuelles Weiterschalten erlauben (inkl. Auto-Scroll!)
                     wordSpan.onclick = function() {
-                        if (currentWordIndex >= 0) {
+                        if (isReadingActive && currentWordIndex >= 0) {
                             setWordActive(parseInt(this.dataset.index));
                         }
                     };
@@ -364,6 +308,8 @@
             document.getElementById('btn-stop').style.display = 'none';
             currentWordIndex = -1;
             
+            // Zum Start der Seite scrollen
+            window.scrollTo(0, 0);
             showPage('reader-page');
         }
 
@@ -383,66 +329,75 @@
                 }
                 
                 let spokenWords = interimTranscript.toLowerCase().split(' ');
-                
-                // Prüfen ob das aktuelle Wort in den gesprochenen Wörtern auftaucht
                 let expectedWord = wordElements[currentWordIndex].dataset.clean;
-                
-                // Tolerante Prüfung (z.B. wegen Ungenauigkeiten der Spracherkennung bei Kindern)
-                let matchFound = spokenWords.some(w => w.includes(expectedWord) || expectedWord.includes(w) && w.length > 2);
+                let matchFound = spokenWords.some(w => w.includes(expectedWord) || (expectedWord.includes(w) && w.length > 2));
 
                 if (matchFound) {
-                    wordElements[currentWordIndex].classList.remove('active');
-                    wordElements[currentWordIndex].classList.add('read');
-                    
-                    currentWordIndex++;
-                    if (currentWordIndex < wordElements.length) {
-                        wordElements[currentWordIndex].classList.add('active');
+                    let nextIndex = currentWordIndex + 1;
+                    if (nextIndex < wordElements.length) {
+                        setWordActive(nextIndex); // Macht das neue Wort aktiv + Auto-Scroll
                     } else {
-                        finishReading(); // Fertig!
+                        // Letztes Wort
+                        wordElements[currentWordIndex].classList.remove('active');
+                        wordElements[currentWordIndex].classList.add('read');
+                        currentWordIndex++;
+                        finishReading(); 
                     }
                 }
             };
+
+            // NEU: Verhindert, dass die Erkennung bei längeren Pausen oder Scrollen komplett abbricht
+            recognition.onend = function() {
+                if (isReadingActive) {
+                    try { recognition.start(); } catch(e) { console.log("Neustart der Spracherkennung...", e); }
+                }
+            };
+
         } else {
             alert("Achtung: Dein Browser unterstützt keine Spracherkennung. Bitte nutze Google Chrome oder Edge für die automatische Worterkennung.");
         }
 
+        // --- WORTHERVORHEBUNG & AUTO-SCROLL ---
         function setWordActive(index) {
             if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
                 wordElements[currentWordIndex].classList.remove('active');
             }
             currentWordIndex = index;
+            
             // Vorherige als gelesen markieren
             for(let i=0; i<index; i++){
                 wordElements[i].classList.add('read');
             }
+            
+            // Neues Wort markieren und in die Mitte scrollen
             if(index < wordElements.length){
-                wordElements[index].classList.add('active');
+                let activeEl = wordElements[index];
+                activeEl.classList.add('active');
+                
+                // NEU: Automatisches sanftes Scrollen, damit das Kind sich nur aufs Lesen konzentrieren muss
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
         // --- START / STOP LOGIK ---
         document.getElementById('btn-start').onclick = async () => {
+            isReadingActive = true;
             secondsElapsed = 0;
             document.getElementById('time').innerText = secondsElapsed;
             
-            // Timer starten
             timerInterval = setInterval(() => {
                 secondsElapsed++;
                 document.getElementById('time').innerText = secondsElapsed;
             }, 1000);
 
-            // UI anpassen
             document.getElementById('btn-start').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
             
-            // Erstes Wort markieren
             setWordActive(0);
 
-            // Mikrofon für Aufnahme & Spracherkennung anfordern
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
-                // Audio Aufnahme (für Kind zum Anhören)
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
@@ -453,7 +408,6 @@
                 };
                 mediaRecorder.start();
 
-                // Spracherkennung (für Worterkennung)
                 if(recognition) recognition.start();
             } catch (err) {
                 console.error("Mikrofonfehler:", err);
@@ -466,13 +420,14 @@
         };
 
         function stopReading() {
+            isReadingActive = false;
             clearInterval(timerInterval);
+            
             if(recognition) {
                 try { recognition.stop(); } catch(e){}
             }
             if(mediaRecorder && mediaRecorder.state === "recording") {
                 mediaRecorder.stop();
-                // Stream-Tracks beenden
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
             }
         }
@@ -480,20 +435,18 @@
         function finishReading() {
             stopReading();
             
-            // Auswertung
             let readWords = 0;
             wordElements.forEach(el => {
                 el.classList.remove('active');
                 if (el.classList.contains('read')) {
                     readWords++;
                 } else {
-                    el.classList.add('wrong'); // Zeigt nicht gelesene / falsche Wörter rot an
+                    el.classList.add('wrong');
                 }
             });
 
             let percentage = (readWords / wordElements.length) * 100;
             
-            // Ergebnisse anzeigen
             document.getElementById('result-time').innerText = secondsElapsed;
             
             let scoreText = "";
@@ -513,8 +466,8 @@
             document.getElementById('score-display').innerText = scoreText;
             document.getElementById('stars-display').innerText = stars;
 
-            // Zeige Result-Page erst nach kurzer Verzögerung, damit man die "falschen" Wörter im Text noch sieht
             setTimeout(() => {
+                window.scrollTo(0, 0); // Scrollt zum Ergebnis hoch
                 showPage('result-page');
             }, 3000); 
         }
