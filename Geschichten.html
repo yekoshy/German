@@ -31,14 +31,35 @@
         
         #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; margin-bottom: 10px; }
         
+        /* --- KINDER TIPP BOX --- */
+        .kid-tip {
+            background-color: #e8f5e9;
+            border: 3px dashed var(--primary);
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 0 auto 25px auto;
+            max-width: 650px;
+            font-size: 1.3rem;
+            line-height: 1.5;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .kid-tip h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1b5e20;
+            font-size: 1.5rem;
+        }
+
         /* --- BEDIENFELD --- */
         .controls-area {
             background: #ffffff;
             padding: 15px;
             border-radius: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin: 20px auto 30px auto;
-            max-width: 600px;
+            margin: 0 auto 30px auto;
+            max-width: 650px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -110,11 +131,10 @@
         #score-display { font-size: 2.5rem; margin: 20px 0; }
         .stars { font-size: 4rem; color: #FFD700; margin-bottom: 20px; }
 
-        .info { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 1.1rem; }
-
         @media (max-width: 600px) {
             .story-line { font-size: 26px; }
             button { font-size: 1.1rem; padding: 10px 20px; }
+            .kid-tip { font-size: 1.1rem; padding: 12px; }
         }
     </style>
 </head>
@@ -130,7 +150,12 @@
     <!-- LESE-SEITE -->
     <div id="reader-page" class="page">
         <h2 id="story-title">Titel</h2>
-        <div class="info">Tipp: Wenn ein Wort beim Lesen nicht erkannt wird, tippe einfach mit dem Finger darauf!</div>
+        
+        <!-- KINDERGERECHTER TIPP -->
+        <div class="kid-tip">
+            <h3>💡 Ein Tipp für dich!</h3>
+            <p>Sollte das Mikrofon ein Wort mal wirklich nicht verstehen, kannst du jetzt einfach <b>mit dem Finger auf das nächste Wort tippen</b>!<br><br>Die gelbe Markierung springt sofort dorthin und die Seite scrollt für dich automatisch weiter.</p>
+        </div>
         
         <!-- BEDIENFELD -->
         <div class="controls-area">
@@ -225,6 +250,10 @@
         let recognition;
         let isRecognizing = false; 
         let isTTSPlaying = false; 
+        
+        // Timer für das Fallback beim Vorlesen (wenn das Gerät hängt)
+        let ttsFallbackInterval = null;
+        let ttsBoundaryFired = false;
 
         // Menü aufbauen
         const menuContainer = document.getElementById('story-buttons');
@@ -347,12 +376,12 @@
                 try {
                     window.scrollTo({ top: offsetPosition, behavior: "smooth" });
                 } catch(e) {
-                    window.scrollTo(0, offsetPosition); // Fallback für sehr alte Browser
+                    window.scrollTo(0, offsetPosition); 
                 }
             }, 50);
         }
 
-        // --- VORLESEN (TTS) MIT HIGHLIGHTING ---
+        // --- VORLESEN (TTS) MIT HIGHLIGHTING & FALLBACK ---
         function toggleTTS() {
             let btnListen = document.getElementById('btn-listen');
             
@@ -361,12 +390,26 @@
             } else {
                 if (!currentStory) return;
                 
-                currentActiveLine = null; // Stellt sicher, dass das erste Wort gescrollt wird
+                currentActiveLine = null; 
                 let utterance = new SpeechSynthesisUtterance(window.ttsText);
                 utterance.lang = 'de-DE'; 
                 utterance.rate = 0.85; 
                 
+                ttsBoundaryFired = false;
+
+                utterance.onstart = function() {
+                    // Startet den Rettungs-Rhythmus, falls das Gerät den Text stumm runterbetet, ohne Markierungen zu senden.
+                    setTimeout(() => {
+                        if (!ttsBoundaryFired) {
+                            startTTSFallback();
+                        }
+                    }, 600);
+                };
+                
                 utterance.onboundary = function(event) {
+                    if (event.name !== 'word') return;
+                    ttsBoundaryFired = true; // Signal: Das Gerät funktioniert normal!
+                    
                     let matchIndex = -1;
                     for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
                         if (window.ttsWordMap[i].charIndex <= event.charIndex) {
@@ -385,6 +428,38 @@
                 isTTSPlaying = true;
                 btnListen.innerHTML = '🔇 Stopp';
             }
+        }
+
+        // Rettungs-Highlighting für blockierende Browser (z.B. Android Chrome / altes Safari)
+        function startTTSFallback() {
+            let startTime = Date.now();
+            let msPerChar = 90; // Geschätzte Dauer pro Buchstabe bei Geschwindigkeit 0.85
+            
+            ttsFallbackInterval = setInterval(() => {
+                if (!isTTSPlaying) {
+                    clearInterval(ttsFallbackInterval);
+                    return;
+                }
+                
+                let elapsed = Date.now() - startTime;
+                let estimatedCharIndex = Math.floor(elapsed / msPerChar);
+                
+                let matchIndex = -1;
+                for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
+                    if (window.ttsWordMap[i].charIndex <= estimatedCharIndex) {
+                        matchIndex = window.ttsWordMap[i].wordIndex;
+                        break;
+                    }
+                }
+                
+                if (matchIndex !== -1 && matchIndex !== ttsCurrentWordIndex && matchIndex < wordElements.length) {
+                    highlightAndScrollTTS(matchIndex);
+                }
+                
+                if (matchIndex >= wordElements.length - 1) {
+                    clearInterval(ttsFallbackInterval);
+                }
+            }, 200);
         }
 
         function highlightAndScrollTTS(index) {
@@ -408,6 +483,8 @@
         function stopAllAudio() {
             if (window.speechSynthesis) window.speechSynthesis.cancel();
             isTTSPlaying = false;
+            clearInterval(ttsFallbackInterval); // Beendet den Rettungs-Timer
+            
             let listenBtn = document.getElementById('btn-listen');
             if (listenBtn) listenBtn.innerHTML = '🔊 Vorhören';
             
@@ -519,61 +596,4 @@
             document.getElementById('btn-listen').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
             
-            setWordActive(0); // Aktiviert das erste Wort und scrollt dorthin
-
-            if(recognition && !isRecognizing) {
-                try { recognition.start(); } catch(e) {}
-            }
-        };
-
-        document.getElementById('btn-stop').onclick = () => finishReading();
-
-        function stopReading() {
-            isReadingActive = false;
-            clearInterval(timerInterval);
-            if(recognition && isRecognizing) {
-                try { recognition.stop(); } catch(e){}
-            }
-        }
-
-        function finishReading() {
-            stopReading();
-            
-            let readWords = 0;
-            wordElements.forEach(el => {
-                el.classList.remove('active');
-                if (el.classList.contains('read')) {
-                    readWords++;
-                } else {
-                    el.classList.add('wrong');
-                }
-            });
-
-            let percentage = (readWords / wordElements.length) * 100;
-            document.getElementById('result-time').innerText = secondsElapsed;
-            
-            let scoreText = "";
-            let stars = "";
-            if (percentage >= 90) {
-                scoreText = "Perfekt! Du bist ein Lesemeister!";
-                stars = "⭐⭐⭐";
-            } else if (percentage >= 60) {
-                scoreText = "Gut gemacht! Das war schon sehr flüssig.";
-                stars = "⭐⭐";
-            } else {
-                scoreText = "Schon ganz gut! Übe noch ein bisschen weiter.";
-                stars = "⭐";
-            }
-            
-            document.getElementById('score-display').innerText = scoreText;
-            document.getElementById('stars-display').innerText = stars;
-
-            setTimeout(() => {
-                window.scrollTo(0, 0); 
-                showPage('result-page');
-            }, 2000); 
-        }
-
-    </script>
-</body>
-</html>
+            setWor
