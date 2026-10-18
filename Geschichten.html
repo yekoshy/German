@@ -83,22 +83,23 @@
         }
 
         .story-line {
-            font-size: 32px; /* Etwas größer für Tablets */
+            font-size: 32px; 
             line-height: 2.5;
             margin: 15px 0;
             text-align: left;
             padding: 10px;
             border-bottom: 1px dashed #e0e0e0;
+            transition: background-color 0.3s;
         }
 
         /* Silben & Wörter */
-        .word { display: inline-block; margin-right: 12px; padding: 2px 5px; border-radius: 8px; transition: all 0.3s; cursor: pointer; }
+        .word { display: inline-block; margin-right: 12px; padding: 2px 5px; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
         .syl-0 { color: var(--syl1); }
         .syl-1 { color: var(--syl2); }
         .syl-2 { color: var(--syl1); }
         
         /* Hervorhebungen */
-        .word.active { background-color: #fff59d; border-bottom: 4px solid var(--accent); transform: scale(1.1); }
+        .word.active { background-color: #fff59d; border-bottom: 4px solid var(--accent); transform: scale(1.1); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .word.read { background-color: #c8e6c9; opacity: 0.8; }
         .word.wrong { background-color: #ffcdd2; color: #c62828 !important; text-decoration: underline; }
 
@@ -141,9 +142,9 @@
     <div id="reader-page" class="page">
         
         <h2 id="story-title">Titel</h2>
-        <div class="info">Tipp: Wenn ein Wort nicht erkannt wird, tippe einfach auf das nächste Wort, um weiterzumachen!</div>
+        <div class="info">Tipp: Wenn ein Wort beim Lesen nicht erkannt wird, tippe einfach darauf, um weiterzumachen!</div>
         
-        <!-- BEDIENFELD (Buttons über dem Text) -->
+        <!-- BEDIENFELD -->
         <div class="controls-area">
             <div id="timer">⏱️ Zeit: <span id="time">0</span> s</div>
             <div class="button-group">
@@ -154,9 +155,10 @@
             </div>
         </div>
         
-        <!-- HIER STEHT DER TEXT -->
+        <!-- TEXT -->
         <div id="text-container"></div>
 
+        <!-- WÖRTERBUCH -->
         <div id="dictionary">
             <h3>📖 Wörterbuch (Schwere Wörter)</h3>
             <div id="dict-content"></div>
@@ -225,9 +227,12 @@
         // --- VARIABLEN ---
         let currentStory = null;
         let wordElements = [];
-        let currentWordIndex = 0;
+        let currentWordIndex = -1;
         let isReadingActive = false;
+        
+        // Scroll & Highlight Variablen
         let currentActiveLine = null; 
+        let ttsCurrentWordIndex = -1; // Index während des Vorlesens
         
         let timerInterval;
         let secondsElapsed = 0;
@@ -235,7 +240,7 @@
         let recognition;
         let isRecognizing = false; 
         
-        let isTTSPlaying = false; // Für das Vorlesen
+        let isTTSPlaying = false; 
 
         // Initialisierung Menü
         const menuContainer = document.getElementById('story-buttons');
@@ -250,7 +255,7 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            stopAllAudio(); // Alles stoppen, wenn man die Seite wechselt
+            stopAllAudio(); 
             stopReading(); 
         }
 
@@ -259,6 +264,11 @@
             currentStory = story;
             document.getElementById('story-title').innerText = story.title;
             currentActiveLine = null;
+            
+            // Vorbereitung für TTS Hervorhebung (Speichert genaue Textposition)
+            window.ttsText = "";
+            window.ttsWordMap = [];
+            let charCounter = 0;
             
             const container = document.getElementById('text-container');
             container.innerHTML = '';
@@ -272,8 +282,17 @@
                 let words = line.split(' ');
                 words.forEach(wordStr => {
                     let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); 
-                    let syllables = wordStr.split('-');
+                    let cleanWordTTS = wordStr.replace(/-/g, ''); // Ohne Bindestriche für Vorleser
                     
+                    // Für TTS Positionsspeicherung
+                    window.ttsWordMap.push({
+                        charIndex: charCounter,
+                        wordIndex: globalWordIndex
+                    });
+                    window.ttsText += cleanWordTTS + " ";
+                    charCounter += cleanWordTTS.length + 1; // +1 für das Leerzeichen
+                    
+                    let syllables = wordStr.split('-');
                     let wordSpan = document.createElement('span');
                     wordSpan.className = 'word';
                     wordSpan.dataset.index = globalWordIndex;
@@ -299,6 +318,7 @@
                         }
                     });
 
+                    // Weiterschalten per Klick
                     wordSpan.onclick = function() {
                         if (isReadingActive && currentWordIndex >= 0) {
                             setWordActive(parseInt(this.dataset.index));
@@ -312,6 +332,7 @@
                 container.appendChild(lineDiv);
             });
 
+            // Wörterbuch füllen
             const dictContainer = document.getElementById('dict-content');
             dictContainer.innerHTML = '';
             for (let [word, meaning] of Object.entries(story.dict)) {
@@ -327,38 +348,83 @@
             document.getElementById('btn-listen').style.display = 'inline-block';
             document.getElementById('btn-stop').style.display = 'none';
             currentWordIndex = -1;
+            ttsCurrentWordIndex = -1;
             
             window.scrollTo(0, 0);
             showPage('reader-page');
         }
 
-        // --- VORLESEN (Text-to-Speech) ---
+        // --- HILFSFUNKTION FÜR ZENTRIERTES SCROLLEN ---
+        function scrollToLineCentered(lineEl) {
+            if (!lineEl) return;
+            // Berechnet die Position so, dass die Zeile genau in der Mitte des Bildschirms ist
+            const elementPosition = lineEl.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.scrollY - (window.innerHeight / 2) + (lineEl.offsetHeight / 2);
+            
+            window.scrollTo({
+                 top: offsetPosition,
+                 behavior: "smooth"
+            });
+        }
+
+        // --- VORLESEN (Text-to-Speech) MIT HIGHLIGHTING ---
         function toggleTTS() {
             let btnListen = document.getElementById('btn-listen');
             
             if (isTTSPlaying) {
-                // Stoppe Vorlesen
-                window.speechSynthesis.cancel();
-                isTTSPlaying = false;
-                btnListen.innerHTML = '🔊 Vorhören';
+                stopAllAudio();
             } else {
                 if (!currentStory) return;
                 
-                // Entferne die Trennstriche (-) für flüssiges Vorlesen
-                let cleanText = currentStory.lines.join(' ').replace(/-/g, '');
+                let utterance = new SpeechSynthesisUtterance(window.ttsText);
+                utterance.lang = 'de-DE'; 
+                utterance.rate = 0.85; // Kindgerechte Geschwindigkeit
                 
-                let utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'de-DE'; // Deutsche Stimme
-                utterance.rate = 0.85; // Etwas langsamer für Kinder
+                // Feuert jedes Mal, wenn ein neues Wort gesprochen wird
+                utterance.onboundary = function(event) {
+                    if (event.name === 'word') {
+                        // Finde das Wort basierend auf der Textposition
+                        let activeWordObj = null;
+                        for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
+                            if (window.ttsWordMap[i].charIndex <= event.charIndex) {
+                                activeWordObj = window.ttsWordMap[i];
+                                break;
+                            }
+                        }
+                        
+                        if (activeWordObj) {
+                            highlightAndScrollTTS(activeWordObj.wordIndex);
+                        }
+                    }
+                };
                 
                 utterance.onend = function() {
-                    isTTSPlaying = false;
-                    btnListen.innerHTML = '🔊 Vorhören';
+                    stopAllAudio();
                 };
                 
                 window.speechSynthesis.speak(utterance);
                 isTTSPlaying = true;
                 btnListen.innerHTML = '🔇 Stopp';
+            }
+        }
+
+        function highlightAndScrollTTS(index) {
+            // Altes Wort demarkieren
+            if (ttsCurrentWordIndex >= 0 && ttsCurrentWordIndex < wordElements.length) {
+                wordElements[ttsCurrentWordIndex].classList.remove('active');
+            }
+            ttsCurrentWordIndex = index;
+            
+            // Neues Wort markieren und scrollen
+            if (index < wordElements.length) {
+                let activeEl = wordElements[index];
+                activeEl.classList.add('active');
+                
+                let lineEl = activeEl.closest('.story-line');
+                if (lineEl && lineEl !== currentActiveLine) {
+                    currentActiveLine = lineEl;
+                    scrollToLineCentered(lineEl); // Scrolle Zeile in die Mitte!
+                }
             }
         }
 
@@ -369,9 +435,21 @@
             isTTSPlaying = false;
             let listenBtn = document.getElementById('btn-listen');
             if (listenBtn) listenBtn.innerHTML = '🔊 Vorhören';
+            
+            // Markierung vom Vorlesen entfernen
+            if (ttsCurrentWordIndex >= 0 && ttsCurrentWordIndex < wordElements.length) {
+                wordElements[ttsCurrentWordIndex].classList.remove('active');
+            }
+            ttsCurrentWordIndex = -1;
+            
+            // Falls gerade nicht selber gelesen wird, scrolle zurück nach ganz oben
+            if (!isReadingActive) {
+                currentActiveLine = null;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
-        // --- SPRACHERKENNUNG SETUP ---
+        // --- SPRACHERKENNUNG (SELBER LESEN) ---
         const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
         
         if (SpeechRecognitionAPI) {
@@ -419,21 +497,21 @@
                     }, 300);
                 }
             };
-        } else {
-            console.warn("Browser unterstützt keine Spracherkennung.");
         }
 
-        // --- WORTHERVORHEBUNG & AUTO-SCROLL ---
+        // --- WORTHERVORHEBUNG (SELBER LESEN) ---
         function setWordActive(index) {
             if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
                 wordElements[currentWordIndex].classList.remove('active');
             }
             currentWordIndex = index;
             
+            // Vorherige grün (gelesen) markieren
             for(let i=0; i<index; i++){
                 wordElements[i].classList.add('read');
             }
             
+            // Aktuelles markieren und scrollen
             if(index < wordElements.length){
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
@@ -441,23 +519,14 @@
                 let lineEl = activeEl.closest('.story-line');
                 if (lineEl && lineEl !== currentActiveLine) {
                     currentActiveLine = lineEl;
-                    
-                    const headerOffset = 150; 
-                    const elementPosition = lineEl.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    
-                    window.scrollTo({
-                         top: offsetPosition,
-                         behavior: "smooth"
-                    });
+                    scrollToLineCentered(lineEl); // Scrolle Zeile in die Mitte!
                 }
             }
         }
 
         // --- START / STOP LOGIK ---
         document.getElementById('btn-start').onclick = () => {
-            // Stoppe das Vorlesen, falls es noch läuft, bevor das Kind anfängt
-            stopAllAudio();
+            stopAllAudio(); // Vorleser beenden, falls er noch läuft
             
             isReadingActive = true;
             secondsElapsed = 0;
@@ -468,7 +537,7 @@
                 document.getElementById('time').innerText = secondsElapsed;
             }, 1000);
 
-            // Verstecke den Start- und Vorhör-Button, zeige den Stop-Button
+            // Verstecke Start & Vorhören, zeige Stop
             document.getElementById('btn-start').style.display = 'none';
             document.getElementById('btn-listen').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
