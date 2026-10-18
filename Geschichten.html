@@ -71,6 +71,7 @@
         .btn-start { background-color: var(--primary); color: white; }
         .btn-stop { background-color: #f44336; color: white; }
         .btn-back { background-color: #9e9e9e; color: white; }
+        .btn-listen { background-color: #9C27B0; color: white; } /* Lila Button für "Vorhören" */
         
         /* --- SEITEN (PAGES) --- */
         .page { display: none; max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -146,6 +147,7 @@
         <div class="controls-area">
             <div id="timer">⏱️ Zeit: <span id="time">0</span> s</div>
             <div class="button-group">
+                <button id="btn-listen" class="btn-listen" onclick="toggleTTS()">🔊 Vorhören</button>
                 <button id="btn-start" class="btn-start">🎤 Starten</button>
                 <button id="btn-stop" class="btn-stop" style="display:none;">⏹️ Fertig!</button>
                 <button class="btn-back" onclick="showPage('menu-page')">🏠 Zurück</button>
@@ -225,13 +227,15 @@
         let wordElements = [];
         let currentWordIndex = 0;
         let isReadingActive = false;
-        let currentActiveLine = null; // Für das zeilenweise Scrollen
+        let currentActiveLine = null; 
         
         let timerInterval;
         let secondsElapsed = 0;
         
         let recognition;
         let isRecognizing = false; 
+        
+        let isTTSPlaying = false; // Für das Vorlesen
 
         // Initialisierung Menü
         const menuContainer = document.getElementById('story-buttons');
@@ -246,7 +250,8 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            stopReading(); // Sicherheitsstop
+            stopAllAudio(); // Alles stoppen, wenn man die Seite wechselt
+            stopReading(); 
         }
 
         // --- GESCHICHTE LADEN ---
@@ -294,7 +299,6 @@
                         }
                     });
 
-                    // Manuelles Weiterschalten per Klick/Tippen
                     wordSpan.onclick = function() {
                         if (isReadingActive && currentWordIndex >= 0) {
                             setWordActive(parseInt(this.dataset.index));
@@ -320,6 +324,7 @@
             // UI Reset
             document.getElementById('time').innerText = '0';
             document.getElementById('btn-start').style.display = 'inline-block';
+            document.getElementById('btn-listen').style.display = 'inline-block';
             document.getElementById('btn-stop').style.display = 'none';
             currentWordIndex = -1;
             
@@ -327,8 +332,46 @@
             showPage('reader-page');
         }
 
-        // --- SPRACHERKENNUNG SETUP (Ohne Audio-Aufnahme) ---
-        // Funktioniert mit Safari (iOS) und Chrome (Android)
+        // --- VORLESEN (Text-to-Speech) ---
+        function toggleTTS() {
+            let btnListen = document.getElementById('btn-listen');
+            
+            if (isTTSPlaying) {
+                // Stoppe Vorlesen
+                window.speechSynthesis.cancel();
+                isTTSPlaying = false;
+                btnListen.innerHTML = '🔊 Vorhören';
+            } else {
+                if (!currentStory) return;
+                
+                // Entferne die Trennstriche (-) für flüssiges Vorlesen
+                let cleanText = currentStory.lines.join(' ').replace(/-/g, '');
+                
+                let utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'de-DE'; // Deutsche Stimme
+                utterance.rate = 0.85; // Etwas langsamer für Kinder
+                
+                utterance.onend = function() {
+                    isTTSPlaying = false;
+                    btnListen.innerHTML = '🔊 Vorhören';
+                };
+                
+                window.speechSynthesis.speak(utterance);
+                isTTSPlaying = true;
+                btnListen.innerHTML = '🔇 Stopp';
+            }
+        }
+
+        function stopAllAudio() {
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            isTTSPlaying = false;
+            let listenBtn = document.getElementById('btn-listen');
+            if (listenBtn) listenBtn.innerHTML = '🔊 Vorhören';
+        }
+
+        // --- SPRACHERKENNUNG SETUP ---
         const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
         
         if (SpeechRecognitionAPI) {
@@ -358,7 +401,6 @@
                     if (nextIndex < wordElements.length) {
                         setWordActive(nextIndex); 
                     } else {
-                        // Letztes Wort erreicht
                         wordElements[currentWordIndex].classList.remove('active');
                         wordElements[currentWordIndex].classList.add('read');
                         currentWordIndex++;
@@ -367,7 +409,6 @@
                 }
             };
 
-            // Falls die Erkennung auf Mobilgeräten abbricht, wird sie automatisch neu gestartet
             recognition.onend = function() {
                 isRecognizing = false;
                 if (isReadingActive) {
@@ -379,10 +420,10 @@
                 }
             };
         } else {
-            alert("Dein Browser unterstützt die automatische Spracherkennung leider nicht. Das Kind kann die Wörter manuell antippen!");
+            console.warn("Browser unterstützt keine Spracherkennung.");
         }
 
-        // --- WORTHERVORHEBUNG & ZUVERLÄSSIGES AUTO-SCROLL ---
+        // --- WORTHERVORHEBUNG & AUTO-SCROLL ---
         function setWordActive(index) {
             if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
                 wordElements[currentWordIndex].classList.remove('active');
@@ -397,12 +438,10 @@
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
                 
-                // Zuverlässiges Scrollen auf Mobilgeräten (Zeilenweise)
                 let lineEl = activeEl.closest('.story-line');
                 if (lineEl && lineEl !== currentActiveLine) {
                     currentActiveLine = lineEl;
                     
-                    // Berechnet die Position der neuen Zeile und scrollt etwas darüber (wegen der Buttons)
                     const headerOffset = 150; 
                     const elementPosition = lineEl.getBoundingClientRect().top;
                     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
@@ -417,6 +456,9 @@
 
         // --- START / STOP LOGIK ---
         document.getElementById('btn-start').onclick = () => {
+            // Stoppe das Vorlesen, falls es noch läuft, bevor das Kind anfängt
+            stopAllAudio();
+            
             isReadingActive = true;
             secondsElapsed = 0;
             document.getElementById('time').innerText = secondsElapsed;
@@ -426,12 +468,13 @@
                 document.getElementById('time').innerText = secondsElapsed;
             }, 1000);
 
+            // Verstecke den Start- und Vorhör-Button, zeige den Stop-Button
             document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('btn-listen').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
             
             setWordActive(0);
 
-            // Startet NUR die Spracherkennung (Keine Speicherung der Stimme mehr)
             if(recognition && !isRecognizing) {
                 try {
                     recognition.start();
@@ -481,8 +524,8 @@
                 scoreText = "Gut gemacht! Das war schon sehr flüssig.";
                 stars = "⭐⭐";
             } else {
-                scoreText = "Übe noch ein bisschen weiter.";
-                stars = "";
+                scoreText = "Schon ganz gut! Übe noch ein bisschen weiter.";
+                stars = "⭐";
             }
             
             document.getElementById('score-display').innerText = scoreText;
