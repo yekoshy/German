@@ -236,6 +236,7 @@
             }
         ];
 
+        // Globale Variablen
         let currentStory = null;
         let wordElements = [];
         let currentWordIndex = -1;
@@ -247,33 +248,39 @@
         let timerInterval;
         let secondsElapsed = 0;
         
-        let recognition;
+        let recognition = null;
         let isRecognizing = false; 
         let isTTSPlaying = false; 
         
-        // Timer für das Fallback beim Vorlesen (wenn das Gerät hängt)
         let ttsFallbackInterval = null;
         let ttsBoundaryFired = false;
 
-        // Menü aufbauen
-        const menuContainer = document.getElementById('story-buttons');
-        stories.forEach(story => {
-            let btn = document.createElement('button');
-            btn.className = 'btn-story';
-            btn.innerText = story.title;
-            btn.onclick = () => loadStory(story);
-            menuContainer.appendChild(btn);
+        // --- SICHERE INITIALISIERUNG BEIM LADEN DER SEITE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const menuContainer = document.getElementById('story-buttons');
+            if (menuContainer) {
+                stories.forEach(story => {
+                    let btn = document.createElement('button');
+                    btn.className = 'btn-story';
+                    btn.innerText = story.title;
+                    btn.onclick = () => loadStory(story);
+                    menuContainer.appendChild(btn);
+                });
+            } else {
+                console.error("Menü konnte nicht geladen werden.");
+            }
         });
 
-        function showPage(pageId) {
+        // Seitenwechsel
+        window.showPage = function(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             stopAllAudio(); 
             stopReading(); 
-        }
+        };
 
         // --- GESCHICHTE LADEN ---
-        function loadStory(story) {
+        window.loadStory = function(story) {
             currentStory = story;
             document.getElementById('story-title').innerText = story.title;
             currentActiveLine = null;
@@ -343,6 +350,7 @@
                 container.appendChild(lineDiv);
             });
 
+            // Wörterbuch
             const dictContainer = document.getElementById('dict-content');
             dictContainer.innerHTML = '';
             for (let [word, meaning] of Object.entries(story.dict)) {
@@ -352,6 +360,7 @@
                 dictContainer.appendChild(entry);
             }
 
+            // Buttons zurücksetzen
             document.getElementById('time').innerText = '0';
             document.getElementById('btn-start').style.display = 'inline-block';
             document.getElementById('btn-listen').style.display = 'inline-block';
@@ -361,16 +370,15 @@
             
             window.scrollTo(0, 0);
             showPage('reader-page');
-        }
+        };
 
         // --- HILFSFUNKTION FÜR ZUVERLÄSSIGES SCROLLEN ---
         function scrollToLineCentered(lineEl) {
             if (!lineEl) return;
             
-            // Kurze Verzögerung für sichere Berechnung
             setTimeout(() => {
                 const rect = lineEl.getBoundingClientRect();
-                const elementTop = rect.top + window.pageYOffset;
+                const elementTop = rect.top + window.scrollY;
                 const offsetPosition = elementTop - (window.innerHeight / 2) + (rect.height / 2);
                 
                 try {
@@ -381,8 +389,8 @@
             }, 50);
         }
 
-        // --- VORLESEN (TTS) MIT HIGHLIGHTING & FALLBACK ---
-        function toggleTTS() {
+        // --- VORLESEN (TTS) MIT HIGHLIGHTING & RETTUNGS-FALLBACK ---
+        window.toggleTTS = function() {
             let btnListen = document.getElementById('btn-listen');
             
             if (isTTSPlaying) {
@@ -398,17 +406,15 @@
                 ttsBoundaryFired = false;
 
                 utterance.onstart = function() {
-                    // Startet den Rettungs-Rhythmus, falls das Gerät den Text stumm runterbetet, ohne Markierungen zu senden.
+                    // Startet den Ghost-Reader, falls das Gerät keine Infos zur Markierung sendet
                     setTimeout(() => {
-                        if (!ttsBoundaryFired) {
-                            startTTSFallback();
-                        }
+                        if (!ttsBoundaryFired) startTTSFallback();
                     }, 600);
                 };
                 
                 utterance.onboundary = function(event) {
                     if (event.name !== 'word') return;
-                    ttsBoundaryFired = true; // Signal: Das Gerät funktioniert normal!
+                    ttsBoundaryFired = true; 
                     
                     let matchIndex = -1;
                     for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
@@ -428,12 +434,11 @@
                 isTTSPlaying = true;
                 btnListen.innerHTML = '🔇 Stopp';
             }
-        }
+        };
 
-        // Rettungs-Highlighting für blockierende Browser (z.B. Android Chrome / altes Safari)
         function startTTSFallback() {
             let startTime = Date.now();
-            let msPerChar = 90; // Geschätzte Dauer pro Buchstabe bei Geschwindigkeit 0.85
+            let msPerChar = 90; 
             
             ttsFallbackInterval = setInterval(() => {
                 if (!isTTSPlaying) {
@@ -483,7 +488,7 @@
         function stopAllAudio() {
             if (window.speechSynthesis) window.speechSynthesis.cancel();
             isTTSPlaying = false;
-            clearInterval(ttsFallbackInterval); // Beendet den Rettungs-Timer
+            clearInterval(ttsFallbackInterval); 
             
             let listenBtn = document.getElementById('btn-listen');
             if (listenBtn) listenBtn.innerHTML = '🔊 Vorhören';
@@ -499,73 +504,84 @@
             }
         }
 
-        // --- SPRACHERKENNUNG (SELBER LESEN) ---
-        const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognitionAPI) {
-            recognition = new SpeechRecognitionAPI();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'de-DE';
+        // --- SPRACHERKENNUNG SICHER LADEN (Erst bei Klick) ---
+        function initSpeechRecognition() {
+            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognitionAPI) {
+                console.warn("Browser unterstützt keine automatische Worterkennung.");
+                return;
+            }
 
-            recognition.onstart = function() { isRecognizing = true; };
+            if (!recognition) {
+                try {
+                    recognition = new SpeechRecognitionAPI();
+                    recognition.continuous = true;
+                    recognition.interimResults = true;
+                    recognition.lang = 'de-DE';
 
-            recognition.onresult = function(event) {
-                if(currentWordIndex < 0 || currentWordIndex >= wordElements.length) return;
+                    recognition.onstart = function() { isRecognizing = true; };
 
-                let interimTranscript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    interimTranscript += event.results[i][0].transcript;
-                }
-                
-                let spokenWords = interimTranscript.toLowerCase().split(/\s+/);
-                
-                // Springt durch ALLE erkannten Wörter (für flüssiges Lesen)
-                let advanced = false;
-                while (currentWordIndex < wordElements.length) {
-                    let expectedWord = wordElements[currentWordIndex].dataset.clean;
-                    let matchFound = spokenWords.some(w => w === expectedWord || w.includes(expectedWord) || (expectedWord.includes(w) && w.length > 3));
-                    
-                    if (matchFound) {
-                        currentWordIndex++;
-                        advanced = true;
-                    } else {
-                        break; 
-                    }
-                }
+                    recognition.onresult = function(event) {
+                        if(currentWordIndex < 0 || currentWordIndex >= wordElements.length) return;
 
-                if (advanced) {
-                    if (currentWordIndex < wordElements.length) {
-                        setWordActive(currentWordIndex);
-                    } else {
-                        finishReading();
-                    }
-                }
-            };
-
-            recognition.onend = function() {
-                isRecognizing = false;
-                if (isReadingActive) {
-                    setTimeout(() => {
-                        if (!isRecognizing && isReadingActive) {
-                            try { recognition.start(); } catch(e) {}
+                        let interimTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            interimTranscript += event.results[i][0].transcript;
                         }
-                    }, 300);
+                        
+                        let spokenWords = interimTranscript.toLowerCase().split(/\s+/);
+                        
+                        let advanced = false;
+                        while (currentWordIndex < wordElements.length) {
+                            let expectedWord = wordElements[currentWordIndex].dataset.clean;
+                            let matchFound = spokenWords.some(w => w === expectedWord || w.includes(expectedWord) || (expectedWord.includes(w) && w.length > 3));
+                            
+                            if (matchFound) {
+                                currentWordIndex++;
+                                advanced = true;
+                            } else {
+                                break; 
+                            }
+                        }
+
+                        if (advanced) {
+                            if (currentWordIndex < wordElements.length) {
+                                setWordActive(currentWordIndex);
+                            } else {
+                                finishReading();
+                            }
+                        }
+                    };
+
+                    recognition.onend = function() {
+                        isRecognizing = false;
+                        if (isReadingActive) {
+                            setTimeout(() => {
+                                if (!isRecognizing && isReadingActive) {
+                                    try { recognition.start(); } catch(e) {}
+                                }
+                            }, 300);
+                        }
+                    };
+                } catch(e) {
+                    console.error("Fehler beim Vorbereiten der Spracherkennung:", e);
                 }
-            };
+            }
+
+            if (recognition && !isRecognizing) {
+                try { recognition.start(); } catch(e) { console.error("Konnte Mikrofon nicht starten", e); }
+            }
         }
 
         // --- WORTHERVORHEBUNG (SELBER LESEN) ---
         function setWordActive(index) {
-            // Alte Hervorhebungen aufräumen
             document.querySelectorAll('.word.active').forEach(el => el.classList.remove('active'));
             currentWordIndex = index;
             
-            // Alles davor wird grün
             for(let i=0; i<index; i++){
                 wordElements[i].classList.add('read');
             }
             
-            // Aktuelles markieren und ggf. scrollen
             if(index < wordElements.length){
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
@@ -578,10 +594,10 @@
             }
         }
 
-        // --- START / STOP LOGIK ---
+        // --- START / STOP ---
         document.getElementById('btn-start').onclick = () => {
             stopAllAudio(); 
-            currentActiveLine = null; // Scroll-Speicher leeren
+            currentActiveLine = null; 
             
             isReadingActive = true;
             secondsElapsed = 0;
@@ -596,4 +612,60 @@
             document.getElementById('btn-listen').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
             
-            setWor
+            setWordActive(0); 
+
+            // Spracherkennung erst hier sicher aktivieren!
+            initSpeechRecognition();
+        };
+
+        document.getElementById('btn-stop').onclick = () => finishReading();
+
+        function stopReading() {
+            isReadingActive = false;
+            clearInterval(timerInterval);
+            if(recognition && isRecognizing) {
+                try { recognition.stop(); } catch(e){}
+            }
+        }
+
+        function finishReading() {
+            stopReading();
+            
+            let readWords = 0;
+            wordElements.forEach(el => {
+                el.classList.remove('active');
+                if (el.classList.contains('read')) {
+                    readWords++;
+                } else {
+                    el.classList.add('wrong');
+                }
+            });
+
+            let percentage = (readWords / wordElements.length) * 100;
+            document.getElementById('result-time').innerText = secondsElapsed;
+            
+            let scoreText = "";
+            let stars = "";
+            if (percentage >= 90) {
+                scoreText = "Perfekt! Du bist ein Lesemeister!";
+                stars = "⭐⭐⭐";
+            } else if (percentage >= 60) {
+                scoreText = "Gut gemacht! Das war schon sehr flüssig.";
+                stars = "⭐⭐";
+            } else {
+                scoreText = "Schon ganz gut! Übe noch ein bisschen weiter.";
+                stars = "⭐";
+            }
+            
+            document.getElementById('score-display').innerText = scoreText;
+            document.getElementById('stars-display').innerText = stars;
+
+            setTimeout(() => {
+                window.scrollTo(0, 0); 
+                showPage('result-page');
+            }, 2000); 
+        }
+
+    </script>
+</body>
+</html>
