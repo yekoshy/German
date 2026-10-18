@@ -31,7 +31,7 @@
         
         #story-title { color: var(--accent); font-size: 2.2rem; margin-top: 0; margin-bottom: 10px; }
         
-        /* --- BEDIENFELD (Direkt über dem Text) --- */
+        /* --- BEDIENFELD --- */
         .controls-area {
             background: #ffffff;
             padding: 15px;
@@ -71,16 +71,14 @@
         .btn-start { background-color: var(--primary); color: white; }
         .btn-stop { background-color: #f44336; color: white; }
         .btn-back { background-color: #9e9e9e; color: white; }
-        .btn-listen { background-color: #9C27B0; color: white; } /* Lila Button für "Vorhören" */
+        .btn-listen { background-color: #9C27B0; color: white; }
         
         /* --- SEITEN (PAGES) --- */
         .page { display: none; max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         .page.active { display: block; }
 
         /* --- LESE-BEREICH --- */
-        #text-container {
-            margin-top: 20px;
-        }
+        #text-container { margin-top: 20px; }
 
         .story-line {
             font-size: 32px; 
@@ -89,7 +87,6 @@
             text-align: left;
             padding: 10px;
             border-bottom: 1px dashed #e0e0e0;
-            transition: background-color 0.3s;
         }
 
         /* Silben & Wörter */
@@ -104,13 +101,7 @@
         .word.wrong { background-color: #ffcdd2; color: #c62828 !important; text-decoration: underline; }
 
         /* --- WÖRTERBUCH --- */
-        #dictionary {
-            margin-top: 50px;
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: left;
-        }
+        #dictionary { margin-top: 50px; background: #e3f2fd; padding: 20px; border-radius: 15px; text-align: left; }
         #dictionary h3 { margin-top: 0; color: var(--secondary); }
         .dict-entry { margin-bottom: 10px; font-size: 1.2rem; }
         .dict-word { font-weight: bold; color: var(--syl1); }
@@ -119,10 +110,8 @@
         #score-display { font-size: 2.5rem; margin: 20px 0; }
         .stars { font-size: 4rem; color: #FFD700; margin-bottom: 20px; }
 
-        /* Info-Box */
         .info { background: #fff3cd; color: #856404; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 1.1rem; }
 
-        /* Mobile Anpassungen */
         @media (max-width: 600px) {
             .story-line { font-size: 26px; }
             button { font-size: 1.1rem; padding: 10px 20px; }
@@ -140,9 +129,8 @@
 
     <!-- LESE-SEITE -->
     <div id="reader-page" class="page">
-        
         <h2 id="story-title">Titel</h2>
-        <div class="info">Tipp: Wenn ein Wort beim Lesen nicht erkannt wird, tippe einfach darauf, um weiterzumachen!</div>
+        <div class="info">Tipp: Wenn ein Wort beim Lesen nicht erkannt wird, tippe einfach mit dem Finger darauf!</div>
         
         <!-- BEDIENFELD -->
         <div class="controls-area">
@@ -160,7 +148,7 @@
 
         <!-- WÖRTERBUCH -->
         <div id="dictionary">
-            <h3>📖 Wörterbuch (Schwere Wörter)</h3>
+            <h3>📖 Wörterbuch</h3>
             <div id="dict-content"></div>
         </div>
     </div>
@@ -171,7 +159,6 @@
         <div id="score-display"></div>
         <div id="stars-display" class="stars"></div>
         <p style="font-size: 1.5rem;">Lesezeit: <b id="result-time">0</b> Sekunden.</p>
-        
         <br>
         <button class="btn-start" onclick="showPage('menu-page')">🏠 Zurück zum Menü</button>
     </div>
@@ -224,25 +211,22 @@
             }
         ];
 
-        // --- VARIABLEN ---
         let currentStory = null;
         let wordElements = [];
         let currentWordIndex = -1;
         let isReadingActive = false;
         
-        // Scroll & Highlight Variablen
         let currentActiveLine = null; 
-        let ttsCurrentWordIndex = -1; // Index während des Vorlesens
+        let ttsCurrentWordIndex = -1; 
         
         let timerInterval;
         let secondsElapsed = 0;
         
         let recognition;
         let isRecognizing = false; 
-        
         let isTTSPlaying = false; 
 
-        // Initialisierung Menü
+        // Menü aufbauen
         const menuContainer = document.getElementById('story-buttons');
         stories.forEach(story => {
             let btn = document.createElement('button');
@@ -265,33 +249,30 @@
             document.getElementById('story-title').innerText = story.title;
             currentActiveLine = null;
             
-            // Vorbereitung für TTS Hervorhebung (Speichert genaue Textposition)
             window.ttsText = "";
             window.ttsWordMap = [];
-            let charCounter = 0;
             
             const container = document.getElementById('text-container');
             container.innerHTML = '';
             wordElements = [];
             let globalWordIndex = 0;
 
-            story.lines.forEach((line, lineIndex) => {
+            story.lines.forEach((line) => {
                 let lineDiv = document.createElement('div');
                 lineDiv.className = 'story-line';
                 
                 let words = line.split(' ');
                 words.forEach(wordStr => {
-                    let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); 
-                    let cleanWordTTS = wordStr.replace(/-/g, ''); // Ohne Bindestriche für Vorleser
+                    let cleanWordTTS = wordStr.replace(/-/g, ''); 
                     
-                    // Für TTS Positionsspeicherung
+                    // Genaue Karte für den Vorleser (TTS)
                     window.ttsWordMap.push({
-                        charIndex: charCounter,
+                        charIndex: window.ttsText.length,
                         wordIndex: globalWordIndex
                     });
                     window.ttsText += cleanWordTTS + " ";
-                    charCounter += cleanWordTTS.length + 1; // +1 für das Leerzeichen
                     
+                    let cleanWord = wordStr.replace(/[.,!?:„“"']/g, ''); 
                     let syllables = wordStr.split('-');
                     let wordSpan = document.createElement('span');
                     wordSpan.className = 'word';
@@ -303,7 +284,6 @@
                         if(isPunctuation && syl.length === 1) {
                             let sylSpan = document.createElement('span');
                             sylSpan.innerText = syl;
-                            sylSpan.style.color = 'var(--text)';
                             wordSpan.appendChild(sylSpan);
                         } else {
                             let sylSpan = document.createElement('span');
@@ -311,17 +291,19 @@
                             let textPart = syl.replace(/[.,!?:„“"']/g, '');
                             let puncPart = syl.match(/[.,!?:„“"']/g);
                             
-                            if (syl.startsWith('„')) { wordSpan.innerHTML += `<span style="color:var(--text)">„</span>`; }
+                            if (syl.startsWith('„')) { wordSpan.innerHTML += `<span>„</span>`; }
                             sylSpan.innerText = textPart;
                             wordSpan.appendChild(sylSpan);
-                            if (puncPart && !syl.startsWith('„')) { wordSpan.innerHTML += `<span style="color:var(--text)">${puncPart.join('')}</span>`; }
+                            if (puncPart && !syl.startsWith('„')) { wordSpan.innerHTML += `<span>${puncPart.join('')}</span>`; }
                         }
                     });
 
-                    // Weiterschalten per Klick
+                    // Manuelles Antippen (Funktioniert sofort!)
                     wordSpan.onclick = function() {
-                        if (isReadingActive && currentWordIndex >= 0) {
-                            setWordActive(parseInt(this.dataset.index));
+                        if (isReadingActive) {
+                            let idx = parseInt(this.dataset.index);
+                            setWordActive(idx);
+                            scrollToLineCentered(this.closest('.story-line'));
                         }
                     };
 
@@ -332,7 +314,6 @@
                 container.appendChild(lineDiv);
             });
 
-            // Wörterbuch füllen
             const dictContainer = document.getElementById('dict-content');
             dictContainer.innerHTML = '';
             for (let [word, meaning] of Object.entries(story.dict)) {
@@ -342,7 +323,6 @@
                 dictContainer.appendChild(entry);
             }
 
-            // UI Reset
             document.getElementById('time').innerText = '0';
             document.getElementById('btn-start').style.display = 'inline-block';
             document.getElementById('btn-listen').style.display = 'inline-block';
@@ -354,20 +334,25 @@
             showPage('reader-page');
         }
 
-        // --- HILFSFUNKTION FÜR ZENTRIERTES SCROLLEN ---
+        // --- HILFSFUNKTION FÜR ZUVERLÄSSIGES SCROLLEN ---
         function scrollToLineCentered(lineEl) {
             if (!lineEl) return;
-            // Berechnet die Position so, dass die Zeile genau in der Mitte des Bildschirms ist
-            const elementPosition = lineEl.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.scrollY - (window.innerHeight / 2) + (lineEl.offsetHeight / 2);
             
-            window.scrollTo({
-                 top: offsetPosition,
-                 behavior: "smooth"
-            });
+            // Kurze Verzögerung für sichere Berechnung
+            setTimeout(() => {
+                const rect = lineEl.getBoundingClientRect();
+                const elementTop = rect.top + window.pageYOffset;
+                const offsetPosition = elementTop - (window.innerHeight / 2) + (rect.height / 2);
+                
+                try {
+                    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                } catch(e) {
+                    window.scrollTo(0, offsetPosition); // Fallback für sehr alte Browser
+                }
+            }, 50);
         }
 
-        // --- VORLESEN (Text-to-Speech) MIT HIGHLIGHTING ---
+        // --- VORLESEN (TTS) MIT HIGHLIGHTING ---
         function toggleTTS() {
             let btnListen = document.getElementById('btn-listen');
             
@@ -376,31 +361,25 @@
             } else {
                 if (!currentStory) return;
                 
+                currentActiveLine = null; // Stellt sicher, dass das erste Wort gescrollt wird
                 let utterance = new SpeechSynthesisUtterance(window.ttsText);
                 utterance.lang = 'de-DE'; 
-                utterance.rate = 0.85; // Kindgerechte Geschwindigkeit
+                utterance.rate = 0.85; 
                 
-                // Feuert jedes Mal, wenn ein neues Wort gesprochen wird
                 utterance.onboundary = function(event) {
-                    if (event.name === 'word') {
-                        // Finde das Wort basierend auf der Textposition
-                        let activeWordObj = null;
-                        for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
-                            if (window.ttsWordMap[i].charIndex <= event.charIndex) {
-                                activeWordObj = window.ttsWordMap[i];
-                                break;
-                            }
+                    let matchIndex = -1;
+                    for (let i = window.ttsWordMap.length - 1; i >= 0; i--) {
+                        if (window.ttsWordMap[i].charIndex <= event.charIndex) {
+                            matchIndex = window.ttsWordMap[i].wordIndex;
+                            break;
                         }
-                        
-                        if (activeWordObj) {
-                            highlightAndScrollTTS(activeWordObj.wordIndex);
-                        }
+                    }
+                    if (matchIndex !== -1 && matchIndex !== ttsCurrentWordIndex) {
+                        highlightAndScrollTTS(matchIndex);
                     }
                 };
                 
-                utterance.onend = function() {
-                    stopAllAudio();
-                };
+                utterance.onend = stopAllAudio;
                 
                 window.speechSynthesis.speak(utterance);
                 isTTSPlaying = true;
@@ -409,40 +388,34 @@
         }
 
         function highlightAndScrollTTS(index) {
-            // Altes Wort demarkieren
             if (ttsCurrentWordIndex >= 0 && ttsCurrentWordIndex < wordElements.length) {
                 wordElements[ttsCurrentWordIndex].classList.remove('active');
             }
             ttsCurrentWordIndex = index;
             
-            // Neues Wort markieren und scrollen
             if (index < wordElements.length) {
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
                 
                 let lineEl = activeEl.closest('.story-line');
-                if (lineEl && lineEl !== currentActiveLine) {
+                if (lineEl !== currentActiveLine) {
                     currentActiveLine = lineEl;
-                    scrollToLineCentered(lineEl); // Scrolle Zeile in die Mitte!
+                    scrollToLineCentered(lineEl);
                 }
             }
         }
 
         function stopAllAudio() {
-            if (window.speechSynthesis) {
-                window.speechSynthesis.cancel();
-            }
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
             isTTSPlaying = false;
             let listenBtn = document.getElementById('btn-listen');
             if (listenBtn) listenBtn.innerHTML = '🔊 Vorhören';
             
-            // Markierung vom Vorlesen entfernen
             if (ttsCurrentWordIndex >= 0 && ttsCurrentWordIndex < wordElements.length) {
                 wordElements[ttsCurrentWordIndex].classList.remove('active');
             }
             ttsCurrentWordIndex = -1;
             
-            // Falls gerade nicht selber gelesen wird, scrolle zurück nach ganz oben
             if (!isReadingActive) {
                 currentActiveLine = null;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -451,16 +424,13 @@
 
         // --- SPRACHERKENNUNG (SELBER LESEN) ---
         const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-        
         if (SpeechRecognitionAPI) {
             recognition = new SpeechRecognitionAPI();
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'de-DE';
 
-            recognition.onstart = function() {
-                isRecognizing = true;
-            };
+            recognition.onstart = function() { isRecognizing = true; };
 
             recognition.onresult = function(event) {
                 if(currentWordIndex < 0 || currentWordIndex >= wordElements.length) return;
@@ -470,19 +440,27 @@
                     interimTranscript += event.results[i][0].transcript;
                 }
                 
-                let spokenWords = interimTranscript.toLowerCase().split(' ');
-                let expectedWord = wordElements[currentWordIndex].dataset.clean;
-                let matchFound = spokenWords.some(w => w.includes(expectedWord) || (expectedWord.includes(w) && w.length > 2));
-
-                if (matchFound) {
-                    let nextIndex = currentWordIndex + 1;
-                    if (nextIndex < wordElements.length) {
-                        setWordActive(nextIndex); 
-                    } else {
-                        wordElements[currentWordIndex].classList.remove('active');
-                        wordElements[currentWordIndex].classList.add('read');
+                let spokenWords = interimTranscript.toLowerCase().split(/\s+/);
+                
+                // Springt durch ALLE erkannten Wörter (für flüssiges Lesen)
+                let advanced = false;
+                while (currentWordIndex < wordElements.length) {
+                    let expectedWord = wordElements[currentWordIndex].dataset.clean;
+                    let matchFound = spokenWords.some(w => w === expectedWord || w.includes(expectedWord) || (expectedWord.includes(w) && w.length > 3));
+                    
+                    if (matchFound) {
                         currentWordIndex++;
-                        finishReading(); 
+                        advanced = true;
+                    } else {
+                        break; 
+                    }
+                }
+
+                if (advanced) {
+                    if (currentWordIndex < wordElements.length) {
+                        setWordActive(currentWordIndex);
+                    } else {
+                        finishReading();
                     }
                 }
             };
@@ -492,7 +470,7 @@
                 if (isReadingActive) {
                     setTimeout(() => {
                         if (!isRecognizing && isReadingActive) {
-                            try { recognition.start(); } catch(e) { }
+                            try { recognition.start(); } catch(e) {}
                         }
                     }, 300);
                 }
@@ -501,32 +479,32 @@
 
         // --- WORTHERVORHEBUNG (SELBER LESEN) ---
         function setWordActive(index) {
-            if(currentWordIndex >= 0 && currentWordIndex < wordElements.length) {
-                wordElements[currentWordIndex].classList.remove('active');
-            }
+            // Alte Hervorhebungen aufräumen
+            document.querySelectorAll('.word.active').forEach(el => el.classList.remove('active'));
             currentWordIndex = index;
             
-            // Vorherige grün (gelesen) markieren
+            // Alles davor wird grün
             for(let i=0; i<index; i++){
                 wordElements[i].classList.add('read');
             }
             
-            // Aktuelles markieren und scrollen
+            // Aktuelles markieren und ggf. scrollen
             if(index < wordElements.length){
                 let activeEl = wordElements[index];
                 activeEl.classList.add('active');
                 
                 let lineEl = activeEl.closest('.story-line');
-                if (lineEl && lineEl !== currentActiveLine) {
+                if (lineEl !== currentActiveLine) {
                     currentActiveLine = lineEl;
-                    scrollToLineCentered(lineEl); // Scrolle Zeile in die Mitte!
+                    scrollToLineCentered(lineEl);
                 }
             }
         }
 
         // --- START / STOP LOGIK ---
         document.getElementById('btn-start').onclick = () => {
-            stopAllAudio(); // Vorleser beenden, falls er noch läuft
+            stopAllAudio(); 
+            currentActiveLine = null; // Scroll-Speicher leeren
             
             isReadingActive = true;
             secondsElapsed = 0;
@@ -537,30 +515,22 @@
                 document.getElementById('time').innerText = secondsElapsed;
             }, 1000);
 
-            // Verstecke Start & Vorhören, zeige Stop
             document.getElementById('btn-start').style.display = 'none';
             document.getElementById('btn-listen').style.display = 'none';
             document.getElementById('btn-stop').style.display = 'inline-block';
             
-            setWordActive(0);
+            setWordActive(0); // Aktiviert das erste Wort und scrollt dorthin
 
             if(recognition && !isRecognizing) {
-                try {
-                    recognition.start();
-                } catch(e) {
-                    console.log("Spracherkennung Fehler:", e);
-                }
+                try { recognition.start(); } catch(e) {}
             }
         };
 
-        document.getElementById('btn-stop').onclick = () => {
-            finishReading();
-        };
+        document.getElementById('btn-stop').onclick = () => finishReading();
 
         function stopReading() {
             isReadingActive = false;
             clearInterval(timerInterval);
-            
             if(recognition && isRecognizing) {
                 try { recognition.stop(); } catch(e){}
             }
@@ -580,12 +550,10 @@
             });
 
             let percentage = (readWords / wordElements.length) * 100;
-            
             document.getElementById('result-time').innerText = secondsElapsed;
             
             let scoreText = "";
             let stars = "";
-            
             if (percentage >= 90) {
                 scoreText = "Perfekt! Du bist ein Lesemeister!";
                 stars = "⭐⭐⭐";
