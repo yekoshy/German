@@ -1,520 +1,411 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mathe Klasse 2 – Testportal bis 100</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #F8FAFC;
-      --card-bg: #FFFFFF;
-      --text: #0F172A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --success: #16A34A;
-      --danger: #DC2626;
-      --radius: 16px;
-    }
+    <meta charset="UTF-8">
+    <title>Mathe Tests 2. Klasse</title>
+    <style>
+        /* PDF and Print Page Setup */
+        * {
+            box-sizing: border-box;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+        @page {
+            size: A4 portrait;
+            margin: 0; /* Let .test-page control the margins */
+        }
 
-    body {
-      background: linear-gradient(135deg, #EFF6FF 0%, #FEF9C3 50%, #FDF2F8 100%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 16px;
-    }
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+            font-size: 11pt;
+            color: #333;
+            line-height: 1.3;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        /* Each test is strictly one A4 page */
+        .test-page {
+            width: 210mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            padding: 12mm 15mm 10mm 15mm;
+            display: flex;
+            flex-direction: column;
+            page-break-after: always;
+            break-after: page;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            overflow: hidden;
+            position: relative;
+            background-color: #ffffff;
+        }
 
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-      padding: 24px;
-      border: 3px solid #E0E7FF;
-    }
+        .test-page:last-child {
+            page-break-after: auto;
+            break-after: auto;
+        }
 
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 14px;
-      border-bottom: 2px dashed #CBD5E1;
-    }
+        /* Header Styling */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #333;
+            padding-bottom: 4px;
+            margin-bottom: 8px;
+            font-size: 10.5pt;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 14pt;
+            text-align: center;
+            margin: 4px 0 10px 0;
+            background-color: #f0f0f0;
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        h2 {
+            font-size: 11.5pt;
+            margin: 8px 0 4px 0;
+            border-bottom: 1px dotted #999;
+            padding-bottom: 2px;
+        }
+        p {
+            margin: 3px 0;
+            font-size: 10.5pt;
+        }
 
-    h1 {
-      font-size: 26px;
-      font-weight: 900;
-      color: #1E3A8A;
-      margin-bottom: 4px;
-    }
+        /* Layout helpers */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 4px;
+        }
+        .col {
+            flex: 1;
+        }
+        
+        /* Answer formatting */
+        .answer-box {
+            display: inline-block;
+            border-bottom: 2px solid #333;
+            min-width: 36px;
+            height: 18px;
+            text-align: center;
+            margin: 0 4px;
+            vertical-align: bottom;
+        }
+        .long-box {
+            display: block;
+            border: 1.5px solid #aaa;
+            border-radius: 5px;
+            height: 34px;
+            margin: 4px 0;
+            background-color: #fafafa;
+        }
+        .circle-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #333;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            margin: 0 4px;
+            vertical-align: middle;
+            font-size: 11pt;
+        }
 
-    .subtitle {
-      font-size: 15px;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
+        /* Tables */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            text-align: center;
+        }
+        th, td {
+            border: 1.5px solid #333;
+            padding: 4px;
+            font-size: 11pt;
+        }
+        .table-header {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
 
-    .badge-bar {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
+        /* Hunderterfeld */
+        .hunderterfeld {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            border: 2px solid #333;
+            width: 65%;
+            margin: 4px auto;
+        }
+        .hunderterfeld div {
+            border: 1px solid #333;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11pt;
+        }
+        .hunderterfeld .blank {
+            background-color: #f4f4f4;
+        }
 
-    .pill {
-      background: #FEF08A;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: 13px;
-      color: #854D0E;
-    }
+        /* Pyramids */
+        .mauer {
+            text-align: center;
+            margin: 4px 0;
+        }
+        .mauer-row {
+            display: flex;
+            justify-content: center;
+        }
+        .mauer-box {
+            border: 2px solid #333;
+            width: 50px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 1px;
+            background-color: #fff;
+            font-size: 11pt;
+        }
 
-    .test-nav {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 650px) {
-      .test-nav { grid-template-columns: 1fr; }
-    }
-
-    .test-btn {
-      padding: 12px 8px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      background: #F8FAFC;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .test-btn small {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .test-btn:hover { transform: translateY(-2px); }
-    .test-btn.active[data-test="0"] { background: #DBEAFE; border-color: #3B82F6; color: #1E40AF; }
-    .test-btn.active[data-test="1"] { background: #FFEDD5; border-color: #F97316; color: #9A3412; }
-    .test-btn.active[data-test="2"] { background: #FCE7F3; border-color: #EC4899; color: #9D174D; }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #F1F5F9;
-      padding: 10px 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .timer-box {
-      font-size: 17px;
-      font-weight: 900;
-      color: #DC2626;
-      background: #FEE2E2;
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
-
-    .actions { display: flex; gap: 8px; }
-
-    .btn {
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 13px;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-pdf { background: #E2E8F0; color: #1E293B; }
-    .btn-submit { background: #16A34A; color: white; }
-    .btn-reset { background: #DC2626; color: white; }
-
-    .question-card {
-      background: #FFFFFF;
-      border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 18px;
-      margin-bottom: 14px;
-      transition: 0.15s;
-    }
-
-    .question-card:hover { border-color: #93C5FD; }
-
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .q-number {
-      font-size: 13px;
-      font-weight: 900;
-      background: #EEF2FF;
-      color: #3730A3;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .q-topic {
-      font-size: 12px;
-      font-weight: 700;
-      color: #047857;
-      background: #ECFDF5;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .q-text {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-
-    .q-input-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    input[type="text"] {
-      font-size: 19px;
-      font-weight: 800;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 2px solid #CBD5E1;
-      width: 140px;
-      text-align: center;
-      background: #F8FAFC;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #3B82F6;
-      background: #FFFFFF;
-      box-shadow: 0 0 0 3px #DBEAFE;
-    }
-
-    .feedback-indicator {
-      font-size: 15px;
-      font-weight: 800;
-      display: none;
-    }
-
-    .feedback-indicator.correct { display: inline-block; color: var(--success); }
-    .feedback-indicator.wrong { display: inline-block; color: var(--danger); }
-
-    .result-banner {
-      display: none;
-      background: linear-gradient(135deg, #FEF08A, #FED7AA);
-      border: 3px solid #F59E0B;
-      border-radius: 14px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .result-score { font-size: 34px; font-weight: 900; color: #92400E; }
-    .result-level { font-size: 20px; font-weight: 800; color: #B45309; margin-top: 4px; }
-
-    @media print {
-      body { background: white; padding: 0; }
-      .container { border: none; box-shadow: none; max-width: 100%; padding: 0; }
-      .test-nav, .toolbar, .actions, .btn, .result-banner { display: none !important; }
-      .question-card { page-break-inside: avoid; border: 1px solid #64748B; margin-bottom: 12px; }
-      input {
-        border-bottom: 2px solid #000 !important;
-        border-top: none !important;
-        border-left: none !important;
-        border-right: none !important;
-        background: transparent !important;
-      }
-    }
-  </style>
+        .grade-box {
+            text-align: right;
+            margin-top: auto;
+            padding-top: 6px;
+            font-size: 10pt;
+            font-weight: bold;
+            border-top: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <h1>🦁 Mathe 2. Klasse – Testcenter bis 100</h1>
-    <div class="subtitle">Wie im Arbeitsheft: Zahlenraum 100 & Rechnen mit Einern</div>
-    <div class="badge-bar">
-      <span class="pill">⏱️ Zeit: 40 Minuten</span>
-      <span class="pill">👧 Alter: 7 Jahre</span>
-      <span class="pill">💾 Auto-Speichern bei Neuladen</span>
+    <!-- ========================================== -->
+    <!-- TEST 1: EASY (Leicht) -->
+    <!-- ========================================== -->
+    <div class="test-page">
+        <div class="header">
+            <span>Name: ___________________________</span>
+            <span>Klasse: 2 ___</span>
+            <span>Datum: _______________</span>
+        </div>
+
+        <h1>Test 1: Übung macht den Meister (Leicht)</h1>
+
+        <h2>1. Rechne aus. (8 Punkte)</h2>
+        <div class="row" style="font-size: 12.5pt; line-height: 1.8;">
+            <div class="col">
+                (34 + 5 =) <span class="answer-box"></span><br>
+                (52 + 6 =) <span class="answer-box"></span><br>
+                (67 - 4 =) <span class="answer-box"></span>
+            </div>
+            <div class="col">
+                (45 + 30 =) <span class="answer-box"></span><br>
+                (78 - 20 =) <span class="answer-box"></span><br>
+                (80 + 9 =) <span class="answer-box"></span>
+            </div>
+        </div>
+
+        <h2>2. Vergleiche. Setze ein: &lt; , &gt; oder = (6 Punkte)</h2>
+        <div class="row" style="font-size: 12pt; line-height: 1.8;">
+            <div class="col">
+                (45 + 3) <span class="circle-box"></span> (49)<br>
+                (62) <span class="circle-box"></span> (60 + 2)
+            </div>
+            <div class="col">
+                (78 - 5) <span class="circle-box"></span> (78 + 5)<br>
+                (9) Zehner (4) Einer <span class="circle-box"></span> (90)
+            </div>
+        </div>
+
+        <h2>3. Rechentabelle (8 Punkte)</h2>
+        <table style="width: 75%; margin: 4px auto;">
+            <tr class="table-header"><td>+</td><td>3</td><td>5</td><td>8</td></tr>
+            <tr><td class="table-header">24</td><td></td><td></td><td></td></tr>
+            <tr><td class="table-header">41</td><td></td><td></td><td></td></tr>
+            <tr><td class="table-header">76</td><td></td><td></td><td></td></tr>
+        </table>
+
+        <h2>4. Zahlenmauer (4 Punkte)</h2>
+        <p style="text-align: center;">Zwei Steine nebeneinander ergeben den Stein darüber.</p>
+        <div class="mauer">
+            <div class="mauer-row"><div class="mauer-box"></div></div>
+            <div class="mauer-row"><div class="mauer-box"></div><div class="mauer-box"></div></div>
+            <div class="mauer-row"><div class="mauer-box">35</div><div class="mauer-box">12</div><div class="mauer-box">7</div></div>
+        </div>
+
+        <h2>5. Das Hunderterfeld (8 Punkte)</h2>
+        <p style="text-align: center;">Trage die fehlenden Zahlen ein.</p>
+        <div class="hunderterfeld">
+            <div>21</div><div>22</div><div class="blank"></div><div>24</div><div>25</div>
+            <div>31</div><div class="blank"></div><div>33</div><div>34</div><div class="blank"></div>
+            <div>41</div><div>42</div><div class="blank"></div><div>44</div><div>45</div>
+        </div>
+
+        <div class="grade-box">Von 34 Punkten habe ich ______ erreicht.</div>
     </div>
-  </header>
 
-  <div class="test-nav">
-    <button class="test-btn active" data-test="0" onclick="switchTest(0)">
-      <span>⭐ Test 1: Mittel</span>
-      <small>Zahlenraum & ohne Übergang</small>
-    </button>
-    <button class="test-btn" data-test="1" onclick="switchTest(1)">
-      <span>🚀 Test 2: Schwer</span>
-      <small>Über den Zehner & Detektiv</small>
-    </button>
-    <button class="test-btn" data-test="2" onclick="switchTest(2)">
-      <span>👑 Test 3: Profi</span>
-      <small>Knobel-, Farb- & Sachaufgaben</small>
-    </button>
-  </div>
+    <!-- ========================================== -->
+    <!-- TEST 2: MEDIUM (Mittel) -->
+    <!-- ========================================== -->
+    <div class="test-page">
+        <div class="header">
+            <span>Name: ___________________________</span>
+            <span>Klasse: 2 ___</span>
+            <span>Datum: _______________</span>
+        </div>
 
-  <div class="toolbar">
-    <div class="timer-box">
-      <span>⏳ Zeit:</span>
-      <span id="timerDisplay">40:00</span>
+        <h1>Test 2: Auf dem Weg zum Profi (Mittel)</h1>
+
+        <h2>1. Rechne aus (Zehnerübergang). (8 Punkte)</h2>
+        <div class="row" style="font-size: 12.5pt; line-height: 1.8;">
+            <div class="col">
+                (48 + 5 =) <span class="answer-box"></span><br>
+                (36 + 8 =) <span class="answer-box"></span><br>
+                (72 - 6 =) <span class="answer-box"></span>
+            </div>
+            <div class="col">
+                (57 + 7 =) <span class="answer-box"></span><br>
+                (64 - 9 =) <span class="answer-box"></span><br>
+                (85 - 8 =) <span class="answer-box"></span>
+            </div>
+        </div>
+
+        <h2>2. Vergleiche. Setze ein: &lt; , &gt; oder = (6 Punkte)</h2>
+        <div class="row" style="font-size: 12pt; line-height: 1.8;">
+            <div class="col">
+                (38 + 7) <span class="circle-box"></span> (45)<br>
+                (7) Zehner (3) Einer <span class="circle-box"></span> (69)
+            </div>
+            <div class="col">
+                (66 - 8) <span class="circle-box"></span> (66 - 9)<br>
+                (50 + 20) <span class="circle-box"></span> (80 - 10)
+            </div>
+        </div>
+
+        <h2>3. Rechne in zwei Schritten. (6 Punkte)</h2>
+        <div class="row" style="font-size: 11.5pt;">
+            <div class="col">
+                (45 + 8 = 45 +) <span class="answer-box" style="min-width:24px;"></span> (+) <span class="answer-box" style="min-width:24px;"></span> (=) <span class="answer-box"></span>
+            </div>
+            <div class="col">
+                (83 - 6 = 83 -) <span class="answer-box" style="min-width:24px;"></span> (-) <span class="answer-box" style="min-width:24px;"></span> (=) <span class="answer-box"></span>
+            </div>
+        </div>
+
+        <h2>4. Zahlenhaus (6 Punkte)</h2>
+        <p style="text-align: center;">Die zwei unteren Zahlen ergeben zusammen die Zahl im Dach.</p>
+        <div style="width: 140px; margin: 0 auto; text-align: center;">
+            <div style="border-bottom: 2px solid #333; width: 60px; margin: 0 auto; font-weight: bold; font-size: 13pt;">70</div>
+            <table style="width: 100%; border: none; margin-top: 3px;">
+                <tr><td style="border: 1px solid #333; padding: 3px;">40</td><td style="border: 1px solid #333; background: #f4f4f4; padding: 3px;"></td></tr>
+                <tr><td style="border: 1px solid #333; background: #f4f4f4; padding: 3px;"></td><td style="border: 1px solid #333; padding: 3px;">25</td></tr>
+            </table>
+        </div>
+
+        <h2>5. Das Hunderterfeld (8 Punkte)</h2>
+        <p style="text-align: center;">Trage die fehlenden Zahlen ein.</p>
+        <div class="hunderterfeld">
+            <div class="blank"></div><div>52</div><div>53</div><div class="blank"></div><div>55</div>
+            <div>61</div><div class="blank"></div><div>63</div><div>64</div><div class="blank"></div>
+            <div>71</div><div>72</div><div class="blank"></div><div>74</div><div>75</div>
+        </div>
+
+        <h2>6. Sachaufgabe (4 Punkte)</h2>
+        <p>Auf dem Pausenhof spielen 46 Kinder. 9 Kinder gehen in die Klasse zurück.<br>
+        <strong>Frage:</strong> Wie viele Kinder bleiben auf dem Pausenhof?</p>
+        <p><strong>Rechnung:</strong></p>
+        <div class="long-box"></div>
+        <p><strong>Antwort:</strong> Es bleiben <span class="answer-box" style="min-width: 50px;"></span> Kinder auf dem Pausenhof.</p>
+
+        <div class="grade-box">Von 38 Punkten habe ich ______ erreicht.</div>
     </div>
-    <div class="actions">
-      <button class="btn btn-pdf" onclick="window.print()">🖨️ Drucken / PDF</button>
-      <button class="btn btn-reset" onclick="resetCurrentTest()">↺ Neu starten</button>
-      <button class="btn btn-submit" onclick="gradeCurrentTest()">✅ Test abgeben</button>
+
+    <!-- ========================================== -->
+    <!-- TEST 3: HARD (Schwer) -->
+    <!-- ========================================== -->
+    <div class="test-page">
+        <div class="header">
+            <span>Name: ___________________________</span>
+            <span>Klasse: 2 ___</span>
+            <span>Datum: _______________</span>
+        </div>
+
+        <h1>Test 3: Das große Super-M-Rätsel (Schwer)</h1>
+
+        <h2>1. Finde die fehlenden Zahlen. (8 Punkte)</h2>
+        <div class="row" style="font-size: 12.5pt; line-height: 1.8;">
+            <div class="col">
+                (35 +) <span class="answer-box"></span> (= 42)<br>
+                <span class="answer-box"></span> (+ 7 = 54)<br>
+                (81 -) <span class="answer-box"></span> (= 74)
+            </div>
+            <div class="col">
+                (68 -) <span class="answer-box"></span> (= 59)<br>
+                <span class="answer-box"></span> (- 8 = 47)<br>
+                (29 +) <span class="answer-box"></span> (= 33)
+            </div>
+        </div>
+
+        <h2>2. Vergleiche. Setze ein: &lt; , &gt; oder = (6 Punkte)</h2>
+        <div class="row" style="font-size: 12pt; line-height: 1.8;">
+            <div class="col">
+                (56 + 8) <span class="circle-box"></span> (50 + 14)<br>
+                (70 - 4) <span class="circle-box"></span> (70 - 6)
+            </div>
+            <div class="col">
+                (43 - 8) <span class="circle-box"></span> (32 + 3)<br>
+                (90 - 10) <span class="circle-box"></span> (8) Zehner
+            </div>
+        </div>
+
+        <h2>3. Super-Päckchen. Finde das Muster und rechne. (6 Punkte)</h2>
+        <div class="row" style="font-size: 11pt;">
+            <div class="col" style="line-height: 1.6;">
+                (24 + 8 =) <span class="answer-box"></span><br>
+                (25 + 7 =) <span class="answer-box"></span><br>
+                (26 + 6 =) <span class="answer-box"></span><br>
+                (27 + 5 =) <span class="answer-box"></span>
+            </div>
+            <div class="col">
+                <em>Was fällt dir auf?</em>
+                <div class="long-box" style="height: 52px;"></div>
+            </div>
+        </div>
+
+        <h2>4. Rechenmauer (6 Punkte)</h2>
+        <div class="mauer">
+            <div class="mauer-row"><div class="mauer-box"></div></div>
+            <div class="mauer-row"><div class="mauer-box"></div><div class="mauer-box"></div></div>
+            <div class="mauer-row"><div class="mauer-box">48</div><div class="mauer-box">9</div><div class="mauer-box">7</div></div>
+        </div>
+
+        <h2>5. Zahlenrätsel (4 Punkte)</h2>
+        <p>
+            a) Wenn du zu meiner Zahl 8 dazuzählst, erhältst du 50.<br>
+            Meine Zahl heißt: <span class="answer-box"></span><br>
+            b) Meine Zahl liegt zwischen 60 und 70. Sie hat doppelt so viele Einer wie Zehner.<br>
+            Meine Zahl heißt: <span class="answer-box"></span>
+        </p>
+
+        <h2>6. Sachaufgabe (6 Punkte)</h2>
+        <p>Marie hat 54 Sticker in ihrem Album. Sie verschenkt 8 Sticker an Tim. Am Nachmittag kauft sie sich 6 neue Sticker.<br>
+        <strong>Frage:</strong> Wie viele Sticker hat Marie am Ende des Tages?</p>
+        <p><strong>Rechnung (2 Schritte):</strong></p>
+        <div class="long-box"></div>
+        <p><strong>Antwort:</strong> Marie hat am Ende <span class="answer-box" style="min-width: 50px;"></span> Sticker.</p>
+
+        <div class="grade-box">Von 36 Punkten habe ich ______ erreicht.</div>
     </div>
-  </div>
-
-  <div class="result-banner" id="resultBanner">
-    <div class="result-score" id="scoreDisplay">0 / 15 Punkte</div>
-    <div class="result-level" id="levelDisplay">🌟 Super gemacht!</div>
-  </div>
-
-  <div id="questionsContainer"></div>
-</div>
-
-<script>
-const testsData = [
-  {
-    title: "Test 1: Mittel (Zahlen bis 100 & Einer ohne Übergang)",
-    questions: [
-      { id: 1, topic: "Stellenwert", text: "Wie heißt die Zahl mit 5 Zehnern und 7 Einern?", answer: "57" },
-      { id: 2, topic: "Stellenwert", text: "Welche Zahl ist 8 Z 4 E?", answer: "84" },
-      { id: 3, topic: "Nachbarzehner", text: "Welcher volle Zehner kommt direkt VOR der 64? (z.B. 50, 60...)", answer: "60" },
-      { id: 4, topic: "Nachbarzehner", text: "Welcher volle Zehner kommt direkt NACH der 87?", answer: "90" },
-      { id: 5, topic: "Zahlenreihe", text: "Setze passend fort: 48 ➔ 51 ➔ 54 ➔ ___ ➔ 60", answer: "57" },
-      { id: 6, topic: "Zerlegen", text: "Zerlege in Zehner und Einer: 73 = 70 + ___", answer: "3" },
-      { id: 7, topic: "Vergleichen", text: "Setze < , > oder = ein: 8 Z 2 E ___ 8 Z 7 E", answer: "<" },
-      { id: 8, topic: "Vergleichen", text: "Setze < , > oder = ein: 5 E 9 Z ___ 95", answer: "=" },
-      { id: 9, topic: "Plus rechnen", text: "Rechne aus: 43 + 5 =", answer: "48" },
-      { id: 10, topic: "Plus rechnen", text: "Rechne aus: 62 + 7 =", answer: "69" },
-      { id: 11, topic: "Minus rechnen", text: "Rechne aus: 58 - 4 =", answer: "54" },
-      { id: 12, topic: "Minus rechnen", text: "Rechne aus: 79 - 6 =", answer: "73" },
-      { id: 13, topic: "Ergänzen", text: "Ergänze zum nächsten Zehner: 34 + ___ = 40", answer: "6" },
-      { id: 14, topic: "Rechenmauer", text: "Unten liegen 41 und 6 nebeneinander. Welche Zahl steht auf dem Stein darüber?", answer: "47" },
-      { id: 15, topic: "Sachaufgabe", text: "Im Schulgarten blühen 32 gelbe Blumen und 6 rote Blumen. Wie viele Blumen blühen zusammen?", answer: "38" }
-    ]
-  },
-  {
-    title: "Test 2: Schwer (Schrittweise über den Zehner & Detektiv)",
-    questions: [
-      { id: 1, topic: "Schrittweise Plus", text: "Schrittweise über den Zehner: 48 + 5 = 48 + 2 + 3 = ___", answer: "53" },
-      { id: 2, topic: "Schrittweise Plus", text: "Schrittweise über den Zehner: 65 + 8 = 65 + 5 + 3 = ___", answer: "73" },
-      { id: 3, topic: "Zehnerübergang", text: "Rechne: 37 + 6 =", answer: "43" },
-      { id: 4, topic: "Zehnerübergang", text: "Rechne: 74 + 8 =", answer: "82" },
-      { id: 5, topic: "Schrittweise Minus", text: "Schrittweise zurück: 52 - 5 = 52 - 2 - 3 = ___", answer: "47" },
-      { id: 6, topic: "Schrittweise Minus", text: "Schrittweise zurück: 73 - 7 = 73 - 3 - 4 = ___", answer: "66" },
-      { id: 7, topic: "Zehnerübergang", text: "Rechne: 43 - 6 =", answer: "37" },
-      { id: 8, topic: "Zehnerübergang", text: "Rechne: 81 - 5 =", answer: "76" },
-      { id: 9, topic: "Lückenaufgabe", text: "Ergänze: 88 + ___ = 93", answer: "5" },
-      { id: 10, topic: "Lückenaufgabe", text: "Ergänze: 61 - ___ = 55", answer: "6" },
-      { id: 11, topic: "Rechenmauer", text: "Unten liegen 38 und 7. Welcher Stein kommt genau darüber?", answer: "45" },
-      { id: 12, topic: "Fehler-Detektiv", text: "Stimmt die Rechnung? 76 + 7 = 83 (Schreibe: ja oder nein)", answer: "ja" },
-      { id: 13, topic: "Fehler-Detektiv", text: "Stimmt die Rechnung? 54 - 6 = 49 (Schreibe: ja oder nein)", answer: "nein" },
-      { id: 14, topic: "Zahlenrätsel", text: "Wenn ich von meiner Zahl 6 abziehe, erhalte ich 47. Wie heißt meine Zahl?", answer: "53" },
-      { id: 15, topic: "Sachaufgabe", text: "Auf dem Rodelberg sind 26 Kinder. Es kommen noch 8 Kinder dazu. Wie viele Kinder sind es jetzt?", answer: "34" }
-    ]
-  },
-  {
-    title: "Test 3: Profi (Knobelaufgaben, Farbrätsel & Logik)",
-    questions: [
-      { id: 1, topic: "Lücke vorne", text: "Finde die Zahl: ___ + 7 = 53", answer: "46" },
-      { id: 2, topic: "Lücke vorne", text: "Finde die Zahl: ___ - 8 = 65", answer: "73" },
-      { id: 3, topic: "Farbrätsel", text: "Ein grünes Feld ist 7 wert. Was ergibt: 34 - Grün ?", answer: "27" },
-      { id: 4, topic: "Farbrätsel", text: "Gelb + Grün = 30. Grün ist 7. Wie viel ist Gelb?", answer: "23" },
-      { id: 5, topic: "Rechenkette", text: "50 minus 6 = 44. Nun 44 plus 9 = ___", answer: "53" },
-      { id: 6, topic: "Würfel-Rätsel", text: "4 Würfel ergeben zusammen 42. Drei Würfel zeigen 20, 10 und 7. Welche Zahl hat der 4. Würfel?", answer: "5" },
-      { id: 7, topic: "Hunderterfeld", text: "Starte bei 34. Gehe 2 Schritte nach rechts (+2) und 3 Zeilen nach unten (+30). Wo landest du?", answer: "66" },
-      { id: 8, topic: "Ziffernkarten", text: "Karten: 8, 3, 0, 5. Wie heißt die GRÖSSTE zweistellige Zahl?", answer: "85" },
-      { id: 9, topic: "Ziffernkarten", text: "Karten: 8, 3, 0, 5. Wie heißt die KLEINSTE zweistellige Zahl (ohne 0 vorn)?", answer: "30" },
-      { id: 10, topic: "Zahlenrätsel", text: "Die Zahl liegt zwischen 70 und 80. Ihre Einerziffer ist um 3 kleiner als die Zehnerziffer (7).", answer: "74" },
-      { id: 11, topic: "Zahlenrätsel", text: "Ich denke mir eine Zahl. Wenn ich 9 abziehe, erhalte ich 68. Welche Zahl dachte ich?", answer: "77" },
-      { id: 12, topic: "Halber Hunderter", text: "Die Hälfte von 100 ist 50. Ziehe 7 Einer ab. Wie heißt das Ergebnis?", answer: "43" },
-      { id: 13, topic: "Schneeballschlacht", text: "Marco hat 32 Schneebälle. Josip hat 8 MEHR als Marco. Wie viele hat Josip?", answer: "40" },
-      { id: 14, topic: "Schneeballschlacht", text: "Pablo hat 10 WENIGER als Marco (32). Wie viele Schneebälle hat Pablo?", answer: "22" },
-      { id: 15, topic: "Mauer-Knobelei", text: "Schneekugeln: 6 unten + 5 darüber + 4 + 3 + 2 + 1 ganz oben. Wie viele Kugeln sind es insgesamt?", answer: "21" }
-    ]
-  }
-];
-
-let activeTest = 0;
-let timers = [2400, 2400, 2400];
-let timerInterval = null;
-
-function getStorageKey(idx) {
-  return "mathe_real2kl_test_" + idx;
-}
-
-function loadState() {
-  const savedActive = localStorage.getItem("mathe_real_activetest");
-  if (savedActive !== null) activeTest = parseInt(savedActive, 10);
-  const savedTime = localStorage.getItem("mathe_real_timer_" + activeTest);
-  if (savedTime !== null) timers[activeTest] = parseInt(savedTime, 10);
-}
-
-function saveAnswer(testIdx, qId, val) {
-  let savedData = JSON.parse(localStorage.getItem(getStorageKey(testIdx)) || "{}");
-  savedData[qId] = val.trim();
-  localStorage.setItem(getStorageKey(testIdx), JSON.stringify(savedData));
-}
-
-function getSavedAnswer(testIdx, qId) {
-  let savedData = JSON.parse(localStorage.getItem(getStorageKey(testIdx)) || "{}");
-  return savedData[qId] || "";
-}
-
-function renderQuestions() {
-  const container = document.getElementById("questionsContainer");
-  const currentTest = testsData[activeTest];
-  container.innerHTML = "";
-
-  document.querySelectorAll(".test-btn").forEach((btn, idx) => {
-    btn.classList.toggle("active", idx === activeTest);
-  });
-
-  document.getElementById("resultBanner").style.display = "none";
-
-  currentTest.questions.forEach((q, idx) => {
-    const card = document.createElement("div");
-    card.className = "question-card";
-    const userVal = getSavedAnswer(activeTest, q.id);
-
-    card.innerHTML = `
-      <div class="question-header">
-        <span class="q-number">Aufgabe ${idx + 1}</span>
-        <span class="q-topic">${q.topic}</span>
-      </div>
-      <div class="q-text">${q.text}</div>
-      <div class="q-input-wrap">
-        <input type="text" id="input_q_${q.id}" value="${userVal}" placeholder="Antwort..." oninput="handleInput(${activeTest}, ${q.id}, this.value)">
-        <span class="feedback-indicator" id="feedback_${q.id}"></span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-function handleInput(testIdx, qId, value) {
-  saveAnswer(testIdx, qId, value);
-}
-
-function switchTest(newIndex) {
-  activeTest = newIndex;
-  localStorage.setItem("mathe_real_activetest", activeTest);
-  renderQuestions();
-  startTimer();
-}
-
-function startTimer() {
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (timers[activeTest] > 0) {
-      timers[activeTest]--;
-      localStorage.setItem("mathe_real_timer_" + activeTest, timers[activeTest]);
-      updateTimerDisplay();
-    } else {
-      clearInterval(timerInterval);
-      alert("⏰ Die Zeit von 40 Minuten ist um!");
-      gradeCurrentTest();
-    }
-  }, 1000);
-  updateTimerDisplay();
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timers[activeTest] / 60);
-  const s = timers[activeTest] % 60;
-  document.getElementById("timerDisplay").textContent = 
-    (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
-}
-
-function gradeCurrentTest() {
-  const currentTest = testsData[activeTest];
-  let score = 0;
-  const total = currentTest.questions.length;
-
-  currentTest.questions.forEach(q => {
-    const userVal = (getSavedAnswer(activeTest, q.id) || "").replace(/\s+/g, '').toLowerCase();
-    const cleanAnswer = q.answer.toLowerCase().replace(/\s+/g, '');
-    const feedbackEl = document.getElementById("feedback_" + q.id);
-
-    if (userVal === cleanAnswer) {
-      score++;
-      if (feedbackEl) {
-        feedbackEl.className = "feedback-indicator correct";
-        feedbackEl.innerHTML = "✅ Richtig!";
-      }
-    } else {
-      if (feedbackEl) {
-        feedbackEl.className = "feedback-indicator wrong";
-        feedbackEl.innerHTML = `❌ Richtig: <b>${q.answer}</b>`;
-      }
-    }
-  });
-
-  const banner = document.getElementById("resultBanner");
-  const scoreDisp = document.getElementById("scoreDisplay");
-  const levelDisp = document.getElementById("levelDisplay");
-  banner.style.display = "block";
-  scoreDisp.textContent = `${score} von ${total} Punkten`;
-
-  let badge = "";
-  if (score === 15) badge = "🏆 Fantastisch! Du bist ein echter Mathe-Champion!";
-  else if (score >= 12) badge = "🌟 Klasse Leistung! Fast fehlerfrei gerechnet!";
-  else if (score >= 9) badge = "👍 Gut gemacht! Du bist auf dem besten Weg!";
-  else badge = "💪 Weiter so! Übung macht den Meister!";
-
-  levelDisp.textContent = badge;
-  banner.scrollIntoView({ behavior: 'smooth' });
-}
-
-function resetCurrentTest() {
-  if (confirm("Möchtest du diesen Test wirklich von vorne starten?")) {
-    localStorage.removeItem(getStorageKey(activeTest));
-    timers[activeTest] = 2400;
-    localStorage.removeItem("mathe_real_timer_" + activeTest);
-    renderQuestions();
-    updateTimerDisplay();
-  }
-}
-
-// Start
-loadState();
-renderQuestions();
-startTimer();
-</script>
 
 </body>
 </html>
