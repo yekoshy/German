@@ -854,7 +854,8 @@
         </div>
         <div style="font-weight: 800; color: #546E7A; margin-bottom: 12px;" id="speakProgressText">Wort 1 von 10</div>
 
-        <div class="carousel-image-frame" style="height: 220px; max-width: 320px;">
+        <!-- Frame with ID speakFrame so re-rendering doesn't detach container -->
+        <div class="carousel-image-frame" id="speakFrame" style="height: 220px; max-width: 320px;">
           <img id="speakImg" class="carousel-image" src="img/a1.jpg" alt="Target Word" onerror="handleImageError(this, currentSpeakIdx)">
         </div>
 
@@ -902,7 +903,14 @@
         <h2 style="margin-top:0; color:#8E24AA;">✏️ Großes 'A' oder kleines 'a'?</h2>
         <p style="color:#607D8B; font-weight: 700;">Wähle den richtigen Buchstaben für die Lücke!</p>
 
-        <div class="carousel-image-frame" style="height: 220px; max-width: 320px;">
+        <!-- Progress bar for all 10 fill-in exercises -->
+        <div class="progress-bar-container">
+          <div class="progress-fill" id="fillProgressFill"></div>
+        </div>
+        <div style="font-weight: 800; color: #546E7A; margin-bottom: 12px;" id="fillProgressText">Wort 1 von 10</div>
+
+        <!-- Frame with ID fillFrame so re-rendering doesn't detach container -->
+        <div class="carousel-image-frame" id="fillFrame" style="height: 220px; max-width: 320px;">
           <img id="fillImg" class="carousel-image" src="img/a1.jpg" alt="Fill word" onerror="handleImageError(this, currentFillIdx)">
         </div>
 
@@ -1243,12 +1251,9 @@
     }
 
     function speakTrilingual(deText, enText, arText) {
-      // 1. German
       speakText(deText, 'de-DE', 1.1, 0.85, () => {
-        // 2. English
         setTimeout(() => {
           speakText(enText, 'en-US', 1.05, 0.9, () => {
-            // 3. Arabic
             setTimeout(() => {
               speakText(arText, 'ar-SA', 1.0, 0.85);
             }, 300);
@@ -1287,7 +1292,6 @@
       }
 
       if (listenCurrentIndex >= listenQueue.length) {
-        // Finished all 10 words!
         listenQuizContainer.style.display = 'none';
         listenCongrats.style.display = 'block';
         triggerConfetti();
@@ -1298,19 +1302,16 @@
       listenLock = false;
       listenCurrentTarget = listenQueue[listenCurrentIndex];
 
-      // Update progress
       const progressPercent = (listenCurrentIndex / listenQueue.length) * 100;
       listenProgressFill.style.width = `${progressPercent}%`;
       listenProgressText.textContent = `Frage ${listenCurrentIndex + 1} von ${listenQueue.length}`;
 
-      // Pick 2 distractors
       const distractors = VOCABULARY.filter(item => item.id !== listenCurrentTarget.id)
                                    .sort(() => Math.random() - 0.5)
                                    .slice(0, 2);
       
       const roundOptions = [listenCurrentTarget, ...distractors].sort(() => Math.random() - 0.5);
 
-      // Render options
       listenQuizOptions.innerHTML = "";
       roundOptions.forEach(opt => {
         const btn = document.createElement('button');
@@ -1320,7 +1321,6 @@
         listenQuizOptions.appendChild(btn);
       });
 
-      // Play audio automatically
       playListenPromptAudio();
     }
 
@@ -1359,23 +1359,24 @@
 
     /* =========================================================
        7. TAB 4: EXERCISE 2 – SPEAKING QUIZ (Speech Recognition)
+       [FIXED: Automatic progression & safe container references]
        ========================================================= */
     let currentSpeakIdx = 0;
     let recognition = null;
     let isListening = false;
+    let speakLock = false;
 
     const micBtn = document.getElementById('micBtn');
     const micStatusText = document.getElementById('micStatusText');
     const speakFeedback = document.getElementById('speakFeedback');
     const speakTargetGerman = document.getElementById('speakTargetGerman');
     const speakHints = document.getElementById('speakHints');
-    const speakImg = document.getElementById('speakImg');
+    const speakFrame = document.getElementById('speakFrame');
     const speakProgressFill = document.getElementById('speakProgressFill');
     const speakProgressText = document.getElementById('speakProgressText');
     const speakQuizContainer = document.getElementById('speakQuizContainer');
     const speakCongrats = document.getElementById('speakCongrats');
 
-    // Initialize Web Speech Recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (SpeechRecognition) {
@@ -1420,6 +1421,8 @@
     }
 
     function loadSpeakCard() {
+      speakLock = false;
+
       if (currentSpeakIdx >= VOCABULARY.length) {
         speakQuizContainer.style.display = 'none';
         speakCongrats.style.display = 'block';
@@ -1432,8 +1435,8 @@
       speakCongrats.style.display = 'none';
 
       const item = VOCABULARY[currentSpeakIdx];
-      const parentFrame = speakImg.parentElement;
-      parentFrame.innerHTML = `<img id="speakImg" class="carousel-image" src="${item.img}" alt="${item.noun}" onerror="handleImageError(this, ${currentSpeakIdx})">`;
+      // Using speakFrame directly so the container reference is never lost
+      speakFrame.innerHTML = `<img id="speakImg" class="carousel-image" src="${item.img}" alt="${item.noun}" onerror="handleImageError(this, ${currentSpeakIdx})">`;
       
       speakTargetGerman.innerHTML = formatHighlightedWord(item.article, item.noun);
       speakHints.innerHTML = `${item.emoji} ${item.english} • <span style="direction: rtl; color: #2E7D32;">${item.arabic}</span>`;
@@ -1453,6 +1456,9 @@
     }
 
     function skipSpeakWord() {
+      if (recognition && isListening) {
+        try { recognition.stop(); } catch(e){}
+      }
       currentSpeakIdx++;
       loadSpeakCard();
     }
@@ -1481,31 +1487,33 @@
       }
     });
 
-    // Lenient evaluation for 4-year-old toddler speech
+    // Lenient evaluation for 4-year-old toddler speech + automatic next card
     function evaluateSpokenWord(transcript) {
+      if (speakLock) return;
+
       const item = VOCABULARY[currentSpeakIdx];
       const nounLower = item.noun.toLowerCase();
       const fullLower = item.fullGerman.toLowerCase();
-      
-      // Clean string
       const cleanTranscript = transcript.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").trim();
 
-      // Check match or common child phonetic variations
       let matched = cleanTranscript.includes(nounLower) || 
                     cleanTranscript.includes(fullLower) ||
                     (nounLower === "apfel" && (cleanTranscript.includes("abfel") || cleanTranscript.includes("appel"))) ||
                     (nounLower === "affe" && cleanTranscript.includes("afe")) ||
                     (nounLower === "auto" && cleanTranscript.includes("oto")) ||
-                    (nounLower === "ameise" && cleanTranscript.includes("meise"));
+                    (nounLower === "ameise" && cleanTranscript.includes("meise")) ||
+                    (nounLower === "ananas" && cleanTranscript.includes("nanas")) ||
+                    (nounLower === "aquarium" && (cleanTranscript.includes("quarium") || cleanTranscript.includes("akwarium")));
 
       if (matched) {
+        speakLock = true;
         showFeedback("Super gemacht! 🌟", true);
-        speakText("Super gemacht!", 'de-DE', 1.2, 1.0, () => {
-          setTimeout(() => {
-            currentSpeakIdx++;
-            loadSpeakCard();
-          }, 800);
-        });
+        speakText("Super gemacht!", 'de-DE', 1.2, 1.0);
+        // Automatically moves to the next card after speaking feedback
+        setTimeout(() => {
+          currentSpeakIdx++;
+          loadSpeakCard();
+        }, 1300);
       } else {
         showFeedback(`Gehört: "${transcript}" - Versuch es noch einmal! 💪`, false);
         speakText("Versuch es noch einmal!", 'de-DE', 1.1, 0.9);
@@ -1520,17 +1528,21 @@
 
     /* =========================================================
        8. TAB 5: EXERCISE 3 – LETTER FILL-IN (A vs a)
+       [FIXED: Iterates through ALL 10 words + Progress bar]
        ========================================================= */
     let currentFillIdx = 0;
-    let fillSlots = []; // Array of { expected: 'A'|'a', char: '', isBlank: bool }
+    let fillSlots = [];
     let fillSlotIndexToFill = 0;
+    let fillLock = false;
 
-    const fillImg = document.getElementById('fillImg');
+    const fillFrame = document.getElementById('fillFrame');
     const fillArticle = document.getElementById('fillArticle');
     const slotsContainer = document.getElementById('slotsContainer');
     const fillFeedback = document.getElementById('fillFeedback');
     const fillQuizContainer = document.getElementById('fillQuizContainer');
     const fillCongrats = document.getElementById('fillCongrats');
+    const fillProgressFill = document.getElementById('fillProgressFill');
+    const fillProgressText = document.getElementById('fillProgressText');
 
     function resetFillQuiz() {
       currentFillIdx = 0;
@@ -1540,22 +1552,33 @@
     }
 
     function loadFillCard() {
+      fillLock = false;
+
+      // When all 10 words are finished, show the grand certificate screen!
       if (currentFillIdx >= VOCABULARY.length) {
         fillQuizContainer.style.display = 'none';
         fillCongrats.style.display = 'block';
         triggerConfetti();
-        speakText("Wunderbar! Du kannst alle 'A' und 'a' schreiben!", 'de-DE');
+        speakText("Wunderbar! Du kannst alle großen und kleinen A schreiben!", 'de-DE');
         return;
       }
 
+      fillQuizContainer.style.display = 'block';
+      fillCongrats.style.display = 'none';
+
+      // Update progress for all 10 exercises
+      const progressPercent = (currentFillIdx / VOCABULARY.length) * 100;
+      if (fillProgressFill) fillProgressFill.style.width = `${progressPercent}%`;
+      if (fillProgressText) fillProgressText.textContent = `Wort ${currentFillIdx + 1} von ${VOCABULARY.length}`;
+
       const item = VOCABULARY[currentFillIdx];
-      const parentFrame = fillImg.parentElement;
-      parentFrame.innerHTML = `<img id="fillImg" class="carousel-image" src="${item.img}" alt="${item.noun}" onerror="handleImageError(this, ${currentFillIdx})">`;
+      // Using fillFrame directly so image replacement never detaches DOM node
+      fillFrame.innerHTML = `<img id="fillImg" class="carousel-image" src="${item.img}" alt="${item.noun}" onerror="handleImageError(this, ${currentFillIdx})">`;
       
       fillArticle.innerHTML = `Artikel: <strong style="color:#1976D2; font-size:1.4rem;">${item.article}</strong>`;
       fillFeedback.style.display = 'none';
 
-      // Parse noun into slots
+      // Parse current noun into letter slots
       fillSlots = [];
       for (let i = 0; i < item.noun.length; i++) {
         const ch = item.noun[i];
@@ -1599,7 +1622,7 @@
     }
 
     function handleFillChoice(letterChosen) {
-      if (fillSlotIndexToFill === -1) return;
+      if (fillLock || fillSlotIndexToFill === -1) return;
 
       const targetSlot = fillSlots[fillSlotIndexToFill];
 
@@ -1611,27 +1634,28 @@
         findNextSlotIndex();
         renderSlots();
 
-        // Check if entire word is completed
+        // Check if all blanks for current word are completed
         if (fillSlotIndexToFill === -1) {
+          fillLock = true;
           const item = VOCABULARY[currentFillIdx];
           fillFeedback.textContent = `Wunderbar! "${item.fullGerman}"! 🎉`;
           fillFeedback.className = "feedback-banner feedback-success";
           fillFeedback.style.display = 'inline-block';
-          triggerConfetti(30);
-          speakText(`Wunderbar! ${item.fullGerman}!`, 'de-DE', 1.15, 0.9, () => {
-            setTimeout(() => {
-              currentFillIdx++;
-              loadFillCard();
-            }, 1200);
-          });
+          triggerConfetti(35);
+          speakText(`Wunderbar! ${item.fullGerman}!`, 'de-DE', 1.15, 0.9);
+
+          // Advance to the next word automatically!
+          setTimeout(() => {
+            currentFillIdx++;
+            loadFillCard();
+          }, 1400);
         }
       } else {
-        // Wrong letter case
+        // Wrong letter case (A vs a)
         fillFeedback.textContent = "Probier den anderen Buchstaben! 💪";
         fillFeedback.className = "feedback-banner feedback-retry";
         fillFeedback.style.display = 'inline-block';
         
-        // Slot shake effect
         const activeEl = document.querySelector('.letter-slot.active-target');
         if (activeEl) {
           activeEl.style.animation = 'wiggleShake 0.5s ease';
