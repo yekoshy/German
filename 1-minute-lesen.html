@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>1-Minute-Lesen – Lesetempo-Training</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #ff9f43;
+      --primary-dark: #e68a2e;
+      --secondary: #0abde3;
+      --secondary-dark: #099ec0;
+      --yellow: #ffcc00;
+      --yellow-dark: #ffa000;
+      --green: #1dd1a1;
+      --green-dark: #10ac84;
+      --red: #ff6b6b;
+      --purple: #7158e2;
+      --bg: #fdf6ec;
+      --white: #ffffff;
+      --text-dark: #2d3436;
+      --text-muted: #636e72;
+      --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.08);
+      --shadow-btn: 0 5px 0 rgba(0, 0, 0, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Baloo 2', 'Nunito', 'Comic Sans MS', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Kopfbereich */
+    header {
+      background: linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%);
+      border-bottom: 5px solid var(--yellow);
+      padding: 14px 20px;
+      box-shadow: 0 4px 14px rgba(255, 193, 7, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .timer-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid #fff;
+      box-shadow: 0 4px 12px rgba(255, 159, 67, 0.45);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      line-height: 1.1;
+      color: #d35400;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #5d4037;
+      font-weight: 700;
+    }
+
+    /* Tabs */
+    .nav-wrapper {
+      max-width: 960px;
+      width: 100%;
+      margin: 16px auto 8px;
+      padding: 0 16px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1 1 180px;
+      background: var(--white);
+      border: 3px solid #e0e6ed;
+      border-radius: 20px;
+      padding: 12px 18px;
+      font-family: inherit;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-btn:hover {
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: var(--yellow);
+      color: #4e342e;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 6px 14px rgba(255, 160, 0, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Hauptbereich */
+    main {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto 40px;
+      padding: 8px 16px;
+      flex: 1;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow-card);
+      border: 4px solid #f1f4f8;
+      text-align: center;
+    }
+
+    /* Erklärungsbox */
+    .explanation-box {
+      background: #f0f9ff;
+      border: 3px solid #bae6fd;
+      border-radius: 20px;
+      padding: 20px 24px;
+      text-align: left;
+      margin: 18px 0 24px;
+    }
+
+    .explanation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .explanation-header h3 {
+      margin: 0;
+      font-size: 1.35rem;
+      color: #0369a1;
+    }
+
+    .explanation-box ul {
+      margin: 8px 0 0;
+      padding-left: 22px;
+      font-size: 1.12rem;
+      line-height: 1.65;
+    }
+
+    /* 3-Runden-Übersicht */
+    .rounds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 20px 0 24px;
+    }
+
+    .round-box {
+      background: #f8f9fa;
+      border: 3px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px 10px;
+      transition: all 0.2s;
+    }
+
+    .round-box.done {
+      background: #ecfdf5;
+      border-color: var(--green);
+    }
+
+    .round-box.current {
+      background: #fffbeb;
+      border-color: var(--yellow-dark);
+      box-shadow: 0 0 12px rgba(255, 193, 7, 0.35);
+    }
+
+    .round-box.best-box {
+      background: linear-gradient(135deg, #fff9c4 0%, #ffe082 100%);
+      border-color: #ffb300;
+    }
+
+    .round-label {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .round-score {
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-top: 4px;
+    }
+
+    /* Buttons */
+    .btn {
+      background: var(--secondary);
+      color: var(--white);
+      border: none;
+      border-radius: 20px;
+      padding: 14px 26px;
+      font-family: inherit;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: var(--shadow-btn);
+      transition: transform 0.15s, background-color 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: var(--secondary-dark);
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.14);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-green {
+      background: var(--green-dark);
+    }
+
+    .btn-green:hover {
+      background: #0d8a6a;
+    }
+
+    .btn-gray {
+      background: #95a5a6;
+    }
+
+    .btn-gray:hover {
+      background: #7f8c8d;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 1rem;
+      border-radius: 14px;
+    }
+
+    /* Modus-Auswahl */
+    .order-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #f1f2f6;
+      padding: 8px 16px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .order-toggle select {
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 2px solid #cbd5e1;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    /* Spiel-Ansicht */
+    .round-pill {
+      display: inline-block;
+      background: var(--purple);
+      color: #fff;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .timer-bar-container {
+      width: 100%;
+      height: 22px;
+      background-color: #edf2f7;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #e2e8f0;
+      margin-bottom: 8px;
+    }
+
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background-color: var(--green);
+      transition: width 1s linear, background-color 0.4s;
+    }
+
+    .time-text {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+
+    .word-display {
+      font-size: clamp(2.4rem, 7vw, 4rem);
+      font-weight: 800;
+      margin: 24px 0;
+      padding: 48px 20px;
+      background-color: #f8fafc;
+      border-radius: 26px;
+      border: 5px dashed var(--secondary);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, background-color 0.15s;
+      position: relative;
+      word-break: break-word;
+    }
+
+    .word-display:hover {
+      background-color: #f0f9ff;
+    }
+
+    .word-display:active {
+      transform: scale(0.97);
+    }
+
+    .word-number-tag {
+      position: absolute;
+      top: 12px;
+      left: 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #64748b;
+      background: #e2e8f0;
+      padding: 2px 12px;
+      border-radius: 12px;
+    }
+
+    .score-display {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .game-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    /* Ergebnis-Ansicht */
+    .stars {
+      font-size: 3.2rem;
+      margin: 14px 0;
+    }
+
+    .advice-box {
+      background-color: #e8f8f5;
+      border-left: 6px solid var(--green-dark);
+      padding: 16px 20px;
+      border-radius: 0 16px 16px 0;
+      margin: 20px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    /* Wörterbuch */
+    .dict-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .dict-filter-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 8px 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--secondary);
+      color: #fff;
+      border-color: var(--secondary-dark);
+    }
+
+    .search-input {
+      flex: 1 1 220px;
+      max-width: 320px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      border: 3px solid #cbd5e1;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--secondary);
+    }
+
+    .dictionary-wrapper {
+      overflow-x: auto;
+      border-radius: 20px;
+      border: 3px solid #e2e8f0;
+      background: #fff;
+    }
+
+    .dict-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .dict-table th {
+      background: #fff9c4;
+      color: #5d4037;
+      padding: 14px 12px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-bottom: 3px solid #ffe082;
+      white-space: nowrap;
+    }
+
+    .dict-table td {
+      padding: 11px 12px;
+      border-bottom: 2px solid #f1f5f9;
+      font-size: 1.12rem;
+      vertical-align: middle;
+    }
+
+    .dict-table tr:hover {
+      background-color: #f8fdff;
+    }
+
+    .dict-num {
+      color: #64748b;
+      font-weight: 800;
+      width: 48px;
+      text-align: center;
+    }
+
+    .dict-de {
+      font-weight: 800;
+      color: #1e293b;
+      font-size: 1.2rem;
+    }
+
+    .dict-en {
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .dict-ar {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #1b5e20;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .audio-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mini-audio-btn {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 2px solid #7dd3fc;
+      border-radius: 12px;
+      padding: 5px 10px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.1s, background-color 0.15s;
+    }
+
+    .mini-audio-btn:hover {
+      background: var(--secondary);
+      color: #fff;
+      border-color: var(--secondary-dark);
+      transform: scale(1.05);
+    }
+
+    .mini-audio-btn.all-btn {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #86efac;
+    }
+
+    .mini-audio-btn.all-btn:hover {
+      background: var(--green-dark);
+      color: #fff;
+      border-color: var(--green-dark);
+    }
+
+    /* Konfetti */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @media (max-width: 650px) {
+      .card { padding: 18px; }
+      h1 { font-size: 1.4rem; }
+      .timer-badge { width: 52px; height: 52px; font-size: 1.25rem; }
+      .word-display { padding: 36px 14px; }
+      .dict-table th, .dict-table td { padding: 9px 8px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="timer-badge">01:00</div>
+        <div>
+          <h1>1-Minute-Lesen ⏱️</h1>
+          <div class="subtitle">Stufe 1 – Wortebene • 3 Runden &amp; Bestleistung</div>
+        </div>
+      </div>
+      <button class="btn btn-small" onclick="speakText('Hallo! Bereit für das 1-Minute-Lesen? Wähle eine Karte und starte Runde 1!', 'de-DE')">
+        🔊 Begrüßung
+      </button>
+    </div>
+  </header>
+
+  <div class="nav-wrapper">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="karte2" onclick="switchTab('karte2')">
+        📄 Karte 2 (Seite 1)
+      </button>
+      <button class="tab-btn" data-tab="karte3" onclick="switchTab('karte3')">
+        📄 Karte 3 (Seite 2)
+      </button>
+      <button class="tab-btn" data-tab="dict" onclick="switchTab('dict')">
+        📚 Wörterbuch
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <!-- TAB 1: KARTE 2 -->
+    <section id="panel-karte2" class="tab-panel active">
+      <div class="card" id="container-karte2"></div>
+    </section>
+
+    <!-- TAB 2: KARTE 3 -->
+    <section id="panel-karte3" class="tab-panel">
+      <div class="card" id="container-karte3"></div>
+    </section>
+
+    <!-- TAB 3: WÖRTERBUCH -->
+    <section id="panel-dict" class="tab-panel">
+      <div class="card">
+        <h2 style="margin-top: 0; color: #0369a1;">📚 Wörterbuch – Deutsch, Englisch &amp; Arabisch</h2>
+        <p style="color: var(--text-muted); font-weight: 700; margin-top: 0;">
+          Hier findest du alle 200 Wörter aus Karte 2 und Karte 3 mit Bedeutung und Vorlesefunktion.
+        </p>
+
+        <div class="dict-controls">
+          <div class="dict-filter-btns">
+            <button class="filter-btn active" data-filter="karte2" onclick="setDictFilter('karte2')">Karte 2 (1–100)</button>
+            <button class="filter-btn" data-filter="karte3" onclick="setDictFilter('karte3')">Karte 3 (1–100)</button>
+            <button class="filter-btn" data-filter="all" onclick="setDictFilter('all')">Alle 200 Wörter</button>
+          </div>
+          <input type="text" id="dictSearch" class="search-input" placeholder="🔍 Wort suchen (DE / EN / AR)..." oninput="renderDictionary()">
+        </div>
+
+        <div class="dictionary-wrapper">
+          <table class="dict-table">
+            <thead>
+              <tr>
+                <th style="text-align: center;">Nr.</th>
+                <th>Deutsch</th>
+                <th>Englisch</th>
+                <th style="text-align: right;">Arabisch</th>
+                <th>Vorlesen</th>
+              </tr>
+            </thead>
+            <tbody id="dictTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================
+       1. WORTLISTEN AUS DEM PDF (KARTE 2 & KARTE 3, JE 100 WÖRTER)
+       ========================================================= */
+    const KARTE_2_WORDS = [
+      { n: 1, de: "Dino", en: "Dinosaur", ar: "ديناصور" },
+      { n: 2, de: "Mensch", en: "Human / Person", ar: "إنسان" },
+      { n: 3, de: "Heft", en: "Notebook", ar: "دفتر" },
+      { n: 4, de: "Auge", en: "Eye", ar: "عين" },
+      { n: 5, de: "meine", en: "my", ar: "خاصتي / لي" },
+      { n: 6, de: "Laufen", en: "Running / to run", ar: "الجري / يركض" },
+      { n: 7, de: "Silber", en: "Silver", ar: "فضة" },
+      { n: 8, de: "Arm", en: "Arm", ar: "ذراع" },
+      { n: 9, de: "zu", en: "to / too / closed", ar: "إلى / جداً / مغلق" },
+      { n: 10, de: "klein", en: "small / little", ar: "صغير" },
+      { n: 11, de: "hiermit", en: "herewith / with this", ar: "بهذا" },
+      { n: 12, de: "Zeit", en: "Time", ar: "وقت" },
+      { n: 13, de: "Tomate", en: "Tomato", ar: "طماطم" },
+      { n: 14, de: "Mädchen", en: "Girl", ar: "فتاة" },
+      { n: 15, de: "Nase", en: "Nose", ar: "أنف" },
+      { n: 16, de: "Butter", en: "Butter", ar: "زبدة" },
+      { n: 17, de: "an", en: "on / at", ar: "على / عند" },
+      { n: 18, de: "Pferd", en: "Horse", ar: "حصان" },
+      { n: 19, de: "Bein", en: "Leg", ar: "ساق" },
+      { n: 20, de: "blau", en: "blue", ar: "أزرق" },
+      { n: 21, de: "Rutsche", en: "Slide", ar: "زحليقة" },
+      { n: 22, de: "Salz", en: "Salt", ar: "ملح" },
+      { n: 23, de: "halten", en: "to hold / to stop", ar: "يمسك / يتوقف" },
+      { n: 24, de: "Lampe", en: "Lamp", ar: "مصباح" },
+      { n: 25, de: "ganz", en: "whole / quite", ar: "كامل / تماماً" },
+      { n: 26, de: "September", en: "September", ar: "سبتمبر" },
+      { n: 27, de: "Meer", en: "Sea", ar: "بحر" },
+      { n: 28, de: "Ampel", en: "Traffic light", ar: "إشارة مرور" },
+      { n: 29, de: "gelb", en: "yellow", ar: "أصفر" },
+      { n: 30, de: "ob", en: "whether / if", ar: "إذا / ما إذا" },
+      { n: 31, de: "Los", en: "Go! / Ticket", ar: "هيا / تذكرة" },
+      { n: 32, de: "hallo", en: "hello", ar: "مرحباً" },
+      { n: 33, de: "hoch", en: "high / tall", ar: "عالٍ / مرتفع" },
+      { n: 34, de: "Stift", en: "Pen / Pencil", ar: "قلم" },
+      { n: 35, de: "Zeitung", en: "Newspaper", ar: "جريدة" },
+      { n: 36, de: "mehr", en: "more", ar: "أكثر" },
+      { n: 37, de: "Katze", en: "Cat", ar: "قطة" },
+      { n: 38, de: "singen", en: "to sing", ar: "يغني" },
+      { n: 39, de: "Musik", en: "Music", ar: "موسيقى" },
+      { n: 40, de: "Muschel", en: "Seashell", ar: "صدفة" },
+      { n: 41, de: "Tee", en: "Tea", ar: "شاي" },
+      { n: 42, de: "Geld", en: "Money", ar: "مال / نقود" },
+      { n: 43, de: "kaufen", en: "to buy", ar: "يشتري" },
+      { n: 44, de: "Möwen", en: "Seagulls", ar: "طيور النورس" },
+      { n: 45, de: "dich", en: "you", ar: "أنتَ / أنتِ" },
+      { n: 46, de: "See", en: "Lake / Sea", ar: "بحيرة / بحر" },
+      { n: 47, de: "Kunst", en: "Art", ar: "فن" },
+      { n: 48, de: "Strumpf", en: "Stocking / Sock", ar: "جورب طويل" },
+      { n: 49, de: "Luft", en: "Air", ar: "هواء" },
+      { n: 50, de: "fliegt", en: "flies", ar: "يطير" },
+      { n: 51, de: "Maus", en: "Mouse", ar: "فأر" },
+      { n: 52, de: "Schaf", en: "Sheep", ar: "خروف" },
+      { n: 53, de: "andere", en: "other", ar: "آخر / أخرى" },
+      { n: 54, de: "Tasse", en: "Cup / Mug", ar: "فنجان / كوب" },
+      { n: 55, de: "bevor", en: "before", ar: "قبل أن" },
+      { n: 56, de: "auf", en: "on / open", ar: "على / مفتوح" },
+      { n: 57, de: "Buch", en: "Book", ar: "كتاب" },
+      { n: 58, de: "Esel", en: "Donkey", ar: "حمار" },
+      { n: 59, de: "viel", en: "much / a lot", ar: "كثير" },
+      { n: 60, de: "grün", en: "green", ar: "أخضر" },
+      { n: 61, de: "Schlange", en: "Snake / Queue", ar: "ثعبان / طابور" },
+      { n: 62, de: "Brot", en: "Bread", ar: "خبز" },
+      { n: 63, de: "erschrecken", en: "to frighten / get scared", ar: "يُخيف / يفزع" },
+      { n: 64, de: "Hand", en: "Hand", ar: "يد" },
+      { n: 65, de: "Junge", en: "Boy", ar: "ولد / صبي" },
+      { n: 66, de: "Welt", en: "World", ar: "عالم" },
+      { n: 67, de: "Affe", en: "Monkey", ar: "قرد" },
+      { n: 68, de: "schreien", en: "to scream / shout", ar: "يصرخ" },
+      { n: 69, de: "Pilz", en: "Mushroom", ar: "فطر" },
+      { n: 70, de: "Nashorn", en: "Rhinoceros", ar: "وحيد القرن" },
+      { n: 71, de: "rennen", en: "to run", ar: "يركض" },
+      { n: 72, de: "schauen", en: "to look / watch", ar: "ينظر / يشاهد" },
+      { n: 73, de: "Zirkus", en: "Circus", ar: "سيرك" },
+      { n: 74, de: "habt", en: "(you all) have", ar: "لديكم" },
+      { n: 75, de: "Hund", en: "Dog", ar: "كلب" },
+      { n: 76, de: "jetzt", en: "now", ar: "الآن" },
+      { n: 77, de: "müssen", en: "must / have to", ar: "يجب" },
+      { n: 78, de: "Auto", en: "Car", ar: "سيارة" },
+      { n: 79, de: "Spielplatz", en: "Playground", ar: "ملعب أطفال" },
+      { n: 80, de: "Teller", en: "Plate", ar: "طبق / صحن" },
+      { n: 81, de: "lila", en: "purple", ar: "بنفسجي" },
+      { n: 82, de: "Haus", en: "House", ar: "بيت / منزل" },
+      { n: 83, de: "Raupe", en: "Caterpillar", ar: "يرقة" },
+      { n: 84, de: "Schal", en: "Scarf", ar: "وشاح" },
+      { n: 85, de: "Müll", en: "Trash / Garbage", ar: "قمامة" },
+      { n: 86, de: "ab", en: "from / off", ar: "من / ابتداءً من" },
+      { n: 87, de: "schreiben", en: "to write", ar: "يكتب" },
+      { n: 88, de: "spielen", en: "to play", ar: "يلعب" },
+      { n: 89, de: "mild", en: "mild / gentle", ar: "معتدل / لطيف" },
+      { n: 90, de: "Schnee", en: "Snow", ar: "ثلج" },
+      { n: 91, de: "Zug", en: "Train", ar: "قطار" },
+      { n: 92, de: "Apfel", en: "Apple", ar: "تفاحة" },
+      { n: 93, de: "Topf", en: "Pot", ar: "قدر / وعاء" },
+      { n: 94, de: "sportlich", en: "sporty / athletic", ar: "رياضي" },
+      { n: 95, de: "Wasser", en: "Water", ar: "ماء" },
+      { n: 96, de: "weiter", en: "further / continue", ar: "أبعد / استمر" },
+      { n: 97, de: "Lese", en: "Reading / Harvest", ar: "قراءة / حصاد" },
+      { n: 98, de: "Tier", en: "Animal", ar: "حيوان" },
+      { n: 99, de: "scharf", en: "sharp / spicy", ar: "حاد / حار" },
+      { n: 100, de: "Käse", en: "Cheese", ar: "جبن" }
+    ];
+
+    const KARTE_3_WORDS = [
+      { n: 1, de: "Socke", en: "Sock", ar: "جورب" },
+      { n: 2, de: "acht", en: "eight", ar: "ثمانية" },
+      { n: 3, de: "spritzen", en: "to splash / spray", ar: "يرش" },
+      { n: 4, de: "Giraffe", en: "Giraffe", ar: "زرافة" },
+      { n: 5, de: "tippen", en: "to tap / type", ar: "ينقر / يكتب" },
+      { n: 6, de: "Kuscheltier", en: "Stuffed animal", ar: "دمية محشوة" },
+      { n: 7, de: "Clown", en: "Clown", ar: "مهرج" },
+      { n: 8, de: "Schaukel", en: "Swing", ar: "أرجوحة" },
+      { n: 9, de: "früh", en: "early", ar: "مبكراً" },
+      { n: 10, de: "schwarz", en: "black", ar: "أسود" },
+      { n: 11, de: "Pfeffer", en: "Pepper", ar: "فلفل" },
+      { n: 12, de: "passieren", en: "to happen", ar: "يحدث" },
+      { n: 13, de: "Jahr", en: "Year", ar: "سنة / عام" },
+      { n: 14, de: "schimpfen", en: "to scold / grumble", ar: "يوبخ / يتذمر" },
+      { n: 15, de: "Vulkan", en: "Volcano", ar: "بركان" },
+      { n: 16, de: "hupen", en: "to honk", ar: "يطلق البوق" },
+      { n: 17, de: "groß", en: "big / tall", ar: "كبير / طويل" },
+      { n: 18, de: "Astronaut", en: "Astronaut", ar: "رائد فضاء" },
+      { n: 19, de: "gesprochen", en: "spoken", ar: "تم التحدث به" },
+      { n: 20, de: "Fuß", en: "Foot", ar: "قدم" },
+      { n: 21, de: "gemacht", en: "made / done", ar: "مصنوع / تم فعله" },
+      { n: 22, de: "Bus", en: "Bus", ar: "حافلة / باص" },
+      { n: 23, de: "Ball", en: "Ball", ar: "كرة" },
+      { n: 24, de: "nun", en: "now", ar: "الآن" },
+      { n: 25, de: "belohnen", en: "to reward", ar: "يكافئ" },
+      { n: 26, de: "Trommel", en: "Drum", ar: "طبلة" },
+      { n: 27, de: "Uhren", en: "Clocks / Watches", ar: "ساعات" },
+      { n: 28, de: "Haare", en: "Hair", ar: "شعر" },
+      { n: 29, de: "halb", en: "half", ar: "نصف" },
+      { n: 30, de: "Salami", en: "Salami", ar: "سلامي" },
+      { n: 31, de: "Elefant", en: "Elephant", ar: "فيل" },
+      { n: 32, de: "wenn", en: "if / when", ar: "إذا / عندما" },
+      { n: 33, de: "Religion", en: "Religion", ar: "دين" },
+      { n: 34, de: "Nachmittag", en: "Afternoon", ar: "بعد الظهر" },
+      { n: 35, de: "Bauer", en: "Farmer", ar: "مزارع / فلاح" },
+      { n: 36, de: "pflücken", en: "to pick (fruit/flowers)", ar: "يقطف" },
+      { n: 37, de: "Obst", en: "Fruit", ar: "فاكهة" },
+      { n: 38, de: "Orange", en: "Orange", ar: "برتقالة" },
+      { n: 39, de: "Anfang", en: "Beginning / Start", ar: "بداية" },
+      { n: 40, de: "sieben", en: "seven", ar: "سبعة" },
+      { n: 41, de: "Fuchs", en: "Fox", ar: "ثعلب" },
+      { n: 42, de: "schneller", en: "faster", ar: "أسرع" },
+      { n: 43, de: "Banane", en: "Banana", ar: "موزة" },
+      { n: 44, de: "niemals", en: "never", ar: "أبداً" },
+      { n: 45, de: "tief", en: "deep", ar: "عميق" },
+      { n: 46, de: "Fliege", en: "Fly (insect)", ar: "ذبابة" },
+      { n: 47, de: "Kopf", en: "Head", ar: "رأس" },
+      { n: 48, de: "bauen", en: "to build", ar: "يبني" },
+      { n: 49, de: "Opa", en: "Grandpa", ar: "جد" },
+      { n: 50, de: "braun", en: "brown", ar: "بني" },
+      { n: 51, de: "dünn", en: "thin", ar: "نحيف / رفيع" },
+      { n: 52, de: "Vase", en: "Vase", ar: "مزهرية" },
+      { n: 53, de: "Paprika", en: "Bell pepper", ar: "فلفل رومي" },
+      { n: 54, de: "machen", en: "to make / do", ar: "يفعل / يصنع" },
+      { n: 55, de: "fangen", en: "to catch", ar: "يمسك / يصطاد" },
+      { n: 56, de: "Gurke", en: "Cucumber", ar: "خيار" },
+      { n: 57, de: "Bonbon", en: "Candy / Sweet", ar: "حلوى" },
+      { n: 58, de: "Bilderrahmen", en: "Picture frame", ar: "إطار صورة" },
+      { n: 59, de: "Gemüse", en: "Vegetables", ar: "خضروات" },
+      { n: 60, de: "Pfanne", en: "Frying pan", ar: "مقلاة" },
+      { n: 61, de: "ruhig", en: "quiet / calm", ar: "هادئ" },
+      { n: 62, de: "Sekunde", en: "Second (time)", ar: "ثانية" },
+      { n: 63, de: "Kreisel", en: "Spinning top / Roundabout", ar: "بلبل دوار" },
+      { n: 64, de: "Dose", en: "Can / Tin / Box", ar: "علبة" },
+      { n: 65, de: "hier", en: "here", ar: "هنا" },
+      { n: 66, de: "Kamera", en: "Camera", ar: "كاميرا" },
+      { n: 67, de: "Krokodil", en: "Crocodile", ar: "تمساح" },
+      { n: 68, de: "unter", en: "under", ar: "تحت" },
+      { n: 69, de: "Busch", en: "Bush", ar: "شجيرة" },
+      { n: 70, de: "brummen", en: "to hum / growl", ar: "يدندن / يزمجر" },
+      { n: 71, de: "Monat", en: "Month", ar: "شهر" },
+      { n: 72, de: "getan", en: "done", ar: "تم فعله" },
+      { n: 73, de: "Pullover", en: "Sweater", ar: "كنزة صوفية" },
+      { n: 74, de: "mager", en: "lean / thin", ar: "هزيل / قليل الدسم" },
+      { n: 75, de: "Polizistin", en: "Policewoman", ar: "شرطية" },
+      { n: 76, de: "vielleicht", en: "maybe / perhaps", ar: "ربما" },
+      { n: 77, de: "denken", en: "to think", ar: "يفكر" },
+      { n: 78, de: "Lippe", en: "Lip", ar: "شفة" },
+      { n: 79, de: "Rose", en: "Rose", ar: "وردة" },
+      { n: 80, de: "Geschäft", en: "Shop / Store", ar: "متجر / محل" },
+      { n: 81, de: "Tasche", en: "Bag / Pocket", ar: "حقيبة / جيب" },
+      { n: 82, de: "muss", en: "must / have to", ar: "يجب" },
+      { n: 83, de: "Knie", en: "Knee", ar: "ركبة" },
+      { n: 84, de: "Fell", en: "Fur", ar: "فرو" },
+      { n: 85, de: "fallen", en: "to fall", ar: "يسقط" },
+      { n: 86, de: "Englisch", en: "English", ar: "الإنجليزية" },
+      { n: 87, de: "Seil", en: "Rope", ar: "حبل" },
+      { n: 88, de: "weiß", en: "white", ar: "أبيض" },
+      { n: 89, de: "verletzt", en: "injured / hurt", ar: "مصاب / مجروح" },
+      { n: 90, de: "schlafen", en: "to sleep", ar: "ينام" },
+      { n: 91, de: "also", en: "so / therefore", ar: "إذاً / حسناً" },
+      { n: 92, de: "Ziege", en: "Goat", ar: "عنزة / ماعز" },
+      { n: 93, de: "hilft", en: "helps", ar: "يساعد" },
+      { n: 94, de: "Platz", en: "Place / Space", ar: "مكان / ساحة" },
+      { n: 95, de: "nächste", en: "next", ar: "التالي / القادم" },
+      { n: 96, de: "Palme", en: "Palm tree", ar: "نخلة" },
+      { n: 97, de: "würzen", en: "to season / spice", ar: "يتبّل" },
+      { n: 98, de: "Schwester", en: "Sister", ar: "أخت" },
+      { n: 99, de: "Kaktus", en: "Cactus", ar: "صبار" },
+      { n: 100, de: "Ende", en: "End", ar: "نهاية" }
+    ];
+
+    /* =========================================================
+       2. ZUSTAND FÜR BEIDE KARTEN (JE 3 RUNDEN, 60 SEKUNDEN)
+       ========================================================= */
+    const ROUND_SECONDS = 60;
+
+    const cardStates = {
+      karte2: {
+        id: 'karte2',
+        title: 'Karte 2 (Seite 1)',
+        words: KARTE_2_WORDS,
+        phase: 'intro', // 'intro' | 'playing' | 'roundResult' | 'finalResult'
+        currentRound: 0, // 0, 1, 2
+        scores: [null, null, null],
+        orderMode: 'ordered', // 'ordered' | 'random'
+        sessionWords: [],
+        wordIndex: 0,
+        timeLeft: ROUND_SECONDS,
+        timerId: null
+      },
+      karte3: {
+        id: 'karte3',
+        title: 'Karte 3 (Seite 2)',
+        words: KARTE_3_WORDS,
+        phase: 'intro',
+        currentRound: 0,
+        scores: [null, null, null],
+        orderMode: 'ordered',
+        sessionWords: [],
+        wordIndex: 0,
+        timeLeft: ROUND_SECONDS,
+        timerId: null
+      }
+    };
+
+    let activeTab = 'karte2';
+    let dictFilter = 'karte2';
+
+    /* =========================================================
+       3. SPRACHAUSGABE (TEXT-TO-SPEECH)
+       ========================================================= */
+    function speakText(text, lang = 'de-DE', rate = 0.9, onEnd = null) {
+      if (!('speechSynthesis' in window)) {
+        if (onEnd) onEnd();
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = lang;
+        u.rate = rate;
+        u.pitch = 1.05;
+        if (onEnd) {
+          u.onend = onEnd;
+          u.onerror = onEnd;
+        }
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        if (onEnd) onEnd();
+      }
+    }
+
+    function speakTrilingual(deText, enText, arText) {
+      speakText(deText, 'de-DE', 0.9, () => {
+        setTimeout(() => {
+          speakText(enText, 'en-US', 0.9, () => {
+            setTimeout(() => {
+              speakText(arText, 'ar-SA', 0.85);
+            }, 350);
+          });
+        }, 350);
+      });
+    }
+
+    function speakExplanation(cardTitle) {
+      const text = `Willkommen beim 1-Minute-Lesen für ${cardTitle}. Du hast pro Runde genau eine Minute Zeit. Lies jedes Wort laut und deutlich vor. Tippe danach auf das Wort oder drücke die Leertaste, um zum nächsten Wort zu kommen. Du machst insgesamt drei Runden. Am Ende zählt dein bestes Ergebnis!`;
+      speakText(text, 'de-DE', 0.95);
+    }
+
+    /* =========================================================
+       4. TAB-WECHSEL
+       ========================================================= */
+    function switchTab(tabId) {
+      // Laufende Timer beim Tab-Wechsel sauber anhalten/abbrechen
+      ['karte2', 'karte3'].forEach(id => {
+        const st = cardStates[id];
+        if (st.phase === 'playing') {
+          clearInterval(st.timerId);
+          st.timerId = null;
+          st.phase = 'intro';
+          renderCard(id);
+        }
+      });
+
+      activeTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === 'panel-' + tabId);
+      });
+
+      if (tabId === 'dict') {
+        renderDictionary();
+      }
+    }
+
+    /* =========================================================
+       5. LOGIK FÜR KARTE 2 & KARTE 3 (3 RUNDEN A 60 SEKUNDEN)
+       ========================================================= */
+    function getBestScore(scores) {
+      const valid = scores.filter(s => s !== null);
+      return valid.length ? Math.max(...valid) : null;
+    }
+
+    function renderRoundsTracker(st) {
+      const best = getBestScore(st.scores);
+      return `
+        <div class="rounds-grid">
+          ${[0, 1, 2].map(i => {
+            const val = st.scores[i];
+            const isDone = val !== null;
+            const isCurrent = st.phase !== 'finalResult' && i === st.currentRound;
+            return `
+              <div class="round-box ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}">
+                <div class="round-label">Runde ${i + 1}</div>
+                <div class="round-score">${isDone ? val + ' Wörter' : '—'}</div>
+              </div>
+            `;
+          }).join('')}
+          <div class="round-box best-box">
+            <div class="round-label">🏆 Bestes Ergebnis</div>
+            <div class="round-score">${best !== null ? best + ' Wörter' : '—'}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCard(cardId) {
+      const st = cardStates[cardId];
+      const container = document.getElementById('container-' + cardId);
+
+      if (st.phase === 'intro') {
+        const nextRoundNum = st.currentRound + 1;
+        container.innerHTML = `
+          <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem;">
+            ${st.title} • Stufe 1 – Wortebene
+          </h2>
+
+          <div class="explanation-box">
+            <div class="explanation-header">
+              <h3>📖 So funktioniert die Übung:</h3>
+              <button class="btn btn-small" onclick="speakExplanation('${st.title}')">
+                🔊 Erklärung anhören
+              </button>
+            </div>
+            <ul>
+              <li>Du hast pro Runde genau <strong>1 Minute (60 Sekunden)</strong> Zeit.</li>
+              <li>Lies das angezeigte Wort laut und deutlich vor.</li>
+              <li>Tippe danach auf das Wort (oder drücke die <strong>Leertaste</strong>), um zum nächsten Wort zu kommen.</li>
+              <li>Du machst insgesamt <strong>3 Runden</strong> (Runde 1, Runde 2 und Runde 3).</li>
+              <li>Am Ende gewinnt dein <strong>bestes Ergebnis</strong> aus allen 3 Runden!</li>
+            </ul>
+          </div>
+
+          ${renderRoundsTracker(st)}
+
+          <div class="order-toggle">
+            <span>Reihenfolge:</span>
+            <select onchange="setOrderMode('${cardId}', this.value)">
+              <option value="ordered" ${st.orderMode === 'ordered' ? 'selected' : ''}>Nach Karte (1–100)</option>
+              <option value="random" ${st.orderMode === 'random' ? 'selected' : ''}>Gemischt (Zufall)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="startRound('${cardId}')">
+              Runde ${nextRoundNum} starten ▶️
+            </button>
+            ${st.scores.some(s => s !== null) ? `
+              <button class="btn btn-gray" onclick="resetAllRounds('${cardId}')">
+                🔄 Alle Runden zurücksetzen
+              </button>
+            ` : ''}
+          </div>
+        `;
+      } else if (st.phase === 'playing') {
+        const currentWord = st.sessionWords[st.wordIndex];
+        const pct = (st.timeLeft / ROUND_SECONDS) * 100;
+        let barColor = 'var(--green)';
+        if (st.timeLeft <= 20) barColor = '#f1c40f';
+        if (st.timeLeft <= 10) barColor = 'var(--red)';
+
+        container.innerHTML = `
+          <div class="round-pill">Runde ${st.currentRound + 1} von 3 • ${st.title}</div>
+
+          <div class="timer-bar-container">
+            <div id="timer-bar-${cardId}" class="timer-bar" style="width: ${pct}%; background-color: ${barColor};"></div>
+          </div>
+          <div id="time-text-${cardId}" class="time-text">${st.timeLeft} Sekunden</div>
+
+          <div id="word-display-${cardId}" class="word-display" onclick="nextWord('${cardId}')">
+            <span class="word-number-tag">Nr. ${currentWord.n}</span>
+            <span id="word-text-${cardId}">${currentWord.de}</span>
+          </div>
+
+          <div class="score-display">
+            Gelesene Wörter: <span id="score-${cardId}" style="color: var(--primary-dark);">${st.wordIndex}</span> / ${st.sessionWords.length}
+          </div>
+
+          <p style="color: var(--text-muted); margin: 0 0 12px; font-weight: 700;">
+            Tippe auf das Wort oder drücke die Leertaste, wenn du es gelesen hast.
+          </p>
+
+          <div class="game-actions">
+            <button class="btn btn-small" onclick="speakCurrentWord('${cardId}')">
+              🔊 Wort anhören (Hilfe)
+            </button>
+            <button class="btn btn-small btn-gray" onclick="cancelRound('${cardId}')">
+              ⏹️ Runde abbrechen
+            </button>
+          </div>
+        `;
+      } else if (st.phase === 'roundResult') {
+        const score = st.scores[st.currentRound];
+        const finishedRoundNum = st.currentRound + 1;
+        const nextRoundNum = finishedRoundNum + 1;
+
+        container.innerHTML = `
+          <h2 style="margin-top: 0; color: var(--secondary-dark); font-size: 2rem;">
+            ⏱️ Runde ${finishedRoundNum} beendet!
+          </h2>
+          <p style="font-size: 1.5rem; font-weight: 800; margin: 10px 0;">
+            Du hast <span style="font-size: 2.3rem; color: var(--primary-dark);">${score}</span> Wörter in 1 Minute gelesen!
+          </p>
+
+          ${renderRoundsTracker(st)}
+
+          <div class="advice-box">
+            ${getRoundFeedback(score, finishedRoundNum)}
+          </div>
+
+          <button class="btn btn-primary" onclick="prepareNextRound('${cardId}')">
+            Weiter zu Runde ${nextRoundNum} ▶️
+          </button>
+        `;
+      } else if (st.phase === 'finalResult') {
+        const best = getBestScore(st.scores);
+        const bestRoundIndex = st.scores.indexOf(best) + 1;
+
+        container.innerHTML = `
+          <h2 style="margin-top: 0; color: var(--green-dark); font-size: 2.2rem;">
+            🎉 Alle 3 Runden geschafft!
+          </h2>
+          <div class="stars">${getStars(best)}</div>
+          <p style="font-size: 1.5rem; font-weight: 800; margin: 6px 0;">
+            🏆 Dein bestes Ergebnis:
+            <span style="font-size: 2.6rem; color: var(--primary-dark);">${best}</span> Wörter!
+          </p>
+          <p style="color: var(--text-muted); font-weight: 700; margin-top: 0;">
+            (Erreicht in Runde ${bestRoundIndex})
+          </p>
+
+          ${renderRoundsTracker(st)}
+
+          <div class="advice-box">
+            ${getFinalFeedback(best)}
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="resetAllRounds('${cardId}')">
+              🔄 Alle 3 Runden neu starten
+            </button>
+            <button class="btn btn-green" onclick="switchTab('${cardId === 'karte2' ? 'karte3' : 'karte2'}')">
+              ${cardId === 'karte2' ? 'Zu Karte 3 wechseln ➡️' : 'Zu Karte 2 wechseln ⬅️'}
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function setOrderMode(cardId, mode) {
+      cardStates[cardId].orderMode = mode;
+    }
+
+    function startRound(cardId) {
+      const st = cardStates[cardId];
+      clearInterval(st.timerId);
+
+      st.sessionWords = st.orderMode === 'random'
+        ? [...st.words].sort(() => Math.random() - 0.5)
+        : [...st.words];
+      st.wordIndex = 0;
+      st.timeLeft = ROUND_SECONDS;
+      st.phase = 'playing';
+
+      renderCard(cardId);
+
+      st.timerId = setInterval(() => {
+        st.timeLeft--;
+        updateTimerUI(cardId);
+        if (st.timeLeft <= 0) {
+          finishRound(cardId, false);
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI(cardId) {
+      const st = cardStates[cardId];
+      const bar = document.getElementById('timer-bar-' + cardId);
+      const txt = document.getElementById('time-text-' + cardId);
+      if (!bar || !txt) return;
+
+      const pct = Math.max(0, (st.timeLeft / ROUND_SECONDS) * 100);
+      bar.style.width = pct + '%';
+      txt.textContent = st.timeLeft + (st.timeLeft === 1 ? ' Sekunde' : ' Sekunden');
+
+      if (st.timeLeft <= 20) bar.style.backgroundColor = '#f1c40f';
+      if (st.timeLeft <= 10) bar.style.backgroundColor = 'var(--red)';
+    }
+
+    function nextWord(cardId) {
+      const st = cardStates[cardId];
+      if (st.phase !== 'playing') return;
+
+      st.wordIndex++;
+      if (st.wordIndex >= st.sessionWords.length) {
+        finishRound(cardId, true);
+        return;
+      }
+
+      const currentWord = st.sessionWords[st.wordIndex];
+      const box = document.getElementById('word-display-' + cardId);
+      const scoreEl = document.getElementById('score-' + cardId);
+      if (box && scoreEl) {
+        box.innerHTML = `
+          <span class="word-number-tag">Nr. ${currentWord.n}</span>
+          <span id="word-text-${cardId}">${currentWord.de}</span>
+        `;
+        scoreEl.textContent = st.wordIndex;
+      }
+    }
+
+    function speakCurrentWord(cardId) {
+      const st = cardStates[cardId];
+      if (st.phase !== 'playing') return;
+      const word = st.sessionWords[st.wordIndex];
+      if (word) speakText(word.de, 'de-DE', 0.85);
+    }
+
+    function cancelRound(cardId) {
+      const st = cardStates[cardId];
+      clearInterval(st.timerId);
+      st.timerId = null;
+      st.phase = 'intro';
+      renderCard(cardId);
+    }
+
+    function finishRound(cardId, finishedAll) {
+      const st = cardStates[cardId];
+      clearInterval(st.timerId);
+      st.timerId = null;
+
+      const score = st.wordIndex;
+      st.scores[st.currentRound] = score;
+
+      if (st.currentRound < 2) {
+        st.phase = 'roundResult';
+        renderCard(cardId);
+        speakText(`Runde ${st.currentRound + 1} beendet! Du hast ${score} Wörter gelesen.`, 'de-DE');
+      } else {
+        st.phase = 'finalResult';
+        renderCard(cardId);
+        triggerConfetti(80);
+        const best = getBestScore(st.scores);
+        speakText(`Super! Alle drei Runden geschafft! Dein bestes Ergebnis sind ${best} Wörter.`, 'de-DE');
+      }
+    }
+
+    function prepareNextRound(cardId) {
+      const st = cardStates[cardId];
+      st.currentRound++;
+      st.phase = 'intro';
+      renderCard(cardId);
+    }
+
+    function resetAllRounds(cardId) {
+      const st = cardStates[cardId];
+      clearInterval(st.timerId);
+      st.timerId = null;
+      st.currentRound = 0;
+      st.scores = [null, null, null];
+      st.phase = 'intro';
+      renderCard(cardId);
+    }
+
+    function getStars(score) {
+      if (score >= 70) return '⭐⭐⭐⭐⭐';
+      if (score >= 50) return '⭐⭐⭐⭐';
+      if (score >= 30) return '⭐⭐⭐';
+      if (score >= 15) return '⭐⭐';
+      return '⭐';
+    }
+
+    function getRoundFeedback(score, roundNum) {
+      if (score < 20) {
+        return `Ein super Start in Runde ${roundNum}! Versuche gleich in der nächsten Runde noch ein paar Wörter mehr zu schaffen.`;
+      }
+      if (score < 45) {
+        return `Toll gelesen in Runde ${roundNum}! Du kennst viele Wörter schon richtig schnell. Schaffst du in Runde ${roundNum + 1} noch mehr?`;
+      }
+      return `Wahnsinn! ${score} Wörter in nur einer Minute! Mal sehen, ob du diesen Rekord in der nächsten Runde noch übertreffen kannst!`;
+    }
+
+    function getFinalFeedback(best) {
+      if (best < 20) {
+        return `Klasse durchgehalten! Tipp: Schaue dir schwierige Wörter im Wörterbuch an, höre sie dir an und starte die 3 Runden noch einmal.`;
+      }
+      if (best < 45) {
+        return `Richtig stark! Mit ${best} Wörtern bist du schon sehr sicher unterwegs. Übung macht den Lese-Meister!`;
+      }
+      if (best < 75) {
+        return `Super schnell gelesen! ${best} Wörter in einer Minute sind ein tolles Ergebnis. Probiere jetzt auch die nächste Karte aus!`;
+      }
+      return `Unglaublich! ${best} Wörter in 60 Sekunden – du bist ein echter Lese-Profi!`;
+    }
+
+    // Tastatur-Steuerung (Leertaste oder Enter für nächstes Wort während einer aktiven Runde)
+    document.addEventListener('keydown', (e) => {
+      if (activeTab === 'karte2' || activeTab === 'karte3') {
+        const st = cardStates[activeTab];
+        if (st.phase === 'playing' && (e.code === 'Space' || e.code === 'Enter')) {
+          e.preventDefault();
+          nextWord(activeTab);
+        }
+      }
+    });
+
+    /* =========================================================
+       6. WÖRTERBUCH (DEUTSCH – ENGLISCH – ARABISCH + AUDIO)
+       ========================================================= */
+    function setDictFilter(filter) {
+      dictFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      renderDictionary();
+    }
+
+    function renderDictionary() {
+      const tbody = document.getElementById('dictTableBody');
+      const query = (document.getElementById('dictSearch').value || '').trim().toLowerCase();
+
+      let list = [];
+      if (dictFilter === 'karte2') {
+        list = KARTE_2_WORDS.map(w => ({ ...w, card: 'K2' }));
+      } else if (dictFilter === 'karte3') {
+        list = KARTE_3_WORDS.map(w => ({ ...w, card: 'K3' }));
+      } else {
+        list = [
+          ...KARTE_2_WORDS.map(w => ({ ...w, card: 'K2' })),
+          ...KARTE_3_WORDS.map(w => ({ ...w, card: 'K3' }))
+        ];
+      }
+
+      if (query) {
+        list = list.filter(w =>
+          w.de.toLowerCase().includes(query) ||
+          w.en.toLowerCase().includes(query) ||
+          w.ar.includes(query)
+        );
+      }
+
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 28px; color: var(--text-muted); font-weight: 700;">
+              Kein passendes Wort gefunden.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = list.map(w => {
+        const safeDe = w.de.replace(/'/g, "\\'");
+        const safeEn = w.en.replace(/'/g, "\\'");
+        const safeAr = w.ar.replace(/'/g, "\\'");
+        const prefix = dictFilter === 'all' ? `${w.card} #${w.n}` : w.n;
+
+        return `
+          <tr>
+            <td class="dict-num">${prefix}</td>
+            <td class="dict-de">${w.de}</td>
+            <td class="dict-en">${w.en}</td>
+            <td class="dict-ar">${w.ar}</td>
+            <td>
+              <div class="audio-cell">
+                <button class="mini-audio-btn" title="Deutsch vorlesen" onclick="speakText('${safeDe}', 'de-DE')">🔊 DE</button>
+                <button class="mini-audio-btn" title="Englisch vorlesen" onclick="speakText('${safeEn}', 'en-US')">🔊 EN</button>
+                <button class="mini-audio-btn" title="Arabisch vorlesen" onclick="speakText('${safeAr}', 'ar-SA')">🔊 AR</button>
+                <button class="mini-audio-btn all-btn" title="Alle 3 Sprachen vorlesen" onclick="speakTrilingual('${safeDe}', '${safeEn}', '${safeAr}')">🌍 Alle</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /* =========================================================
+       7. KONFETTI-ANIMATION
+       ========================================================= */
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let animId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerConfetti(count = 70) {
+      const colors = ['#ff6b6b', '#ffcc00', '#1dd1a1', '#0abde3', '#ff9f43', '#7158e2'];
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 260,
+          y: canvas.height / 3 + (Math.random() - 0.5) * 100,
+          w: Math.random() * 12 + 6,
+          h: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 14,
+          vy: Math.random() * -12 - 4,
+          tilt: Math.random() * 10,
+          tiltSpeed: Math.random() * 0.1 + 0.05,
+          gravity: 0.35,
+          opacity: 1
+        });
+      }
+      if (!animId) animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.tilt += p.tiltSpeed;
+        p.opacity -= 0.007;
+
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.tilt);
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+
+        if (p.y > canvas.height || p.opacity <= 0) {
+          confettiParticles.splice(i, 1);
+        }
+      }
+
+      if (confettiParticles.length > 0) {
+        animId = requestAnimationFrame(animateConfetti);
+      } else {
+        cancelAnimationFrame(animId);
+        animId = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* =========================================================
+       8. INITIALISIERUNG
+       ========================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCard('karte2');
+      renderCard('karte3');
+      renderDictionary();
+    });
+  </script>
+</body>
+</html>
